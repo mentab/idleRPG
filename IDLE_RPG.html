@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>RPG Game</title>
+	<style>
+		body {
+			font-family: "Courier New", Courier, monospace;
+			margin: 0;
+			padding: 0;
+		}
+
+		/* Define the squared button styles */
+		button,
+		input {
+			display: inline-block;
+			padding: 10px 20px;
+			margin-bottom: 10px;
+			background-color: white;
+			border: 1px solid black;
+			text-decoration: none;
+			color: black;
+			text-transform: uppercase;
+			font-weight:  bold;
+			transition: background-color 0.3s ease;
+		}
+
+		/* Add hover effect to the buttons */
+		button:hover {
+			background-color: #f0f0f0;
+		}
+
+		#header-container {
+			padding:  20px;
+		}
+
+		#game-container {
+			display: flex;
+			width:  100%;
+		}
+
+		#main-screens {
+			width: 66%;
+			padding: 20px;
+		}
+
+		#information-screen {
+			width:  100%;
+			padding:  20px;
+		}
+
+		#game-info {
+			flex-grow: 1;
+			height: 300px;
+			overflow-y: scroll;
+			border: 1px solid #ccc;
+			padding: 10px;
+		}
+
+		#game-info {
+			height: 300px;
+			overflow-y: scroll;
+			border: 1px solid #ccc;
+			padding: 10px;
+		}
+		
+		#message-container {
+			display: flex;
+			flex-direction: column-reverse;
+		}
+
+		#inventory {
+			margin-top: 20px;
+		}
+		
+		#actions {
+			margin-top: 20px;
+		}
+		
+		#buy-screen,
+		#sell-screen {
+			margin-top: 20px;
+		}
+		
+		#screens {
+			margin-top: 20px;
+		}
+		
+		#screens > div {
+			margin-top: 20px;
+		}
+		
+		.hidden {
+			display: none;
+		}
+
+		.equipped,
+		.selected {
+			font-weight: bold;
+		}
+
+		.item {
+			cursor: pointer;
+		}
+	</style>
+</head>
+<body>
+	<div id="header-container">
+		<h1>Welcome to the RPG game!</h1>
+		<div>
+			<h2>Player Stats:</h2>
+			<p id="playerStats">
+				🎚️: <span id="playerLevel"></span> |
+				💖: <span id="playerCurrentHP"></span>/<span id="playerMaxHP"></span> |
+				💚: <span id="playerRegeneration"></span> |
+				⚔️: <span id="playerDamage"></span> |
+				🛡️: <span id="playerDefense"></span> |
+				🎯: <span id="playerAccuracy"></span> |
+				🌪️: <span id="playerEvasion"></span> |
+				🌟: <span id="playerExperience"></span> |
+				💰: <span id="playerMoney"></span></p>
+		</div>
+	</div>
+	
+	<div id="game-container">
+		<div id="main-screens">
+			<div id="main-screen">
+				<h2>Main Screen</h2>
+				<button id="btnAdventure">🗺️ Go to Adventure</button>
+				<button id="btnBoss">⚔️ Fight a Boss</button>
+				<button id="btnInventory">🎒 See your Inventory</button>
+				<button id="btnBuy">💰 Buy Items</button>
+				<button id="btnSell">💎 Sell Items</button>
+				<button id="btnGamble">🎲 Gamble Money</button>
+			</div>
+
+			<div id="adventure-screen" class="hidden">
+				<button class="btnBackToMain">🔙 Back to Main</button>
+				<h2>Adventure</h2>
+				<button id="btnStartAdventure">🗺️ Start</button>
+			</div>
+
+			<div id="boss-screen" class="hidden">
+				<button class="btnBackToMain">🔙 Back to Main</button>
+				<h2>Boss</h2>
+				<button id="btnStartBoss">⚔️ Start</button>
+			</div>
+
+			<div id="inventory-screen" class="hidden">
+				<button class="btnBackToMain">🔙 Back to Main</button>
+				<h2>Inventory</h2>
+				<div id="item-list"></div>
+			</div>
+
+			<div id="buy-screen" class="hidden">
+				<button class="btnBackToMain">🔙 Back to Main</button>
+				<h2>Buy Items</h2>
+				<div id="shop-item-list"></div>
+				<button id="btnBuyItem">💰 Buy</button>
+			</div>
+
+			<div id="sell-screen" class="hidden">
+				<button class="btnBackToMain">🔙 Back to Main</button>
+				<h2>Sell Items</h2>
+				<div id="sell-item-list"></div>
+				<button id="btnSellItem">💎 Sell</button>
+			</div>
+
+			<div id="gamble-screen" class="hidden">
+				<button class="btnBackToMain">🔙 Back to Main</button>
+				<h2>Gamble Money</h2>
+				<p id="gamble-info">Bet an amount of money and try your luck!</p>
+				<input type="number" id="gamble-amount" min="1" max="100" value="1">
+				<button id="btnGambleMoney">🎲 Gamble</button>
+			</div>
+		</div>
+
+		<div id="information-screen">
+			<h2>Game Information:</h2>
+			<div id="game-info">
+				<div id="message-container"></div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+
+	const hpDelay = 1000;
+
+	// Define the player object
+	const player = {
+		name: "Player",
+		level: 1,
+		maxHP: 25,
+		currentHP: 25,
+		damage: 6,
+		defense: 6,
+		regeneration: 1,
+		accuracy: 25,
+		evasion: 25,
+		weapon: null,
+		armor: null,
+		soulstone: null,
+		gloves: null,
+		trinket: null,
+		inventory: [],
+		money: 0, // Initial amount of money for the player
+		experience: 0
+	};	
+
+	function levelUp() {
+		player.maxHP += 5;
+		player.currentHP = player.maxHP;
+		player.damage += 2;
+		player.defense += 2;
+		if (player.level % 10 == 0) player.regeneration += 1;
+		updateGameInfo(`Congratulations! You leveled up to level ${player.level}.`);
+		updatePlayerStats();
+	}
+
+	const enemies = [
+		// Shimmering Meadows
+		{ name: "Warthog", level: 1, type: "Beast (Boar)", icon: "🐗", currentHP: 0 },
+		{ name: "Shadowfox", level: 2, type: "Beast (Fox)", icon: "🦊", currentHP: 0 },
+		{ name: "Direwolf", level: 3, type: "Beast (Wolf)", icon: "🐺", currentHP: 0 },
+		{ name: "Thorn Ent", level: 4, type: "Magical Creature (Ent)", icon: "🌿", currentHP: 0 },
+		{ name: "Griffin", level: 5, type: "Magical Creature (Griffin)", icon: "🦅", currentHP: 0 },
+		{ name: "Dark Knight", level: 6, type: "Humanoid", icon: "👹", currentHP: 0 },
+		{ name: "Pixie Sorcerer", level: 7, type: "Fey (Pixie)", icon: "🧚‍♂️", currentHP: 0 },
+		{ name: "Enchanted Dryad", level: 8, type: "Magical Creature (Dryad)", icon: "🌺", currentHP: 0 },
+		{ name: "Illusionist Wizard", level: 9, type: "Humanoid (Wizard)", icon: "🧙‍♀️", currentHP: 0 },
+		// { name: "Legendary Guardian", level: 10, type: "Legendary Being", icon: "🌟", currentHP: 0 },
+		// Whispering Forest
+		{ name: "Goblin Warrior", level: 11, type: "Humanoid (Goblin)", icon: "🧟‍♂️", currentHP: 0 },
+		{ name: "Wicked Witch", level: 12, type: "Humanoid (Witch)", icon: "🧙‍♀️", currentHP: 0 },
+		{ name: "Treant", level: 13, type: "Magical Creature (Treant)", icon: "🌳", currentHP: 0 },
+		{ name: "Banshee", level: 14, type: "Undead", icon: "👻", currentHP: 0 },
+		{ name: "Chimera", level: 15, type: "Magical Creature (Chimera)", icon: "🐲", currentHP: 0 },
+		{ name: "Enraged Bear", level: 16, type: "Beast (Bear)", icon: "🐻", currentHP: 0 },
+		{ name: "Nightshade Assassin", level: 17, type: "Humanoid (Assassin)", icon: "🗡️", currentHP: 0 },
+		{ name: "Druid Shaman", level: 18, type: "Humanoid (Druid)", icon: "🌿🔮", currentHP: 0 },
+		{ name: "Siren Temptress", level: 19, type: "Magical Creature (Siren)", icon: "🧜‍♀️", currentHP: 0 },
+		// { name: "Forest Guardian", level: 20, type: "Magical Creature (Guardian)", icon: "🌳🦉", currentHP: 0 },
+		// Crystal Caverns
+		{ name: "Cave Spider", level: 21, type: "Beast (Spider)", icon: "🕷️", currentHP: 0 },
+		{ name: "Frost Elemental", level: 22, type: "Magical Creature (Elemental)", icon: "❄️🌀", currentHP: 0 },
+		{ name: "Crystal Golem", level: 23, type: "Magical Creature (Golem)", icon: "💎🗿", currentHP: 0 },
+		{ name: "Shadow Stalker", level: 24, type: "Undead", icon: "👤🌑", currentHP: 0 },
+		{ name: "Crystal Mage", level: 25, type: "Humanoid (Mage)", icon: "💎🧙‍♂️", currentHP: 0 },
+		{ name: "Ancient Wyrm", level: 26, type: "Dragon", icon: "🐉🌳", currentHP: 0 },
+		{ name: "Spectral Knight", level: 27, type: "Undead (Knight)", icon: "👻⚔️", currentHP: 0 },
+		{ name: "Ice Queen", level: 28, type: "Humanoid (Queen)", icon: "👸❄️", currentHP: 0 },
+		{ name: "Frozen Colossus", level: 29, type: "Magical Creature (Colossus)", icon: "❄️🗿", currentHP: 0 },
+		// { name: "Eternal Frost Dragon", level: 30, type: "Dragon", icon: "❄️🐉", currentHP: 0 },
+		// Crimson Citadel
+		{ name: "Hellfire Imp", level: 31, type: "Demon (Imp)", icon: "🔥👿", currentHP: 0 },
+		{ name: "Infernal Knight", level: 32, type: "Demon (Knight)", icon: "🔥⚔️", currentHP: 0 },
+		{ name: "Lava Elemental", level: 33, type: "Elemental", icon: "🌋🔥", currentHP: 0 },
+		{ name: "Death's Shadow", level: 34, type: "Undead", icon: "☠️🌑", currentHP: 0 },
+		{ name: "Crimson Succubus", level: 35, type: "Demon (Succubus)", icon: "🔥👿🧚‍♀️", currentHP: 0 },
+		{ name: "Molten Golem", level: 36, type: "Elemental (Golem)", icon: "🔥💥🗿", currentHP: 0 },
+		{ name: "Cursed Necromancer", level: 37, type: "Undead (Necromancer)", icon: "🔥🧟‍♂️", currentHP: 0 },
+		{ name: "Ashen Witch", level: 38, type: "Humanoid (Witch)", icon: "🔥🧙‍♀️", currentHP: 0 },
+		{ name: "Raging Inferno", level: 39, type: "Elemental", icon: "🔥🌋", currentHP: 0 },
+		// { name: "Lord of Flames", level: 40, type: "Demon", icon: "🔥👹", currentHP: 0 },
+		// Stormy Peaks
+		{ name: "Rock Golem", level: 41, type: "Elemental (Golem)", icon: "🗿⛰️", currentHP: 0 },
+		{ name: "Thunderbird", level: 42, type: "Magical Creature (Bird)", icon: "⚡️🐦", currentHP: 0 },
+		{ name: "Storm Shaman", level: 43, type: "Humanoid (Shaman)", icon: "⚡️🧙‍♂️", currentHP: 0 },
+		{ name: "Mistral Drake", level: 44, type: "Dragon", icon: "🌬️🐉", currentHP: 0 },
+		{ name: "Yeti", level: 45, type: "Beast", icon: "🏔️🦧", currentHP: 0 },
+		{ name: "Whirling Dervish", level: 46, type: "Humanoid", icon: "🌪️🧔", currentHP: 0 },
+		{ name: "Frost Giant", level: 47, type: "Humanoid (Giant)", icon: "🌬️🗿", currentHP: 0 },
+		{ name: "Tornado Elemental", level: 48, type: "Elemental", icon: "🌪️🌬️", currentHP: 0 },
+		{ name: "Storm Lord", level: 49, type: "Humanoid", icon: "⚡️👑", currentHP: 0 },
+		// { name: "Tempest Dragon", level: 50, type: "Dragon", icon: "⚡️🐉", currentHP: 0 },
+		// Lost Catacombs
+		{ name: "Skeletal Warrior", level: 51, type: "Undead (Warrior)", icon: "💀⚔️", currentHP: 0 },
+		{ name: "Cursed Mummy", level: 52, type: "Undead", icon: "🔮🧟‍♂️", currentHP: 0 },
+		{ name: "Ghostly Apparition", level: 53, type: "Undead", icon: "👻💀", currentHP: 0 },
+		{ name: "Serpentine Cultist", level: 54, type: "Humanoid (Cultist)", icon: "🔮🐍", currentHP: 0 },
+		{ name: "Crypt Lich", level: 55, type: "Undead (Lich)", icon: "💀🔮", currentHP: 0 },
+		{ name: "Shade Assassin", level: 56, type: "Undead (Assassin)", icon: "👤🔪", currentHP: 0 },
+		{ name: "Ghoul Hound", level: 57, type: "Undead (Beast)", icon: "🐕💀", currentHP: 0 },
+		{ name: "Spectral Sorcerer", level: 58, type: "Undead (Sorcerer)", icon: "🔮🌑", currentHP: 0 },
+		{ name: "Ancient Skeleton", level: 59, type: "Undead", icon: "☠️💀", currentHP: 0 },
+		// { name: "Undying Wraith", level: 60, type: "Undead", icon: "👤🌑", currentHP: 0 },
+		// Celestial Observatory
+		{ name: "Starlight Sprite", level: 61, type: "Fey (Sprite)", icon: "✨🧚", currentHP: 0 },
+		{ name: "Astral Guardian", level: 62, type: "Magical Creature (Guardian)", icon: "⭐🦉", currentHP: 0 },
+		{ name: "Lunar Priestess", level: 63, type: "Humanoid (Priestess)", icon: "🌙👸", currentHP: 0 },
+		{ name: "Solar Elemental", level: 64, type: "Elemental", icon: "☀️🔥", currentHP: 0 },
+		{ name: "Nebula Sorcerer", level: 65, type: "Humanoid (Sorcerer)", icon: "🌌🧙‍♂️", currentHP: 0 },
+		{ name: "Stardust Dragon", level: 66, type: "Dragon", icon: "✨🐉", currentHP: 0 },
+		{ name: "Cosmic Specter", level: 67, type: "Undead", icon: "👤✨", currentHP: 0 },
+		{ name: "Celestial Oracle", level: 68, type: "Humanoid (Oracle)", icon: "⭐🔮", currentHP: 0 },
+		{ name: "Aurora Valkyrie", level: 69, type: "Humanoid (Valkyrie)", icon: "🌌⚔️", currentHP: 0 },
+		// { name: "Ethereal Serpent", level: 70, type: "Magical Creature (Serpent)", icon: "🌙🐍", currentHP: 0 },
+		// Frozen Tundra
+		{ name: "Ice Elemental", level: 71, type: "Elemental", icon: "🌬️❄️", currentHP: 0 },
+		{ name: "Frost Shaman", level: 72, type: "Humanoid (Shaman)", icon: "❄️🧙‍♂️", currentHP: 0 },
+		{ name: "Glacial Golem", level: 73, type: "Magical Creature (Golem)", icon: "❄️💎🗿", currentHP: 0 },
+		{ name: "Snow Siren", level: 74, type: "Magical Creature (Siren)", icon: "❄️🧜‍♀️", currentHP: 0 },
+		{ name: "Winter Wolf", level: 75, type: "Beast (Wolf)", icon: "❄️🐺", currentHP: 0 },
+		{ name: "Avalanche Yeti", level: 76, type: "Beast", icon: "❄️🏔️🦧", currentHP: 0 },
+		{ name: "Frozen Banshee", level: 77, type: "Undead", icon: "❄️👻", currentHP: 0 },
+		{ name: "Blizzard Mage", level: 78, type: "Humanoid (Mage)", icon: "❄️🧙‍♂️❄️", currentHP: 0 },
+		{ name: "Arctic Drake", level: 79, type: "Dragon", icon: "❄️🐉", currentHP: 0 },
+		// { name: "Glacier Guardian", level: 80, type: "Magical Creature (Guardian)", icon: "❄️🏔️🦉", currentHP: 0 },
+		// Volcanic Depths
+		{ name: "Magma Elemental", level: 81, type: "Elemental", icon: "🌋🔥", currentHP: 0 },
+		{ name: "Lava Shaman", level: 82, type: "Humanoid (Shaman)", icon: "🌋🧙‍♂️", currentHP: 0 },
+		{ name: "Infernal Golem", level: 83, type: "Magical Creature (Golem)", icon: "🌋💎🗿", currentHP: 0 },
+		{ name: "Fire Sprite", level: 84, type: "Fey (Sprite)", icon: "🔥🧚", currentHP: 0 },
+		{ name: "Volcanic Drake", level: 85, type: "Dragon", icon: "🌋🐉", currentHP: 0 },
+		{ name: "Obsidian Knight", level: 86, type: "Humanoid (Knight)", icon: "🌋⚔️", currentHP: 0 },
+		{ name: "Hellhound", level: 87, type: "Beast", icon: "🌋🐕", currentHP: 0 },
+		{ name: "Searing Sorcerer", level: 88, type: "Humanoid (Sorcerer)", icon: "🌋🧙‍♂️", currentHP: 0 },
+		{ name: "Inferno Demon", level: 89, type: "Demon", icon: "🌋👹", currentHP: 0 },
+		// { name: "Eruption Guardian", level: 90, type: "Magical Creature (Guardian)", icon: "🌋🏔️🦉", currentHP: 0 },
+		// Cursed Catacombs
+		{ name: "Ghoul", level: 91, type: "Undead", icon: "☠️🧟‍♂️", currentHP: 0 },
+		{ name: "Shadowcaster", level: 92, type: "Humanoid (Caster)", icon: "🌑🧙‍♂️", currentHP: 0 },
+		{ name: "Spectral Assassin", level: 93, type: "Undead (Assassin)", icon: "🌑🗡️", currentHP: 0 },
+		{ name: "Cursed Wraith", level: 94, type: "Undead", icon: "🌑👻", currentHP: 0 },
+		{ name: "Necrotic Warlock", level: 95, type: "Humanoid (Warlock)", icon: "🌑🔮🧙‍♂️", currentHP: 0 },
+		{ name: "Bone Dragon", level: 96, type: "Dragon", icon: "☠️🐉", currentHP: 0 },
+		{ name: "Dark Priest", level: 97, type: "Humanoid (Priest)", icon: "🌑⚔️🙏", currentHP: 0 },
+		{ name: "Phantom Knight", level: 98, type: "Undead (Knight)", icon: "🌑⚔️👻", currentHP: 0 },
+		{ name: "Deathbringer", level: 99, type: "Undead", icon: "🌑👤⚔️", currentHP: 0 },
+		// { name: "Eternal Lich", level: 100, type: "Undead (Lich)", icon: "🌑💀🔮", currentHP: 0 }
+	];
+
+	// Define the bosses object
+	const bosses = [
+		// Shimmering Meadows
+		{ name: "Young Dragon", level: 10, type: "Dragon", icon: "🐉", currentHP: 0 },
+		// Whispering Forest
+		{ name: "Malevolent Sorcerer", level: 20, type: "Humanoid (Sorcerer)", icon: "👺", currentHP: 0 },
+		// Crystal Caverns
+		{ name: "Crystal Behemoth", level: 30, type: "Magical Creature", icon: "💎🐲", currentHP: 0 },
+		// Crimson Citadel
+		{ name: "Inferno Demon", level: 40, type: "Demon", icon: "🔥👹", currentHP: 0 },
+		// Stormy Peaks
+		{ name: "Raging Thunderbird", level: 50, type: "Magical Creature", icon: "⚡️🐦", currentHP: 0 },
+		// Lost Catacombs
+		{ name: "Necrotic Lich", level: 60, type: "Undead (Lich)", icon: "💀🔮", currentHP: 0 },
+		// Celestial Observatory
+		{ name: "Stellar Archangel", level: 70, type: "Celestial Being", icon: "⭐👼", currentHP: 0 },
+		// Area - Frozen Tundra
+		{ name: "Glacial King", level: 80, type: "Humanoid (King)", icon: "❄️👑", currentHP: 0 },
+		// Area - Volcanic Depths
+		{ name: "Molten Dragon", level: 90, type: "Dragon", icon: "🔥🐉", currentHP: 0 },
+		// Area - Cursed Catacombs
+		{ name: "Soul Reaper", level: 100, type: "Undead", icon: "🌑👤☠️", currentHP: 0 }
+	];
+	
+	const getEnemyMaxHP = (enemy) => {
+		const level = enemy.level;
+		if (level % 10 === 0) {
+			return Math.floor(20 + (level - 1) * 6);
+		} else if (level % 3 === 0) {
+			return Math.floor(20 + (level - 1) * 5);
+		} else if (level % 2 === 0) {
+			return Math.floor(20 + (level - 1) * 4);
+		} else {
+			return Math.floor(20 + (level - 1) * 3);
+		}
+	};
+	
+	const getEnemyDamage = (enemy) => {
+		const level = enemy.level;
+		if (level % 10 === 0) {
+			return Math.floor(20 + (level - 1) * 3.8);
+		} else if (level % 3 === 0) {
+			return Math.floor(4 + (level - 1) * 3.4);
+		} else if (level % 2 === 0) {
+			return Math.floor(4 + (level - 1) * 3);
+		} else {
+			return Math.floor(4 + (level - 1) * 2.6);
+		}
+	};
+	
+	const getEnemyDefense = (enemy) => {
+		const level = enemy.level;
+		if (level % 10 === 0) {
+			return Math.floor(20 + (level - 1) * 3.8);
+		} else if (level % 3 === 0) {
+			return Math.floor(4 + (level - 1) * 2.6);
+		} else if (level % 2 === 0) {
+			return Math.floor(4 + (level - 1) * 3);
+		} else {
+			return Math.floor(4 + (level - 1) * 3.4);
+		}
+	};
+
+	const getEnemyAccuracy = (enemy) => {
+		const level = enemy.level;
+		if (level % 10 === 0) {
+			return Math.floor(25 + (level - 1) * 0.6);
+		} else if (level % 3 === 0) {
+			return Math.floor(25 + (level - 1) * 0.5);
+		} else if (level % 2 === 0) {
+			return Math.floor(25 + (level - 1) * 0.4);
+		} else {
+			return Math.floor(25 + (level - 1) * 0.3);
+		}
+	};
+
+	const getEnemyEvasion = (enemy) => {
+		const level = enemy.level;
+		if (level % 10 === 0) {
+			return Math.floor(25 + (level - 1) * 0.6);
+		} else if (level % 3 === 0) {
+			return Math.floor(25 + (level - 1) * 0.3);
+		} else if (level % 2 === 0) {
+			return Math.floor(25 + (level - 1) * 0.4);
+		} else {
+			return Math.floor(25 + (level - 1) * 0.5);
+		}
+	};
+	
+	const getEnemyLootChance = (enemy) => {
+		const level = enemy.level;
+		if (level % 10 === 0) {
+			return 1;
+		} else if (level % 3 === 0) {
+			return 0.1;
+		} else if (level % 2 === 0) {
+			return 0.06;
+		} else {
+			return 0.02;
+		}
+	};
+
+	// Weapon : Damage
+	// Body Armor : Defense
+	// Soulstone: Health Regen
+	// Potion/Consumable: Healing
+
+	// Gloves: Accuracy
+	// Trinket: Evasion
+
+	// Ring: Critical Hit
+	// Cloak : Damage absorbtion
+
+	// Necklace: Magic Find
+	// Charm: Bonus Experience
+
+	// Belt: Health Bonus
+	// Amulet: Elemental Damage
+	// Shield: Block
+
+	// Boots: Endurance / Movement Speed
+	// Pants: Stamina
+
+	// Define the items available for purchase
+	const shopItemsList = [
+		// Armor items
+		{ name: "Leather Armor", type: "armor", defense: 5, icon: "🥼", level: 5 },
+		{ name: "Chainmail Armor", type: "armor", defense: 10, icon: "🔗", level: 10 },
+		{ name: "Scale Armor", type: "armor", defense: 15, icon: "🐉", level: 15 },
+		{ name: "Plate Armor", type: "armor", defense: 20, icon: "💌", level: 20 },
+		{ name: "Dragonhide Armor", type: "armor", defense: 25, icon: "🐉", level: 25 },
+		{ name: "Steel Armor", type: "armor", defense: 30, icon: "⚙️", level: 30 },
+		{ name: "Ironclad Armor", type: "armor", defense: 35, icon: "🛡️", level: 35 },
+		{ name: "Mithril Armor", type: "armor", defense: 40, icon: "⛰️", level: 40 },
+		{ name: "Elven Robes", type: "armor", defense: 45, icon: "🧝", level: 45 },
+		{ name: "Ancient Plate Armor", type: "armor", defense: 50, icon: "🏰", level: 50 },
+		{ name: "Celestial Vestments", type: "armor", defense: 55, icon: "✨", level: 55 },
+		{ name: "Shadow Cloak", type: "armor", defense: 60, icon: "🌑", level: 60 },
+		{ name: "Titanium Mail", type: "armor", defense: 65, icon: "🦾", level: 65 },
+		{ name: "Voidbane Plate", type: "armor", defense: 70, icon: "🌌", level: 70 },
+		{ name: "Radiant Armor", type: "armor", defense: 75, icon: "☀️", level: 75 },
+		{ name: "Crystal Guardian", type: "armor", defense: 80, icon: "💎", level: 80 },
+		{ name: "Stormforged Plate", type: "armor", defense: 85, icon: "⚡", level: 85 },
+		{ name: "Ethereal Shroud", type: "armor", defense: 90, icon: "🌌", level: 90 },
+		{ name: "Divine Raiment", type: "armor", defense: 95, icon: "✨", level: 95 },
+		{ name: "Infinity Armor", type: "armor", defense: 100, icon: "♾️", level: 100 },
+		// Weapon items
+		{ name: "Knife", type: "weapon", damage: 5, icon: "🔪", level: 5 },
+		{ name: "Dagger", type: "weapon", damage: 10, icon: "🗡️", level: 10 },
+		{ name: "Rapier", type: "weapon", damage: 15, icon: "🤺", level: 15 },
+		{ name: "Shortsword", type: "weapon", damage: 20, icon: "🗡️", level: 20 },
+		{ name: "Scimitar", type: "weapon", damage: 25, icon: "🔱", level: 25 },
+		{ name: "Katana", type: "weapon", damage: 30, icon: "🗡️", level: 30 },
+		{ name: "Mace", type: "weapon", damage: 35, icon: "🔨", level: 35 },
+		{ name: "Morningstar", type: "weapon", damage: 40, icon: "🌅", level: 40 },
+		{ name: "Hammer", type: "weapon", damage: 45, icon: "🔨", level: 45 },
+		{ name: "Battleaxe", type: "weapon", damage: 50, icon: "🪓", level: 50 },
+		{ name: "Glaive", type: "weapon", damage: 55, icon: "🍁", level: 55 },
+		{ name: "Spear", type: "weapon", damage: 60, icon: "🌿", level: 60 },
+		{ name: "Warhammer", type: "weapon", damage: 65, icon: "🔨", level: 65 },
+		{ name: "Claymore", type: "weapon", damage: 70, icon: "🗡️", level: 70 },
+		{ name: "Flail", type: "weapon", damage: 75, icon: "🔗", level: 75 },
+		{ name: "Whip", type: "weapon", damage: 80, icon: "👻", level: 80 },
+		{ name: "Halberd", type: "weapon", damage: 85, icon: "🪓", level: 85 },
+		{ name: "Runeblade", type: "weapon", damage: 90, icon: "⚔️", level: 90 },
+		{ name: "Longsword", type: "weapon", damage: 95, icon: "🗡️", level: 95 },
+		{ name: "Excalibur", type: "weapon", damage: 100, icon: "🗡️", level: 100 },
+		// Consumables items
+		{ name: "Health Potion", type: "consumable", heal: 10, icon: "🧪", level: 10 },
+		{ name: "Elixir of Restoration", type: "consumable", heal: 20, icon: "💊", level: 20 },
+		{ name: "Potion of Vitality", type: "consumable", heal: 30, icon: "🧪", level: 30 },
+		{ name: "Rejuvenating Tonic", type: "consumable", heal: 40, icon: "🍷", level: 40 },
+		{ name: "Essence of Healing", type: "consumable", heal: 50, icon: "🌸", level: 50 },
+		{ name: "Life Elixir", type: "consumable", heal: 60, icon: "🔮", level: 60 },
+		{ name: "Elixir of Renewal", type: "consumable", heal: 70, icon: "⏳", level: 70 },
+		{ name: "Potion of Regeneration", type: "consumable", heal: 80, icon: "🌱", level: 80 },
+		{ name: "Panacea", type: "consumable", heal: 90, icon: "⚕️", level: 90 },
+		{ name: "Elixir of Immortality", type: "consumable", heal: 100, icon: "🔱", level: 100 },
+		// Soulstones items
+		{ name: "Soulstone of Renewal", type: "soulstone", regenerate: 1, icon: "🕰️", level: 25 },
+		{ name: "Soulstone of Vitality", type: "soulstone", regenerate: 2, icon: "⌛", level: 50 },
+		{ name: "Soulstone of Resurgence", type: "soulstone", regenerate: 3, icon: "⏳", level: 75 },
+		{ name: "Soulstone of Awakening", type: "soulstone", regenerate: 4, icon: "🌅", level: 100 },
+		// Gloves items
+		{ name: "Leather Gloves", type: "gloves", accuracy: 3, icon: "🧤", level: 10 },
+		{ name: "Chainmail Gauntlets", type: "gloves", accuracy: 6, icon: "🧤", level: 20 },
+		{ name: "Plated Gauntlets", type: "gloves", accuracy: 9, icon: "🧤", level: 30 },
+		{ name: "Dragonhide Gloves", type: "gloves", accuracy: 12, icon: "🧤", level: 40 },
+		{ name: "Shadowsteel Gauntlets", type: "gloves", accuracy: 15, icon: "🧤", level: 50 },
+		{ name: "Stormforged Handguards", type: "gloves", accuracy: 18, icon: "🧤", level: 60 },
+		{ name: "Arcane Gloves", type: "gloves", accuracy: 21, icon: "🧤", level: 70 },
+		{ name: "Gloves of the Eternal Sentinel", type: "gloves", accuracy: 24, icon: "🧤", level: 80 },
+		{ name: "Divine Touch Gauntlets", type: "gloves", accuracy: 27, icon: "🧤", level: 90 },
+		{ name: "Legendary Gauntlets", type: "gloves", accuracy: 30, icon: "🧤", level: 100 },
+		// Trinkets items
+		{ name: "Simple Trinket", type: "trinket", evasion: 3, icon: "🔮", level: 10 },
+		{ name: "Ornate Trinket", type: "trinket", evasion: 6, icon: "🔮", level: 20 },
+		{ name: "Enchanted Trinket", type: "trinket", evasion: 9, icon: "🔮", level: 30 },
+		{ name: "Mystical Trinket", type: "trinket", evasion: 12, icon: "🔮", level: 40 },
+		{ name: "Glowing Trinket", type: "trinket", evasion: 15, icon: "🔮", level: 50 },
+		{ name: "Celestial Trinket", type: "trinket", evasion: 18, icon: "🔮", level: 60 },
+		{ name: "Whispering Trinket", type: "trinket", evasion: 21, icon: "🔮", level: 70 },
+		{ name: "Shadow Trinket", type: "trinket", evasion: 24, icon: "🔮", level: 80 },
+		{ name: "Ethereal Trinket", type: "trinket", evasion: 27, icon: "🔮", level: 90 },
+		{ name: "Mythical Trinket", type: "trinket", evasion: 30, icon: "🔮", level: 100 },
+		// Ring items // @todo implement
+		{ name: "Ring of Precision", type: "ring", critHit: 2, icon: "💍", level: 5 },
+		{ name: "Ring of Blinding Strikes", type: "ring", critHit: 4, icon: "✨", level: 15 },
+		{ name: "Ring of Deadly Precision", type: "ring", critHit: 6, icon: "🔪", level: 25 },
+		{ name: "Ring of Devastation", type: "ring", critHit: 8, icon: "💥", level: 35 },
+		{ name: "Ring of Execution", type: "ring", critHit: 10, icon: "🗡️", level: 45 },
+		{ name: "Ring of Annihilation", type: "ring", critHit: 12, icon: "☠️", level: 55 },
+		{ name: "Ring of Ruthless Strikes", type: "ring", critHit: 14, icon: "🔥", level: 65 },
+		{ name: "Ring of Piercing Precision", type: "ring", critHit: 16, icon: "🎯", level: 75 },
+		{ name: "Ring of Focused Fury", type: "ring", critHit: 18, icon: "⚔️", level: 85 },
+		{ name: "Ring of Merciless Strikes", type: "ring", critHit: 20, icon: "🌪️", level: 95 },
+		// Cloak items // @todo implement
+		{ name: "Cloak of Protection", type: "cloak", absorb: 2, icon: "🧥", level: 5 },
+		{ name: "Cloak of Shadows", type: "cloak", absorb: 4, icon: "🌑", level: 15 },
+		{ name: "Cloak of Resilience", type: "cloak", absorb: 6, icon: "🛡️", level: 25 },
+		{ name: "Cloak of Warding", type: "cloak", absorb: 8, icon: "🔮", level: 35 },
+		{ name: "Cloak of Reflection", type: "cloak", absorb: 10, icon: "🪞", level: 45 },
+		{ name: "Cloak of Absorption", type: "cloak", absorb: 12, icon: "💦", level: 55 },
+		{ name: "Cloak of Unyielding Defense", type: "cloak", absorb: 14, icon: "🛡️", level: 65 },
+		{ name: "Cloak of Eternal Protection", type: "cloak", absorb: 16, icon: "🌟", level: 75 },
+		{ name: "Cloak of Invulnerability", type: "cloak", absorb: 18, icon: "🔒", level: 85 },
+		{ name: "Cloak of Unbreakable Will", type: "cloak", absorb: 20, icon: "💪", level: 95 },
+		// Necklace items // @todo implement
+		{ name: "Amulet of Fortune", type: "necklace", magicFind: 1.2, icon: "🔮", level: 20 },
+		{ name: "Amulet of Prosperity", type: "necklace", magicFind: 1.4, icon: "💰", level: 40 },
+		{ name: "Amulet of Serendipity", type: "necklace", magicFind: 1.6, icon: "🍀", level: 60 },
+		{ name: "Amulet of Abundance", type: "necklace", magicFind: 1.8, icon: "🌟", level: 80 },
+		// Charm items // @todo implement
+		{ name: "Charm of Wisdom", type: "charm", bonusExp: 1.1, icon: "📚", level: 10 },
+		{ name: "Charm of Enlightenment", type: "charm", bonusExp: 1.3, icon: "🌟", level: 30 },
+		{ name: "Charm of Insight", type: "charm", bonusExp: 1.5, icon: "🔍", level: 50 },
+		{ name: "Charm of Mastery", type: "charm", bonusExp: 1.7, icon: "🎓", level: 70 },
+		{ name: "Charm of Ascendancy", type: "charm", bonusExp: 1.9, icon: "⚡", level: 90 },
+		// Belt items // @todo implement
+		{ name: "Leather Belt", type: "belt", bonusHP: 14, icon: "⚕️", level: 7 },
+		{ name: "Chain Belt", type: "belt", bonusHP: 34, icon: "🏋️", level: 17 },
+		{ name: "Plated Belt", type: "belt", bonusHP: 54, icon: "🛡️", level: 27 },
+		{ name: "Reinforced Belt", type: "belt", bonusHP: 74, icon: "💪", level: 37 },
+		{ name: "Studded Belt", type: "belt", bonusHP: 94, icon: "🔋", level: 47 },
+		{ name: "Warrior Belt", type: "belt", bonusHP: 114, icon: "⏱️", level: 57 },
+		{ name: "Guardian Belt", type: "belt", bonusHP: 134, icon: "🔒", level: 67 },
+		{ name: "Knight Belt", type: "belt", bonusHP: 154, icon: "🌅", level: 77 },
+		{ name: "Titan Belt", type: "belt", bonusHP: 174, icon: "🗿", level: 87 },
+		{ name: "Epic Belt", type: "belt", bonusHP: 194, icon: "🌟", level: 97 },
+		// Amulet items //@todo implement
+		{ name: "Amulet of Fire", type: "amulet", elementalDamage: 10, icon: "🔥", level: 18 },
+		{ name: "Amulet of Ice", type: "amulet", elementalDamage: 20, icon: "❄️", level: 38 },
+		{ name: "Amulet of Lightning", type: "amulet", elementalDamage: 30, icon: "⚡", level: 58 },
+		{ name: "Amulet of Earth", type: "amulet", elementalDamage: 40, icon: "🌿", level: 78 },
+		{ name: "Amulet of Elements", type: "amulet", elementalDamage: 50, icon: "🌍", level: 98 },
+		// Shield items // @todo implement
+		{ name: "Buckler", type: "shield", block: 5, icon: "🛡️", level: 9 },
+		{ name: "Kite Shield", type: "shield", block: 10, icon: "🔰", level: 19 },
+		{ name: "Heater Shield", type: "shield", block: 15, icon: "🔥", level: 29 },
+		{ name: "Round Shield", type: "shield", block: 20, icon: "🔵", level: 39 },
+		{ name: "Tower Shield", type: "shield", block: 25, icon: "⚔️", level: 49 },
+		{ name: "Pavise Shield", type: "shield", block: 30, icon: "🌿", level: 59 },
+		{ name: "Scutum Shield", type: "shield", block: 35, icon: "⚔️", level: 69 },
+		{ name: "Aegis Shield", type: "shield", block: 40, icon: "🔱", level: 79 },
+		{ name: "Bulwark Shield", type: "shield", block: 45, icon: "🛡️", level: 89 },
+		{ name: "Colossus Shield", type: "shield", block: 50, icon: "🗿", level: 99 },
+	];
+
+	const lootItems = [
+		// Weapon items
+		{ name: "Staff of Tranquility", type: "weapon", damage: 3, icon: "🏮", level: 3 },
+		{ name: "Shenlong's Staff", type: "weapon", damage: 7, icon: "🐲", level: 7 },
+		{ name: "Sword of Shadows", type: "weapon", damage: 13, icon: "🌑", level: 13 },
+		{ name: "Kasumi's Blade", type: "weapon", damage: 17, icon: "🌸", level: 17 },
+		{ name: "Maul of Fury", type: "weapon", damage: 23, icon: "🔨", level: 23 },
+		{ name: "Kabuto's Hammer", type: "weapon", damage: 27, icon: "⚒️", level: 27 },
+		{ name: "Blade of Valor", type: "weapon", damage: 33, icon: "⚔️", level: 33 },
+		{ name: "Tidebreaker", type: "weapon", damage: 37, icon: "🌊", level: 37 },
+		{ name: "Viper's Fang", type: "weapon", damage: 43, icon: "🐍", level: 43 },
+		{ name: "Starshard Bow", type: "weapon", damage: 47, icon: "🌠", level: 47 },
+		{ name: "Eclipse Scythe", type: "weapon", damage: 53, icon: "🌑", level: 53 },
+		{ name: "Thunderstrike Axe", type: "weapon", damage: 57, icon: "⚡", level: 57 },
+		{ name: "Frostbite Dagger", type: "weapon", damage: 63, icon: "❄️", level: 63 },
+		{ name: "Soulreaper Scythe", type: "weapon", damage: 67, icon: "☠️", level: 67 },
+		{ name: "Phoenixfire Wand", type: "weapon", damage: 73, icon: "🔥", level: 73 },
+		{ name: "Voidblade Katana", type: "weapon", damage: 77, icon: "🌌", level: 77 },
+		{ name: "Doomhammer", type: "weapon", damage: 83, icon: "💀", level: 83 },
+		{ name: "Divine Staff", type: "weapon", damage: 87, icon: "✨", level: 87 },
+		{ name: "Excalibur", type: "weapon", damage: 93, icon: "⚔️", level: 93 },
+		{ name: "Blade of Eternity", type: "weapon", damage: 97, icon: "♾️", level: 97 },
+		{ name: "Scepter of the Ancients", type: "weapon", damage: 100, icon: "👑", level: 100 },
+		// Armor items
+		{ name: "Elven Robes", type: "armor", defense: 3, icon: "🧝", level: 3 },
+		{ name: "Phoenix Feather Armor", type: "armor", defense: 7, icon: "🐦", level: 7 },
+		{ name: "Dragon Scale Armor", type: "armor", defense: 13, icon: "🐉", level: 13 },
+		{ name: "Celestial Plate Armor", type: "armor", defense: 17, icon: "✨", level: 17 },
+		{ name: "Shadowguard Vestments", type: "armor", defense: 23, icon: "👥", level: 23 },
+		{ name: "Tiger Claw Armor", type: "armor", defense: 27, icon: "🐯", level: 27 },
+		{ name: "Voidweaver Garb", type: "armor", defense: 33, icon: "🌑", level: 33 },
+		{ name: "Stormsteel Armor", type: "armor", defense: 37, icon: "⚡", level: 37 },
+		{ name: "Obsidian Scalemail", type: "armor", defense: 43, icon: "🌋", level: 43 },
+		{ name: "Spiritwalker's Robes", type: "armor", defense: 47, icon: "👻", level: 47 },
+		{ name: "Lionheart Plate", type: "armor", defense: 53, icon: "🦁", level: 53 },
+		{ name: "Shadowbane Vestments", type: "armor", defense: 57, icon: "🌑", level: 57 },
+		{ name: "Phoenixfire Robes", type: "armor", defense: 63, icon: "🔥", level: 63 },
+		{ name: "Voidshroud Armor", type: "armor", defense: 67, icon: "🌌", level: 67 },
+		{ name: "Soulweave Vestments", type: "armor", defense: 73, icon: "🌑", level: 73 },
+		{ name: "Divine Aegis", type: "armor", defense: 77, icon: "✨", level: 77 },
+		{ name: "Crystal Guardian", type: "armor", defense: 83, icon: "💎", level: 83 },
+		{ name: "Titanium Fortress", type: "armor", defense: 87, icon: "🗼", level: 87 },
+		{ name: "Ethereal Shroud", type: "armor", defense: 93, icon: "🌌", level: 93 },
+		{ name: "Infinity Armor", type: "armor", defense: 97, icon: "♾️", level: 97 },
+		{ name: "Celestial Garb", type: "armor", defense: 100, icon: "🌟", level: 100 },
+		// Consumables items
+		{ name: "Roast Chicken", type: "consumable", heal: 5, icon: "🍗", level: 1 },
+		{ name: "Soulful Soup", type: "consumable", heal: 15, icon: "🍲", level: 5 },
+		{ name: "Vitality Apple", type: "consumable", heal: 25, icon: "🍎", level: 15 },
+		{ name: "Hearty Stew", type: "consumable", heal: 35, icon: "🍲", level: 25 },
+		{ name: "Ethereal Delight", type: "consumable", heal: 45, icon: "🍰", level: 35 },
+		{ name: "Dragonfruit Smoothie", type: "consumable", heal: 55, icon: "🥤", level: 45 },
+		{ name: "Celestial Ambrosia", type: "consumable", heal: 65, icon: "🌟", level: 55 },
+		{ name: "Mystic Dumplings", type: "consumable", heal: 75, icon: "🥟", level: 65 },
+		{ name: "Golden Nectar", type: "consumable", heal: 85, icon: "🍯", level: 75 },
+		{ name: "Eternal Feast", type: "consumable", heal: 95, icon: "🍖", level: 85 },
+		{ name: "Excalibur's Banquet", type: "consumable", heal: 100, icon: "🍽️", level: 95 }
+	];
+
+	const getItemCost = (item) => {
+		// @fixme Rapier cannot destructure??
+		const { type, level } = item;
+
+		switch (type) {
+			case "armor":
+			case "weapon":
+				return level * 20;
+			case "gloves":
+			case "trinket":
+				return level * 10;
+			case "consumable":
+				return level * 2;
+			case "soulstone":
+			  return level * 100;
+			default:
+			  return 0;
+		}
+	};
+
+	// Define the level-up requirements
+	const levelUpRequirements = [
+	  { level: 2, experience: 100 },
+	  { level: 3, experience: 500 },
+	  { level: 4, experience: 1200 },
+	  { level: 5, experience: 2000 },
+	  { level: 6, experience: 3500 },
+	  { level: 7, experience: 5500 },
+	  { level: 8, experience: 8000 },
+	  { level: 9, experience: 11000 },
+	  { level: 10, experience: 15000 },
+	  { level: 11, experience: 20000 },
+	  { level: 12, experience: 26000 },
+	  { level: 13, experience: 34000 },
+	  { level: 14, experience: 44000 },
+	  { level: 15, experience: 56000 },
+	  { level: 16, experience: 70000 },
+	  { level: 17, experience: 86000 },
+	  { level: 18, experience: 104000 },
+	  { level: 19, experience: 125000 },
+	  { level: 20, experience: 149000 },
+	  { level: 21, experience: 176000 },
+	  { level: 22, experience: 206000 },
+	  { level: 23, experience: 239000 },
+	  { level: 24, experience: 275000 },
+	  { level: 25, experience: 314000 },
+	  { level: 26, experience: 356000 },
+	  { level: 27, experience: 401000 },
+	  { level: 28, experience: 449000 },
+	  { level: 29, experience: 500000 },
+	  { level: 30, experience: 554000 },
+	  { level: 31, experience: 611000 },
+	  { level: 32, experience: 671000 },
+	  { level: 33, experience: 734000 },
+	  { level: 34, experience: 800000 },
+	  { level: 35, experience: 869000 },
+	  { level: 36, experience: 941000 },
+	  { level: 37, experience: 1016000 },
+	  { level: 38, experience: 1093000 },
+	  { level: 39, experience: 1174000 },
+	  { level: 40, experience: 1259000 },
+	  { level: 41, experience: 1348000 },
+	  { level: 42, experience: 1441000 },
+	  { level: 43, experience: 1538000 },
+	  { level: 44, experience: 1639000 },
+	  { level: 45, experience: 1744000 },
+	  { level: 46, experience: 1853000 },
+	  { level: 47, experience: 1966000 },
+	  { level: 48, experience: 2083000 },
+	  { level: 49, experience: 2204000 },
+	  { level: 50, experience: 2329000 },
+	  { level: 51, experience: 2458000 },
+	  { level: 52, experience: 2591000 },
+	  { level: 53, experience: 2728000 },
+	  { level: 54, experience: 2869000 },
+	  { level: 55, experience: 3014000 },
+	  { level: 56, experience: 3163000 },
+	  { level: 57, experience: 3316000 },
+	  { level: 58, experience: 3473000 },
+	  { level: 59, experience: 3634000 },
+	  { level: 60, experience: 3799000 },
+	  { level: 61, experience: 3968000 },
+	  { level: 62, experience: 4141000 },
+	  { level: 63, experience: 4318000 },
+	  { level: 64, experience: 4499000 },
+	  { level: 65, experience: 4684000 },
+	  { level: 66, experience: 4873000 },
+	  { level: 67, experience: 5066000 },
+	  { level: 68, experience: 5263000 },
+	  { level: 69, experience: 5464000 },
+	  { level: 70, experience: 5669000 },
+	  { level: 71, experience: 5878000 },
+	  { level: 72, experience: 6091000 },
+	  { level: 73, experience: 6308000 },
+	  { level: 74, experience: 6529000 },
+	  { level: 75, experience: 6754000 },
+	  { level: 76, experience: 6983000 },
+	  { level: 77, experience: 7216000 },
+	  { level: 78, experience: 7453000 },
+	  { level: 79, experience: 7694000 },
+	  { level: 80, experience: 7939000 },
+	  { level: 81, experience: 8188000 },
+	  { level: 82, experience: 8441000 },
+	  { level: 83, experience: 8698000 },
+	  { level: 84, experience: 8959000 },
+	  { level: 85, experience: 9224000 },
+	  { level: 86, experience: 9493000 },
+	  { level: 87, experience: 9766000 },
+	  { level: 88, experience: 10044000 },
+	  { level: 89, experience: 10326000 },
+	  { level: 90, experience: 10610000 },
+	  { level: 91, experience: 10896000 },
+	  { level: 92, experience: 11184000 },
+	  { level: 93, experience: 11474000 },
+	  { level: 94, experience: 11766000 },
+	  { level: 95, experience: 12060000 },
+	  { level: 96, experience: 12356000 },
+	  { level: 97, experience: 12654000 },
+	  { level: 98, experience: 12954000 },
+	  { level: 99, experience: 13256000 },
+	  { level: 100, experience: 13560000 }
+	];
+
+	// Function to start an adventure
+	function startAdventure() {
+		updateGameInfo(`Starting adventure...`);
+		const enemy = generateRandomEnemy();
+		updateGameInfo(`An enemy ${enemy.icon} ${enemy.name} has appeared!`);
+		updateGameInfo(`It has ${getEnemyMaxHP(enemy)} HP, ${getEnemyDamage(enemy)} DMG, ${getEnemyDefense(enemy)} DEF, ${getEnemyAccuracy(enemy)} ACC, ${getEnemyEvasion(enemy)} EVA`);
+		enemy.currentHP = getEnemyMaxHP(enemy);
+		battle(enemy);
+		
+		if (player.currentHP > 0) {
+			if (enemy.currentHP <= 0) {
+				const experiencePoints = calculateExperiencePoints(enemy);
+				player.experience += experiencePoints;
+				updatePlayerStats();
+				updateGameInfo(`You gained ${experiencePoints} experience points!`);
+				checkLevelUp();
+			} else {
+				updateGameInfo(`The battle with the ${enemy.icon} ${enemy.name} ended prematurely. The enemy escaped!`);
+			}
+		} else {
+			updateGameInfo("You were defeated!");
+		}
+
+		showMainScreen();
+	}
+
+	// Function to start a boss
+	function startBoss() {
+		updateGameInfo(`Starting boss...`);
+		const boss = generateRandomBoss();
+		updateGameInfo(`An boss ${boss.icon} ${boss.name} has appeared!`);
+		boss.currentHP = getEnemyMaxHP(boss);
+		battle(boss);
+		
+		if (player.currentHP > 0) {
+			if (boss.currentHP <= 0) {
+				const experiencePoints = calculateExperiencePoints(boss);
+				player.experience += experiencePoints;
+				updatePlayerStats();
+				updateGameInfo(`You defeated the ${boss.icon} ${boss.name} and gained ${experiencePoints} experience points!`);
+				checkLevelUp();
+			} else {
+				updateGameInfo(`The battle with the ${boss.icon} ${boss.name} ended prematurely. The boss escaped!`);
+			}
+		} else {
+			updateGameInfo("You were defeated!");
+		}
+
+		showMainScreen();
+	}
+
+	function checkLevelUp() {
+		const currentLevel = player.level;
+		const experiencePoints = player.experience;
+
+		for (let i = 0; i < levelUpRequirements.length; i++) {
+			const requirement = levelUpRequirements[i];
+			if (currentLevel < requirement.level && experiencePoints >= requirement.experience) {
+				player.level = requirement.level;
+				player.experience = requirement.experience;
+				levelUp();
+				updatePlayerStats();
+				break;
+			}
+		}
+	}
+
+	// Function to generate a random enemy based on player's level
+	function generateRandomEnemy() {
+		const playerArea = Math.floor(player.level / 10);
+		const filteredEnemies = enemies.filter((enemy) => {	
+			const levelDifference = player.level - enemy.level;
+			const enemyArea = Math.floor(enemy.level / 10);
+			// @fixme this is not what i want to do !
+			return levelDifference >= 0 && levelDifference <= 5 && playerArea - enemyArea <= 1;
+		});
+		const randomIndex = Math.floor(Math.random() * filteredEnemies.length);
+		return filteredEnemies[randomIndex];
+	}
+
+	// Function to generate a random boss based on player's level
+	function generateRandomBoss() {
+		const filteredBosses = bosses.filter((boss) => boss.level <= player.level + 10);
+		const randomIndex = Math.floor(Math.random() * filteredBosses.length);
+		return filteredBosses[randomIndex];
+	}
+
+	// Function to calculate experience points gained from defeating an enemy
+	function calculateExperiencePoints(enemy) {
+		const baseExperience = 25;
+		const enemyLevel = enemy.level;
+
+		// Calculate the level difference between player and enemy
+		const levelDifference = player.level - enemy.level;
+
+		// Determine the adjustment factor based on the level difference
+		const adjustmentFactor = levelDifference >= 0 ? 1 / (1 + levelDifference) : 1 - levelDifference / playerLevel;
+
+		// Apply the adjustment factor to the experience points
+		const experiencePoints = Math.floor(baseExperience * enemyLevel * adjustmentFactor);
+
+		return experiencePoints;
+	}
+
+	function calculateDamageReduction(defense){
+		return defense / (defense + 50);
+	}
+
+	// Function to handle the battle between the player and an enemy
+	function battle(enemy) {
+		const maxTurns = 10000;
+		let turns = 0;
+		const basePlayerDamage = player.damage + calculateEquippedWeaponDamage();
+		const basePlayerDefense = player.defense + calculateEquippedArmorDefense();
+		const basePlayerAccuracy = player.accuracy + calculateEquippedGlovesAccuracy();
+		const basePlayerEvasion = player.evasion + calculateEquippedTrinketEvasion();
+
+		const baseEnemyDamage = getEnemyDamage(enemy);
+		const baseEnemyDefense = getEnemyDefense(enemy);
+		const baseEnemyAccuracy = getEnemyAccuracy(enemy);
+		const baseEnemyEvasion = getEnemyEvasion(enemy);
+	
+		const playerDamageReduction = calculateDamageReduction(basePlayerDefense);
+		const enemyDamageReduction = calculateDamageReduction(baseEnemyDefense);
+
+		const playerDamage = Math.ceil(Math.max(basePlayerDamage * (1 - enemyDamageReduction), 1));
+		const enemyDamage = Math.ceil(Math.max(baseEnemyDamage * (1 - playerDamageReduction), 1));
+
+		const playerHitChance = calculateHitChance(playerDamage, baseEnemyDefense, basePlayerAccuracy, baseEnemyEvasion);
+		const enemyHitChance = calculateHitChance(enemyDamage, basePlayerDefense, baseEnemyAccuracy, basePlayerEvasion);
+
+	  	while (player.currentHP > 0 && enemy.currentHP > 0 && turns < maxTurns) {
+			// Player's Turn
+			if (Math.random() < playerHitChance) {
+				enemy.currentHP -= playerDamage;
+			
+				// Apply damage-over-time effect (example)
+				// if (Math.random() < 0.2) {
+				// const dotDamage = playerDamage * 0.1; // 10% of player's damage
+				// enemy.currentHP -= dotDamage;
+				// }
+				updateGameInfo(`You attack the ${enemy.icon} ${enemy.name} dealing ${playerDamage} damage!`);
+			}
+			
+			// Enemy's Turn
+			if (Math.random() < enemyHitChance) {
+				player.currentHP -= enemyDamage;
+				updateGameInfo(`The ${enemy.icon} ${enemy.name} attack you dealing ${enemyDamage} damage!`);
+			}
+	
+			turns++;
+	  	}
+	
+		if (player.currentHP <= 0) {
+			updateGameInfo("You were defeated!");
+		} else if (enemy.currentHP <= 0) {
+			updateGameInfo(`You defeated the ${enemy.icon} ${enemy.name}!`);
+			const lootChance = getEnemyLootChance(enemy);
+
+			if (Math.random() < lootChance) {
+				const loot = generateLoot(enemy);
+				player.inventory.push(loot);
+				updateGameInfo(`You found a loot: ${loot.name}!`);
+			}
+
+			if (Math.random() < lootChance * 2) {
+				const moneyAmount = enemy.level * 2;
+				player.money += moneyAmount;
+				updateGameInfo(`You found money : ${moneyAmount}!`);
+			}
+		} else {
+			updateGameInfo("The battle ended in a draw.");
+		}
+	}
+
+	function calculateHitChance(attackerAttack, defenderDefense, attackerAccuracy, defenderEvasion) {
+		const baseHitChance = 0.8; // Base hit chance value
+		const maxHitChance = 0.95; // Maximum hit chance value
+		const minHitChance = 0.05; // Minimum hit chance value
+
+		// Calculate hit chance modifiers based on attacker's accuracy and defender's evasion
+		const accuracyModifier = attackerAccuracy - defenderEvasion;
+		const hitChanceModifier = accuracyModifier * 0.01; // Modify hit chance by 1% per point of accuracy difference
+
+		// Calculate hit chance based on attacker's attack, defender's defense, and hit chance modifiers
+		let hitChance = baseHitChance + hitChanceModifier;
+
+		// Adjust hit chance based on attack and defense difference
+		const attackDefenseDifference = attackerAttack - defenderDefense;
+		if (attackDefenseDifference > 0) {
+		  hitChance += attackDefenseDifference * 0.005; // Increase hit chance by 0.5% per point of attack-defense difference
+		} else {
+		  hitChance -= Math.abs(attackDefenseDifference) * 0.005; // Decrease hit chance by 0.5% per point of defense-attack difference
+		}
+
+		// Limit hit chance within the minimum and maximum values
+		hitChance = Math.max(minHitChance, Math.min(hitChance, maxHitChance));
+
+		return hitChance;
+	}
+
+	// Function to generate loot
+	function generateLoot(enemy) {
+		const level = enemy.level;
+		const filteredItems = lootItems.filter((item) => item.level <= level);
+		const randomIndex = Math.floor(Math.random() * filteredItems.length);
+		return filteredItems[randomIndex];
+	}
+
+	// Function to update player stats on the screen
+	function updatePlayerStats() {
+		document.getElementById("playerLevel").textContent = player.level;
+		document.getElementById("playerCurrentHP").textContent = player.currentHP;
+		document.getElementById("playerMaxHP").textContent = player.maxHP;
+		document.getElementById("playerRegeneration").textContent = `${player.regeneration} (+${calculateEquippedSoulstoneRegeneration()})`;
+		document.getElementById("playerDamage").textContent = `${player.damage} (+${calculateEquippedWeaponDamage()})`;
+		document.getElementById("playerDefense").textContent = `${player.defense} (+${calculateEquippedArmorDefense()})`;
+		document.getElementById("playerAccuracy").textContent = `${player.accuracy} (+${calculateEquippedGlovesAccuracy()})`;
+		document.getElementById("playerEvasion").textContent = `${player.evasion} (+${calculateEquippedTrinketEvasion()})`;
+		document.getElementById("playerAccuracy").textContent = `${player.accuracy} (+${calculateEquippedGlovesAccuracy()})`;
+		document.getElementById("playerExperience").textContent = `${player.experience} / ${getNextLevelExperience()}`;
+		document.getElementById("playerMoney").textContent = player.money;
+		updatePlayerCurrentHP();
+	}
+
+	function getNextLevelExperience() {
+		const nextLevelRequirement = levelUpRequirements.find((requirement) => requirement.level === player.level + 1);
+		return nextLevelRequirement ? nextLevelRequirement.experience : "MAX";
+	}
+
+
+	function calculateEquippedArmorDefense() {
+		if (player.armor) {
+			return player.armor.defense;
+		} else {
+			return 0;
+		}
+	}
+
+	function calculateEquippedWeaponDamage() {
+		if (player.weapon) {
+			return player.weapon.damage;
+		} else {
+			return 0;
+		}
+	}
+
+	function calculateEquippedSoulstoneRegeneration() {
+		if (player.soulstone) {
+			return player.soulstone.regenerate;
+		} else {
+			return 0;
+		}
+	}
+
+	function calculateEquippedGlovesAccuracy() {
+		if (player.gloves) {
+			return player.gloves.accuracy;
+		} else {
+			return 0;
+		}
+	}
+
+	function calculateEquippedTrinketEvasion() {
+		if (player.trinket) {
+			return player.trinket.evasion;
+		} else {
+			return 0;
+		}
+	}
+
+	// Function to update the game information
+	function updateGameInfo(message) {
+		const gameInfoElement = document.getElementById("game-info");
+		gameInfoElement.innerHTML = "<br>" + message + gameInfoElement.innerHTML;
+	}
+
+	// Function to handle leveling up and increasing player stats
+	function levelUp() {
+		player.maxHP += 5;
+		player.currentHP = player.maxHP;
+		player.damage += 2;
+		player.defense += 2;
+		if (player.level % 10 == 0) player.regeneration += 1;
+		if (player.level % 5 == 0) player.accuracy += 1;
+		if (player.level % 5 == 0) player.evasion += 1;
+		updateGameInfo(`Congratulations! You leveled up to level ${player.level}.`);
+		updatePlayerStats();
+	}
+
+	// Function to handle the inventory screen
+	function showInventoryScreen() {
+		const inventoryScreen = document.getElementById("inventory-screen");
+		const inventory = document.getElementById("item-list");
+		inventory.innerHTML = "";
+
+		// Display player inventory
+		for (let i = 0; i < player.inventory.length; i++) {
+			const item = player.inventory[i];
+			const itemElement = document.createElement("div");
+			itemElement.textContent = `${item.icon} ${item.name}`;
+	
+			// Check if the item is the equipped weapon or armor or soulstone
+			if (item === player.weapon) {
+				itemElement.classList.add("equipped");
+			} else if (item === player.armor) {
+				itemElement.classList.add("equipped");
+			} else if (item === player.soulstone) {
+				itemElement.classList.add("equipped");
+			} else if (item === player.gloves) {
+				itemElement.classList.add("equipped");
+			} else if (item === player.trinket) {
+				itemElement.classList.add("equipped");
+			}
+	
+			// Check if the item is a potion
+			if (item.type === "consumable") {
+				itemElement.addEventListener("click", () => {
+				usePotion(item);
+				});
+			}
+	
+			itemElement.addEventListener("click", () => {
+				equipItem(item);
+			});
+			inventory.appendChild(itemElement);
+		}
+
+		showScreen("inventory-screen");
+	}
+
+	// Function to equip an item from the inventory
+	function equipItem(item) {
+		if (item.type === "weapon") {
+			player.weapon = item;
+			updateGameInfo(`Equipped weapon: ${item.name}`);
+		} else if (item.type === "armor") {
+			player.armor = item;
+			updateGameInfo(`Equipped armor: ${item.name}`);
+		} else if (item.type === "soulstone") {
+			player.soulstone = item;
+			updateGameInfo(`Equipped soulstone: ${item.name}`);
+		} else if (item.type === "gloves") {
+			player.gloves = item;
+			updateGameInfo(`Equipped gloves: ${item.name}`);
+		} else if (item.type === "trinket") {
+			player.trinket = item;
+			updateGameInfo(`Equipped trinket: ${item.name}`);
+		}
+		updatePlayerStats();
+		showInventoryScreen();
+	}
+
+	function usePotion(potion) {
+		if (player.currentHP === player.maxHP) {
+			updateGameInfo("Your health is already full.");
+		} else {
+			player.currentHP = Math.min(player.currentHP + potion.heal, player.maxHP);
+			updateGameInfo(`You used a ${potion.name} and healed ${potion.heal} HP.`);
+			updatePlayerStats();
+		}
+	}
+
+	// Function to handle the buy screen
+	// I bought knife ??
+	function showBuyScreen() {
+		const buyScreen = document.getElementById("buy-screen");
+		const shopItems = document.getElementById("shop-item-list");
+		shopItems.innerHTML = "";
+	
+		const filteredItems = shopItemsList.filter((shopItem) => shopItem.level >= player.level - 6 && shopItem.level <= player.level + 6);
+
+		// Display items available for purchase
+		for (let i = 0; i < filteredItems.length; i++) {
+			const item = filteredItems[i];
+			const itemElement = document.createElement("div");
+			itemElement.textContent = `${item.icon} ${item.name} - Cost: ${getItemCost(item)}`;
+			itemElement.classList.add("item");
+			itemElement.setAttribute("data-index", i); // Store the index of the item as a data attribute
+		
+			itemElement.addEventListener("click", () => {
+				selectItemToBuy(itemElement);
+			});
+			shopItems.appendChild(itemElement);
+		}
+	
+		showScreen("buy-screen");
+	
+		// Add event listener to the "Buy" button
+		const buyButton = document.getElementById("btnBuyItem");
+		buyButton.addEventListener("click", () => {
+			const selectedItem = document.querySelector("#shop-item-list .selected");
+			if (selectedItem) {
+				const itemIndex = parseInt(selectedItem.getAttribute("data-index"));
+				const selectedItemObj = filteredItems[itemIndex];
+				buyItem(selectedItemObj);
+			}
+		});
+	}
+
+	// Function to select an item to buy
+	function selectItemToBuy(itemElement) {
+		// Remove the "selected" class from all items
+		const shopItems = document.getElementById("shop-item-list");
+		const items = shopItems.getElementsByClassName("item");
+		for (let i = 0; i < items.length; i++) {
+			items[i].classList.remove("selected");
+		}
+	
+		// Add the "selected" class to the clicked item
+		itemElement.classList.add("selected");
+	}
+
+	// Function to buy an item from the shop
+	function buyItem(item) {
+		const itemCost = getItemCost(item);
+		if (player.money >= itemCost) {
+			player.money -= itemCost;
+			player.inventory.push(item);
+			updateGameInfo(`You bought ${item.name}.`);
+			updatePlayerStats();
+		} else {
+			updateGameInfo("Not enough money to buy this item.");
+		}
+		showBuyScreen();
+	}
+
+	// Function to handle the sell screen
+	function showSellScreen() {
+		const sellScreen = document.getElementById("sell-screen");
+		const sellItems = document.getElementById("sell-item-list");
+		sellItems.innerHTML = "";
+	
+		// Display items available for selling
+		for (let i = 0; i < player.inventory.length; i++) {
+			const item = player.inventory[i];
+			const itemElement = document.createElement("div");
+			itemElement.textContent = `${item.icon} ${item.name} - Value: ${calculateItemValue(item)}`;
+			itemElement.classList.add("item");
+			itemElement.setAttribute("data-index", i); // Store the index of the item as a data attribute
+		
+			itemElement.addEventListener("click", () => {
+				selectItemToSell(itemElement);
+			});
+			sellItems.appendChild(itemElement);
+		}
+	
+		showScreen("sell-screen");
+	
+		// Add event listener to the "Sell" button
+		const sellButton = document.getElementById("btnSellItem");
+		sellButton.addEventListener("click", () => {
+			const selectedItem = document.querySelector("#sell-item-list .selected");
+			if (selectedItem) {
+				const itemIndex = parseInt(selectedItem.getAttribute("data-index"));
+				const selectedItemObj = player.inventory[itemIndex];
+				sellItem(selectedItemObj);
+			}
+		});
+	}
+
+	// Function to select an item to sell
+	function selectItemToSell(itemElement) {
+		// Remove the "selected" class from all items
+		const sellItems = document.getElementById("sell-item-list");
+		const items = sellItems.getElementsByClassName("item");
+		for (let i = 0; i < items.length; i++) {
+			items[i].classList.remove("selected");
+		}
+	
+		// Add the "selected" class to the clicked item
+		itemElement.classList.add("selected");
+	}
+	
+	// Function to calculate the value of an item for selling
+	function calculateItemValue(item) {
+		return getItemCost(item) / 2;
+	}
+
+	// Function to sell an item
+	function sellItem(item) {
+		const itemIndex = player.inventory.indexOf(item);
+		if (itemIndex !== -1) {
+			const itemValue = calculateItemValue(item);
+			player.money += itemValue;
+			player.inventory.splice(itemIndex, 1);
+			updateGameInfo(`You sold ${item.name} for ${itemValue} money.`);
+			updatePlayerStats();
+		}
+		showSellScreen();
+	}
+
+	// Function to handle the gamble screen
+	function showGambleScreen() {
+		showScreen("gamble-screen");
+	
+		const gambleAmountInput = document.getElementById("gamble-amount");
+		const gambleButton = document.getElementById("btnGambleMoney");
+	
+		gambleButton.addEventListener("click", () => {
+			const gambleAmount = parseInt(gambleAmountInput.value);
+			gambleMoney(gambleAmount);
+		});
+	}
+	
+	// Function to handle the gambling logic
+	function gambleMoney(amount) {
+		if (amount <= player.money) {
+		const symbols = ["🗡️", "🛡️", "🔮", "👑"]; // Array of symbols representing medieval fantasy elements
+		const spinResult = []; // Array to store the spin result
+	
+		// Spin the slot machine
+		for (let i = 0; i < 3; i++) {
+			const randomIndex = Math.floor(Math.random() * symbols.length);
+			spinResult.push(symbols[randomIndex]);
+		}
+	
+		updateGameInfo("Spinning the slot machine...");
+		updateGameInfo("Result: " + spinResult.join(" "));
+	
+		if (spinResult[0] === spinResult[1] && spinResult[1] === spinResult[2]) {
+			// Player wins
+			const winnings = amount * 3;
+			playerMoney += winnings;
+			updateGameInfo("Congratulations! You won " + winnings + " money!");
+		} else {
+			// Player loses
+			playerMoney -= amount;
+			updateGameInfo("Oh no! You lost " + amount + " money.");
+		}
+	
+			updateGameInfo("Your current balance is: " + player.money + " money.");
+		} else {
+			updateGameInfo("Not enough money to gamble.");
+		}
+	}
+
+	// Function to show the specified screen and hide other screens
+	function showScreen(screenId) {
+		const screens = document.querySelectorAll("#main-screens > div");
+		for (let i = 0; i < screens.length; i++) {
+			const screen = screens[i];
+			if (screen.id === screenId) {
+				screen.classList.remove("hidden");
+			} else {
+				screen.classList.add("hidden");
+			}
+		}
+	}
+
+	// Function to show the main screen
+	function showMainScreen() {
+		showScreen("main-screen");
+	}
+
+	// Function to regenerate player's HP every second
+	function regenerateHP() {
+		if (player.currentHP < player.maxHP) {
+			player.currentHP = Math.min(player.maxHP, player.currentHP + player.regeneration + calculateEquippedSoulstoneRegeneration());
+			updatePlayerCurrentHP();
+		}
+	}
+	
+	// Function to update player's HP display
+	function updatePlayerCurrentHP() {
+		const currentHPElement = document.getElementById("playerCurrentHP");
+		currentHPElement.textContent = player.currentHP;
+	}
+
+	function hpLoop() {
+		regenerateHP();
+
+		// Wait for a specified delay before displaying the next message
+		setTimeout(hpLoop, hpDelay);
+	}
+
+	// Initialize the game
+	function init() {
+		updatePlayerStats();
+		updateGameInfo("Welcome to the RPG game!");
+	
+		// Add event listeners to buttons
+		document.getElementById("btnAdventure").addEventListener("click", () => {
+			showScreen("adventure-screen");
+		});
+	
+		document.getElementById("btnStartAdventure").addEventListener("click", () => {
+			startAdventure();
+		});
+	
+		document.getElementById("btnBoss").addEventListener("click", () => {
+			showScreen("boss-screen");
+		});
+	
+		document.getElementById("btnStartBoss").addEventListener("click", () => {
+			startBoss();
+		});
+
+		document.getElementById("btnInventory").addEventListener("click", () => {
+			showInventoryScreen();
+		});
+	
+		document.getElementById("btnBuy").addEventListener("click", () => {
+			showBuyScreen();
+		});
+	
+		document.getElementById("btnSell").addEventListener("click", () => {
+			showSellScreen();
+		});
+
+		document.getElementById("btnGamble").addEventListener("click", () => {
+			showGambleScreen();
+		});
+
+		const backToMainButtons = document.querySelectorAll(".btnBackToMain");
+		backToMainButtons.forEach((button) => {
+		button.addEventListener("click", showMainScreen);
+		});
+	
+		// Initialize the game
+		updatePlayerStats();
+		showMainScreen();
+
+		// Start the HP regeneration loop
+		hpLoop();
+	}
+
+	init();
+
+	for (var i = 1; i < 36; i++) {
+		player.experience += 10000000000;
+		checkLevelUp();
+		player.money = 10000000000;
+	}
+
+	</script>
+</body>
+</html>
