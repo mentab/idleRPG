@@ -127,6 +127,8 @@
 				<h2>Main Screen</h2>
 				<button id="btnAdventure">🗺️ Go to Adventure</button>
 				<button id="btnBoss">⚔️ Fight a Boss</button>
+				<button id="btnQuest">🔍 Start a Quest</button>
+				<button id="btnDungeon">🔍 Explore the Dungeon</button>
 				<button id="btnInventory">🎒 See your Inventory</button>
 				<button id="btnBuy">💰 Buy Items</button>
 				<button id="btnSell">💎 Sell Items</button>
@@ -143,6 +145,18 @@
 				<button class="btnBackToMain">🔙 Back to Main</button>
 				<h2>Boss</h2>
 				<button id="btnStartBoss">⚔️ Start</button>
+			</div>
+
+			<div id="quest-screen" class="hidden">
+				<button class="btnBackToMain">🔙 Back to Main</button>
+				<h2>Quest</h2>
+				<button id="btnStartQuest">🔍 Start</button>
+			</div>
+
+			<div id="dungeon-screen" class="hidden">
+				<button class="btnBackToMain">🔙 Back to Main</button>
+				<h2>Dungeon</h2>
+				<button id="btnStartDungeon">💀 Dungeon</button>
 			</div>
 
 			<div id="inventory-screen" class="hidden">
@@ -180,6 +194,15 @@
 				<div id="message-container"></div>
 			</div>
 		</div>
+
+		<!-- Idea for screens -->
+		<!-- Alchemy/Crafting -->
+		<!-- Fishing/Mining/Hunting... -->
+		<!-- Housing -->
+		<!-- Achievements -->
+		<!-- Explore -->
+		<!-- Training -->
+		<!-- Dungeon/Endless Dungeon -->
 	</div>
 
 	<script>
@@ -831,6 +854,135 @@
 		showMainScreen();
 	}
 
+	function startQuest() {
+		const enemy = generateRandomEnemy();
+		const numEnemies = getRandomNumber(2, 5);
+		updateGameInfo(generateRandomIntro(enemy.name, numEnemies));
+
+		let totalReward = 0;
+
+		for (let i = 0; i < numEnemies; i++) {
+		  updateGameInfo(`An enemy ${enemy.icon} ${enemy.name} has appeared!`);
+		  updateGameInfo( `It has ${getEnemyMaxHP(enemy)} HP, ${getEnemyDamage(enemy)} DMG, ${getEnemyDefense(enemy)} DEF, ${getEnemyAccuracy(enemy)} ACC, ${getEnemyEvasion(enemy)} EVA`
+		  );
+		  enemy.currentHP = getEnemyMaxHP(enemy);
+		  battle(enemy);
+
+		  if (player.currentHP > 0) {
+			if (enemy.currentHP <= 0) {
+			  const reward = calculateQuestReward(enemy, numEnemies);
+			  totalReward += reward;
+			  updateGameInfo(`You have defeated the ${enemy.icon} ${enemy.name}!`);
+			  updatePlayerStats();
+			  checkLevelUp();
+			} else {
+			  updateGameInfo(`The battle with the ${enemy.icon} ${enemy.name} ended prematurely. The enemy escaped!`);
+			}
+		  } else {
+			updateGameInfo("You were defeated!");
+			break;
+		  }
+		}
+
+		if (player.currentHP > 0) {
+		  updateGameInfo(`Quest completed! Total reward: ${totalReward} coins.`);
+		  player.money += totalReward;
+		  updatePlayerStats();
+		}
+
+		showMainScreen();
+	}
+
+	function startDungeon() {
+		updateGameInfo("You enter the dungeon...");
+
+		const numEnemies = getRandomNumber(3, 6);
+		let defeatedEnemies = 0;
+
+		for (let i = 0; i < numEnemies; i++) {
+		  const enemy = generateRandomEnemy();
+		  updateGameInfo(`An enemy ${enemy.icon} ${enemy.name} has appeared!`);
+		  updateGameInfo(
+		    `It has ${getEnemyMaxHP(enemy)} HP, ${getEnemyDamage(enemy)} DMG, ${getEnemyDefense(enemy)} DEF, ${getEnemyAccuracy(enemy)} ACC, ${getEnemyEvasion(enemy)} EVA`
+		  );
+		  enemy.currentHP = getEnemyMaxHP(enemy);
+		  battle(enemy);
+
+		  if (player.currentHP > 0) {
+		    if (enemy.currentHP <= 0) {
+		      defeatedEnemies++;
+		      const experiencePoints = calculateExperiencePoints(enemy);
+		      player.experience += experiencePoints;
+		      updatePlayerStats();
+		      updateGameInfo(`You defeated the ${enemy.icon} ${enemy.name}!`);
+		      checkLevelUp();
+		    } else {
+		      updateGameInfo(`The battle with the ${enemy.icon} ${enemy.name} ended prematurely. The enemy escaped!`);
+		    }
+		  } else {
+		    updateGameInfo("You were defeated!");
+		    break;
+		  }
+		}
+
+		updateGameInfo(`Dungeon completed!`);
+
+		if (player.currentHP > 0) {
+			for (var i = 0; i < defeatedEnemies; i++) {
+				if (Math.random() < 0.5) {
+					const loot = generateLoot(player.level);
+					player.inventory.push(loot);
+					updateGameInfo(`You received ${loot.name} as loot.`);
+				}
+			}
+		}
+
+		showMainScreen();
+	}
+
+	function generateRandomIntro(enemyType, numEnemies) {
+		const peopleInNeed = ["The distressed villagers","A desperate knight","The royal court","The ancient order of wizards","The sacred priesthood","The renowned guild of adventurers","The mythical creatures of the forest","The noble lords and ladies"];
+		const aidRequests = ["implore your assistance","plead for your aid","request your intervention","seek your heroic deeds","crave your valiant help","beg for your brave intervention","yearn for your courageous action","solicit your gallant support"];
+		const enemyDescriptors = ["fearsome","malevolent","dreaded","vicious","sinister","ferocious","cursed","diabolical"];
+		const groupPhrases = ["A horde of", "A pack of", "A swarm of", "A legion of", "A band of", "An army of", "A brood of", "A congregation of"];
+		const actionVerbs = ["plaguing", "terrorizing", "menacing", "invading", "assaulting", "wreaking havoc upon", "threatening", "laying waste to"];
+		const locations = ["the realm", "a distant village", "the enchanted forest", "the ancient ruins", "the treacherous mountains", "a forgotten crypt", "the mystical swamps", "the forsaken castle"];
+
+		const personInNeed = peopleInNeed[Math.floor(Math.random() * peopleInNeed.length)];
+		const aidRequest = aidRequests[Math.floor(Math.random() * aidRequests.length)];
+		const enemyDescriptor = enemyDescriptors[Math.floor(Math.random() * enemyDescriptors.length)];
+		const groupPhrase = groupPhrases[Math.floor(Math.random() * groupPhrases.length)];
+		const actionVerb = actionVerbs[Math.floor(Math.random() * actionVerbs.length)];
+		const location = locations[Math.floor(Math.random() * locations.length)];
+
+		return `${personInNeed} ${aidRequest}! ${groupPhrase} ${numEnemies} ${enemyDescriptor} ${enemyType} is ${actionVerb} ${location}!`;
+	}
+
+	function calculateQuestReward(enemy, numEnemies) {
+		const enemyLevel = enemy.level;
+		const playerLevel = player.level;
+		
+		const baseReward = numEnemies * 10; // Base reward based on the number of enemies
+		
+		// Calculate the level difference modifier
+		const levelDifference = playerLevel - enemyLevel;
+		let levelModifier = 1;
+		
+		if (levelDifference > 0) {
+			levelModifier -= levelDifference * 0.1;
+		}
+		
+		// Calculate the final reward
+		const finalReward = Math.max(1, Math.round(baseReward * levelModifier));
+		
+		return finalReward;
+	}
+	
+	// Helper function to get a random number between min and max (inclusive)
+	function getRandomNumber(min, max) {
+		return Math.floor(Math.random() * (max - min + 1)) + min;
+	}
+
 	function checkLevelUp() {
 		const currentLevel = player.level;
 		const experiencePoints = player.experience;
@@ -911,7 +1063,7 @@
 		const playerHitChance = calculateHitChance(playerDamage, baseEnemyDefense, basePlayerAccuracy, baseEnemyEvasion);
 		const enemyHitChance = calculateHitChance(enemyDamage, basePlayerDefense, baseEnemyAccuracy, basePlayerEvasion);
 
-	  	while (player.currentHP > 0 && enemy.currentHP > 0 && turns < maxTurns) {
+		while (player.currentHP > 0 && enemy.currentHP > 0 && turns < maxTurns) {
 			// Player's Turn
 			if (Math.random() < playerHitChance) {
 				enemy.currentHP -= playerDamage;
@@ -931,7 +1083,7 @@
 			}
 	
 			turns++;
-	  	}
+		}
 	
 		if (player.currentHP <= 0) {
 			updateGameInfo("You were defeated!");
@@ -940,7 +1092,7 @@
 			const lootChance = getEnemyLootChance(enemy);
 
 			if (Math.random() < lootChance) {
-				const loot = generateLoot(enemy);
+				const loot = generateLoot(enemy.level);
 				player.inventory.push(loot);
 				updateGameInfo(`You found a loot: ${loot.name}!`);
 			}
@@ -982,8 +1134,7 @@
 	}
 
 	// Function to generate loot
-	function generateLoot(enemy) {
-		const level = enemy.level;
+	function generateLoot(level) {
 		const filteredItems = lootItems.filter((item) => item.level <= level);
 		const randomIndex = Math.floor(Math.random() * filteredItems.length);
 		return filteredItems[randomIndex];
@@ -1376,6 +1527,22 @@
 	
 		document.getElementById("btnStartBoss").addEventListener("click", () => {
 			startBoss();
+		});
+
+		document.getElementById("btnQuest").addEventListener("click", () => {
+			showScreen("quest-screen");
+		});
+
+		document.getElementById("btnStartQuest").addEventListener("click", () => {
+			startQuest();
+		});
+
+		document.getElementById("btnDungeon").addEventListener("click", () => {
+			showScreen("dungeon-screen");
+		});
+
+		document.getElementById("btnStartDungeon").addEventListener("click", () => {
+			startDungeon();
 		});
 
 		document.getElementById("btnInventory").addEventListener("click", () => {
