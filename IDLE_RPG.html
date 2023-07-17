@@ -13,7 +13,7 @@
 		button,
 		input {
 			display: inline-block;
-			padding: 10px 20px;
+			padding: 10px;
 			margin-bottom: 10px;
 			background-color: white;
 			border: 1px solid black;
@@ -30,7 +30,7 @@
 		}
 
 		#header-container {
-			padding:  20px;
+			padding: 10px;
 		}
 
 		#game-container {
@@ -40,12 +40,12 @@
 
 		#main-screens {
 			width: 66%;
-			padding: 20px;
+			padding: 10px;
 		}
 
 		#information-screen {
 			width:  100%;
-			padding:  20px;
+			padding:  10px;
 		}
 
 		#game-info {
@@ -69,24 +69,24 @@
 		}
 
 		#inventory {
-			margin-top: 20px;
+			margin-top: 10px;
 		}
 		
 		#actions {
-			margin-top: 20px;
+			margin-top: 10px;
 		}
 		
 		#buy-screen,
 		#sell-screen {
-			margin-top: 20px;
+			margin-top: 10px;
 		}
 		
 		#screens {
-			margin-top: 20px;
+			margin-top: 10px;
 		}
 		
 		#screens > div {
-			margin-top: 20px;
+			margin-top: 10px;
 		}
 		
 		.hidden {
@@ -100,6 +100,12 @@
 
 		.item {
 			cursor: pointer;
+		}
+
+		.game-message {
+			border: 1px solid #000000;
+			padding: 5px;
+			margin-bottom: 5px;
 		}
 	</style>
 </head>
@@ -187,7 +193,7 @@
 
 	<script>
 
-	const hpDelay = 333;
+	const hpDelay = 200;
 
 	// Define the player object
 	const player = {
@@ -364,13 +370,13 @@
 	const getEnemyMaxHP = (enemy) => {
 		const level = enemy.level;
 		if (level % 10 === 0) {
-			return Math.floor(20 + (level - 1) * 6);
+			return Math.floor(15 + (level - 1) * 6);
 		} else if (level % 3 === 0) {
-			return Math.floor(20 + (level - 1) * 5);
+			return Math.floor(15 + (level - 1) * 5);
 		} else if (level % 2 === 0) {
-			return Math.floor(20 + (level - 1) * 4);
+			return Math.floor(15 + (level - 1) * 4);
 		} else {
-			return Math.floor(20 + (level - 1) * 3);
+			return Math.floor(15 + (level - 1) * 3);
 		}
 	};
 	
@@ -715,105 +721,105 @@
 
 	// Define the level-up requirements
 	const levelUpRequirements = [
-	  { level: 2, experience: 100 },
-	  { level: 3, experience: 500 },
-	  { level: 4, experience: 1200 },
-	  { level: 5, experience: 2000 },
-	  { level: 6, experience: 3500 },
-	  { level: 7, experience: 5500 },
-	  { level: 8, experience: 8000 },
-	  { level: 9, experience: 11000 },
-	  { level: 10, experience: 15000 },
-	  { level: 11, experience: 20000 },
-	  { level: 12, experience: 26000 },
-	  { level: 13, experience: 34000 },
-	  { level: 14, experience: 44000 },
-	  { level: 15, experience: 56000 },
-	  { level: 16, experience: 70000 },
-	  { level: 17, experience: 86000 },
-	  { level: 18, experience: 104000 },
-	  { level: 19, experience: 125000 },
-	  { level: 20, experience: 149000 },
-	  { level: 21, experience: 176000 },
-	  { level: 22, experience: 206000 },
-	  { level: 23, experience: 239000 },
-	  { level: 24, experience: 275000 },
-	  { level: 25, experience: 314000 },
-	  { level: 26, experience: 356000 },
-	  { level: 27, experience: 401000 },
-	  { level: 28, experience: 449000 },
-	  { level: 29, experience: 500000 },
-	  { level: 30, experience: 554000 },
-	  { level: 31, experience: 611000 },
-	  { level: 32, experience: 671000 },
-	  { level: 33, experience: 734000 },
-	  { level: 34, experience: 800000 },
-	  { level: 35, experience: 869000 },
-	  { level: 36, experience: 941000 },
-	  { level: 37, experience: 1016000 },
-	  { level: 38, experience: 1093000 },
-	  { level: 39, experience: 1174000 },
-	  { level: 40, experience: 1259000 },
-	  { level: 41, experience: 1348000 },
-	  { level: 42, experience: 1441000 },
-	  { level: 43, experience: 1538000 },
-	  { level: 44, experience: 1639000 },
-	  { level: 45, experience: 1744000 },
-	  { level: 46, experience: 1853000 },
-	  { level: 47, experience: 1966000 },
-	  { level: 48, experience: 2083000 },
-	  { level: 49, experience: 2204000 },
-	  { level: 50, experience: 2329000 },
-	  { level: 51, experience: 2458000 },
-	  { level: 52, experience: 2591000 },
-	  { level: 53, experience: 2728000 },
-	  { level: 54, experience: 2869000 },
-	  { level: 55, experience: 3014000 },
-	  { level: 56, experience: 3163000 },
-	  { level: 57, experience: 3316000 },
-	  { level: 58, experience: 3473000 },
-	  { level: 59, experience: 3634000 },
-	  { level: 60, experience: 3799000 },
-	  { level: 61, experience: 3968000 },
-	  { level: 62, experience: 4141000 },
-	  { level: 63, experience: 4318000 },
-	  { level: 64, experience: 4499000 },
-	  { level: 65, experience: 4684000 },
-	  { level: 66, experience: 4873000 },
-	  { level: 67, experience: 5066000 },
-	  { level: 68, experience: 5263000 },
-	  { level: 69, experience: 5464000 },
-	  { level: 70, experience: 5669000 },
-	  { level: 71, experience: 5878000 },
-	  { level: 72, experience: 6091000 },
-	  { level: 73, experience: 6308000 },
-	  { level: 74, experience: 6529000 },
-	  { level: 75, experience: 6754000 },
-	  { level: 76, experience: 6983000 },
-	  { level: 77, experience: 7216000 },
-	  { level: 78, experience: 7453000 },
-	  { level: 79, experience: 7694000 },
-	  { level: 80, experience: 7939000 },
-	  { level: 81, experience: 8188000 },
-	  { level: 82, experience: 8441000 },
-	  { level: 83, experience: 8698000 },
-	  { level: 84, experience: 8959000 },
-	  { level: 85, experience: 9224000 },
-	  { level: 86, experience: 9493000 },
-	  { level: 87, experience: 9766000 },
-	  { level: 88, experience: 10044000 },
-	  { level: 89, experience: 10326000 },
-	  { level: 90, experience: 10610000 },
-	  { level: 91, experience: 10896000 },
-	  { level: 92, experience: 11184000 },
-	  { level: 93, experience: 11474000 },
-	  { level: 94, experience: 11766000 },
-	  { level: 95, experience: 12060000 },
-	  { level: 96, experience: 12356000 },
-	  { level: 97, experience: 12654000 },
-	  { level: 98, experience: 12954000 },
-	  { level: 99, experience: 13256000 },
-	  { level: 100, experience: 13560000 }
+		{ level: 2, experience: 100 },
+		{ level: 3, experience: 300 },
+		{ level: 4, experience: 600 },
+		{ level: 5, experience: 1000 },
+		{ level: 6, experience: 1500 },
+		{ level: 7, experience: 2100 },
+		{ level: 8, experience: 2800 },
+		{ level: 9, experience: 3600 },
+		{ level: 10, experience: 4500 },
+		{ level: 11, experience: 5500 },
+		{ level: 12, experience: 6600 },
+		{ level: 13, experience: 7800 },
+		{ level: 14, experience: 9100 },
+		{ level: 15, experience: 10500 },
+		{ level: 16, experience: 12000 },
+		{ level: 17, experience: 13600 },
+		{ level: 18, experience: 15300 },
+		{ level: 19, experience: 17100 },
+		{ level: 20, experience: 19000 },
+		{ level: 21, experience: 21000 },
+		{ level: 22, experience: 23100 },
+		{ level: 23, experience: 25300 },
+		{ level: 24, experience: 27600 },
+		{ level: 25, experience: 30000 },
+		{ level: 26, experience: 32500 },
+		{ level: 27, experience: 35100 },
+		{ level: 28, experience: 37800 },
+		{ level: 29, experience: 40600 },
+		{ level: 30, experience: 43500 },
+		{ level: 31, experience: 46500 },
+		{ level: 32, experience: 49600 },
+		{ level: 33, experience: 52800 },
+		{ level: 34, experience: 56100 },
+		{ level: 35, experience: 59500 },
+		{ level: 36, experience: 63000 },
+		{ level: 37, experience: 66600 },
+		{ level: 38, experience: 70300 },
+		{ level: 39, experience: 74100 },
+		{ level: 40, experience: 78000 },
+		{ level: 41, experience: 82000 },
+		{ level: 42, experience: 86100 },
+		{ level: 43, experience: 90300 },
+		{ level: 44, experience: 94600 },
+		{ level: 45, experience: 99000 },
+		{ level: 46, experience: 103500 },
+		{ level: 47, experience: 108100 },
+		{ level: 48, experience: 112800 },
+		{ level: 49, experience: 117600 },
+		{ level: 50, experience: 122500 },
+		{ level: 51, experience: 127500 },
+		{ level: 52, experience: 132600 },
+		{ level: 53, experience: 137800 },
+		{ level: 54, experience: 143100 },
+		{ level: 55, experience: 148500 },
+		{ level: 56, experience: 154000 },
+		{ level: 57, experience: 159600 },
+		{ level: 58, experience: 165300 },
+		{ level: 59, experience: 171100 },
+		{ level: 60, experience: 177000 },
+		{ level: 61, experience: 183000 },
+		{ level: 62, experience: 189100 },
+		{ level: 63, experience: 195300 },
+		{ level: 64, experience: 201600 },
+		{ level: 65, experience: 208000 },
+		{ level: 66, experience: 214500 },
+		{ level: 67, experience: 221100 },
+		{ level: 68, experience: 227800 },
+		{ level: 69, experience: 234600 },
+		{ level: 70, experience: 241500 },
+		{ level: 71, experience: 248500 },
+		{ level: 72, experience: 255600 },
+		{ level: 73, experience: 262800 },
+		{ level: 74, experience: 270100 },
+		{ level: 75, experience: 277500 },
+		{ level: 76, experience: 285000 },
+		{ level: 77, experience: 292600 },
+		{ level: 78, experience: 300300 },
+		{ level: 79, experience: 308100 },
+		{ level: 80, experience: 316000 },
+		{ level: 81, experience: 324000 },
+		{ level: 82, experience: 332100 },
+		{ level: 83, experience: 340300 },
+		{ level: 84, experience: 348600 },
+		{ level: 85, experience: 357000 },
+		{ level: 86, experience: 365500 },
+		{ level: 87, experience: 374100 },
+		{ level: 88, experience: 382800 },
+		{ level: 89, experience: 391600 },
+		{ level: 90, experience: 400500 },
+		{ level: 91, experience: 409500 },
+		{ level: 92, experience: 418600 },
+		{ level: 93, experience: 427800 },
+		{ level: 94, experience: 437100 },
+		{ level: 95, experience: 446500 },
+		{ level: 96, experience: 456000 },
+		{ level: 97, experience: 465600 },
+		{ level: 98, experience: 475300 },
+		{ level: 99, experience: 485100 },
+		{ level: 100, experience: 495000 }
 	];
 
 	// Function to start an adventure
@@ -864,8 +870,8 @@
 	}
 
 	function startQuest() {
-		const enemy = generateRandomEnemy(player.level - 1);
-		const numEnemies = getRandomNumber(2, 4);
+		const enemy = generateRandomEnemy(player.level - 2);
+		const numEnemies = getRandomNumber(2, 3);
 		updateGameInfo(generateRandomIntro(enemy.name, numEnemies));
 
 		let totalReward = 0;
@@ -879,11 +885,13 @@
 
 		  if (player.currentHP > 0) {
 			if (enemy.currentHP <= 0) {
-			  const reward = calculateQuestReward(enemy, numEnemies);
-			  totalReward += reward;
-			  updateGameInfo(`You have defeated the ${enemy.icon} ${enemy.name}!`);
-			  updatePlayerStats();
-			  checkLevelUp();
+				const reward = calculateQuestReward(enemy, numEnemies);
+				totalReward += reward;
+				const experiencePoints = calculateExperiencePoints(enemy);
+				player.experience += experiencePoints;
+				updatePlayerStats();
+				updateGameInfo(`You have defeated the ${enemy.icon} ${enemy.name}!`);
+				checkLevelUp();
 			} else {
 			  updateGameInfo(`The battle with the ${enemy.icon} ${enemy.name} ended prematurely. The enemy escaped!`);
 			}
@@ -903,11 +911,11 @@
 	function startDungeon() {
 		updateGameInfo("You enter the dungeon...");
 
-		const numEnemies = getRandomNumber(2, 4);
+		const numEnemies = getRandomNumber(2, 3);
 		let defeatedEnemies = 0;
 
 		for (let i = 0; i < numEnemies; i++) {
-		  const enemy = generateRandomEnemy(player.level - 1);
+		  const enemy = generateRandomEnemy(player.level - 2);
 		  updateGameInfo(`An enemy ${enemy.icon} ${enemy.name} has appeared!`);
 		  updateGameInfo(
 			`It has ${getEnemyMaxHP(enemy)} HP, ${getEnemyDamage(enemy)} DMG, ${getEnemyDefense(enemy)} DEF, ${getEnemyAccuracy(enemy)} ACC, ${getEnemyEvasion(enemy)} EVA, ${getEnemyCritical(enemy)} CRI, ${getEnemyAbsorb(enemy)} ABS`
@@ -917,14 +925,14 @@
 
 		  if (player.currentHP > 0) {
 			if (enemy.currentHP <= 0) {
-			  defeatedEnemies++;
-			  const experiencePoints = calculateExperiencePoints(enemy);
-			  player.experience += experiencePoints;
-			  updatePlayerStats();
-			  updateGameInfo(`You defeated the ${enemy.icon} ${enemy.name}!`);
-			  checkLevelUp();
+				defeatedEnemies++;
+				const experiencePoints = calculateExperiencePoints(enemy);
+				player.experience += experiencePoints;
+				updatePlayerStats();
+				updateGameInfo(`You defeated the ${enemy.icon} ${enemy.name}!`);
+				checkLevelUp();
 			} else {
-			  updateGameInfo(`The battle with the ${enemy.icon} ${enemy.name} ended prematurely. The enemy escaped!`);
+				updateGameInfo(`The battle with the ${enemy.icon} ${enemy.name} ended prematurely. The enemy escaped!`);
 			}
 		  } else {
 			updateGameInfo("You were defeated!");
@@ -1080,7 +1088,7 @@
 				let playerDamageDealt = playerDamage;
 				if (Math.random() < player.critical / 100) {
 					const criticalMultiplier = 1 + (player.critical / 100);
-					playerDamageDealt = Math.floor(playerDamageDealt * criticalMultiplier);
+					playerDamageDealt = Math.ceil(playerDamageDealt * criticalMultiplier);
 					updateGameInfo(`Critical Hit! You attack the ${enemy.icon} ${enemy.name} dealing ${playerDamageDealt} damage!`);
 				} else {
 					updateGameInfo(`You attack the ${enemy.icon} ${enemy.name} dealing ${playerDamageDealt} damage!`);
@@ -1089,7 +1097,7 @@
 				// Enemy's Damage Absorption
 				if (Math.random() < baseEnemyAbsorb / 100) {
 					const absorptionMultiplier = 1 - (baseEnemyAbsorb / 100);
-					const absorbedDamage = Math.floor(playerDamageDealt * (1 - absorptionMultiplier));
+					const absorbedDamage = Math.ceil(playerDamageDealt * (1 - absorptionMultiplier));
 					playerDamageDealt -= absorbedDamage;
 					updateGameInfo(`The ${enemy.icon} ${enemy.name} absorbed ${absorbedDamage} of your damage!`);
 				}
@@ -1102,7 +1110,7 @@
 				let enemyDamageDealt = enemyDamage;
 				if (Math.random() < enemy.critical / 100) {
 					const criticalMultiplier = 1 + (enemy.critical / 100);
-					enemyDamageDealt = Math.floor(enemyDamageDealt * criticalMultiplier);
+					enemyDamageDealt = Math.ceil(enemyDamageDealt * criticalMultiplier);
 					updateGameInfo(`Critical Hit! The ${enemy.icon} ${enemy.name} attacks you dealing ${enemyDamageDealt} damage!`);
 				} else {
 					updateGameInfo(`The ${enemy.icon} ${enemy.name} attacks you dealing ${enemyDamageDealt} damage!`);
@@ -1111,9 +1119,9 @@
 				// Apply damage absorption
 				if (Math.random() < basePlayerAbsorb / 100) {
 					const absorptionMultiplier = 1 - (basePlayerAbsorb / 100);
-					const absorbedDamage = Math.floor(enemyDamageDealt * (1 - absorptionMultiplier));
+					const absorbedDamage = Math.ceil(enemyDamageDealt * (1 - absorptionMultiplier));
 					enemyDamageDealt -= absorbedDamage;
-					updateGameInfo(`You absorbed ${absorbedDamage}% of enemy damage!`);
+					updateGameInfo(`You absorbed ${absorbedDamage} of enemy damage!`);
 				}
 				
 				player.currentHP -= enemyDamageDealt;
@@ -1134,8 +1142,8 @@
 				updateGameInfo(`You found a loot: ${loot.name}!`);
 			}
 
-			if (Math.random() < lootChance * 2) {
-				const moneyAmount = enemy.level * 2;
+			if (Math.random() < lootChance * 4) {
+				const moneyAmount = enemy.level * 4;
 				player.money += moneyAmount;
 				updateGameInfo(`You found money : ${moneyAmount}!`);
 			}
@@ -1260,7 +1268,10 @@
 	// Function to update the game information
 	function updateGameInfo(message) {
 		const gameInfoElement = document.getElementById("game-info");
-		gameInfoElement.innerHTML = "<br>" + message + gameInfoElement.innerHTML;
+		const messageElement = document.createElement("div");
+		messageElement.innerHTML = message;
+		messageElement.classList.add("game-message"); // Apply a CSS class for styling
+		gameInfoElement.insertBefore(messageElement, gameInfoElement.firstChild);
 	}
 
 	// Function to handle leveling up and increasing player stats
