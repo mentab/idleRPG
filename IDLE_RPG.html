@@ -122,10 +122,12 @@
 				🛡️: <span id="playerDefense"></span> |
 				🎯: <span id="playerAccuracy"></span> |
 				🌪️: <span id="playerEvasion"></span> |
-				💥: <span id="playerCritical"></span> |
+				💥: <span id="playerCritHit"></span> |
 				🔒: <span id="playerAbsorb"></span> |
 				🌟: <span id="playerExperience"></span> |
-				💰: <span id="playerMoney"></span></p>
+				💰: <span id="playerMoney"></span></p> |
+				💫: <span id="playerMagicFind"></span> |
+				🏆: <span id="playerBonusExp"></span>
 		</div>
 	</div>
 	
@@ -206,8 +208,10 @@
 		regeneration: 1,
 		accuracy: 25,
 		evasion: 25,
-		critical: 0,
+		critHit: 0,
 		absorb: 0,
+		bonusExp: 0,
+		magicFind: 0,
 		weapon: null,
 		armor: null,
 		soulstone: null,
@@ -215,6 +219,8 @@
 		trinket: null,
 		ring: null,
 		cloak: null,
+		charm: null,
+		necklace: null,
 		inventory: [],
 		money: 0,
 		experience: 0
@@ -229,6 +235,19 @@
 		updateGameInfo(`Congratulations! You leveled up to level ${player.level}.`);
 		updatePlayerStats();
 	}
+
+	const areas = [
+		"Shimmering Meadows",
+		"Whispering Forest",
+		"Crystal Caverns",
+		"Crimson Citadel",
+		"Stormy Peaks",
+		"Lost Catacombs",
+		"Celestial Observatory",
+		"Frozen Tundra",
+		"Volcanic Depths",
+		"Cursed Catacombs"
+	];
 
 	const enemies = [
 		// Shimmering Meadows
@@ -432,7 +451,7 @@
 		}
 	};
 
-	const getEnemyCritical = (enemy) => {
+	const getEnemyCritHit = (enemy) => {
 		const level = enemy.level;
 		if (level % 10 === 0) {
 			return Math.floor(0 + (level - 1) * 0.8);
@@ -460,28 +479,30 @@
 	
 	const getEnemyLootChance = (enemy) => {
 		const level = enemy.level;
+		let baseChance;
+	
 		if (level % 10 === 0) {
-			return 1;
+		  baseChance = 1;
 		} else if (level % 3 === 0) {
-			return 0.1;
+		  baseChance = 0.1;
 		} else if (level % 2 === 0) {
-			return 0.06;
+		  baseChance = 0.06;
 		} else {
-			return 0.02;
+		  baseChance = 0.02;
 		}
+	
+		const modifiedChance = baseChance * (1 + player.magicFind / 100);
+		return modifiedChance;
 	};
 
 	// Weapon : Damage
 	// Body Armor : Defense
 	// Soulstone: Health Regen
 	// Potion/Consumable: Healing
-
 	// Gloves: Accuracy
 	// Trinket: Evasion
-
 	// Ring: Critical Hit
 	// Cloak : Damage absorbtion
-
 	// Necklace: Magic Find
 	// Charm: Bonus Experience
 
@@ -506,7 +527,7 @@
 		{ name: "Elven Robes", type: "armor", defense: 45, icon: "🧝", level: 45 },
 		{ name: "Ancient Plate Armor", type: "armor", defense: 50, icon: "🏰", level: 50 },
 		{ name: "Celestial Vestments", type: "armor", defense: 55, icon: "✨", level: 55 },
-		{ name: "Shadow Cloak", type: "armor", defense: 60, icon: "🌑", level: 60 },
+		{ name: "Shadow Vestments", type: "armor", defense: 60, icon: "🌑", level: 60 },
 		{ name: "Titanium Mail", type: "armor", defense: 65, icon: "🦾", level: 65 },
 		{ name: "Voidbane Plate", type: "armor", defense: 70, icon: "🌌", level: 70 },
 		{ name: "Radiant Armor", type: "armor", defense: 75, icon: "☀️", level: 75 },
@@ -575,17 +596,17 @@
 		{ name: "Ethereal Trinket", type: "trinket", evasion: 27, icon: "🔮", level: 90 },
 		{ name: "Mythical Trinket", type: "trinket", evasion: 30, icon: "🔮", level: 100 },
 		// Ring items
-		{ name: "Ring of Precision", type: "ring", critical: 2, icon: "💍", level: 5 },
-		{ name: "Ring of Blinding Strikes", type: "ring", critical: 4, icon: "✨", level: 15 },
-		{ name: "Ring of Deadly Precision", type: "ring", critical: 6, icon: "🔪", level: 25 },
-		{ name: "Ring of Devastation", type: "ring", critical: 8, icon: "💥", level: 35 },
-		{ name: "Ring of Execution", type: "ring", critical: 10, icon: "🗡️", level: 45 },
-		{ name: "Ring of Annihilation", type: "ring", critical: 12, icon: "☠️", level: 55 },
-		{ name: "Ring of Ruthless Strikes", type: "ring", critical: 14, icon: "🔥", level: 65 },
-		{ name: "Ring of Piercing Precision", type: "ring", critical: 16, icon: "🎯", level: 75 },
-		{ name: "Ring of Focused Fury", type: "ring", critical: 18, icon: "⚔️", level: 85 },
-		{ name: "Ring of Merciless Strikes", type: "ring", critical: 20, icon: "🌪️", level: 95 },
-		// Cloak items // @todo implement
+		{ name: "Ring of Precision", type: "ring", critHit: 2, icon: "💍", level: 5 },
+		{ name: "Ring of Blinding Strikes", type: "ring", critHit: 4, icon: "✨", level: 15 },
+		{ name: "Ring of Deadly Precision", type: "ring", critHit: 6, icon: "🔪", level: 25 },
+		{ name: "Ring of Devastation", type: "ring", critHit: 8, icon: "💥", level: 35 },
+		{ name: "Ring of Execution", type: "ring", critHit: 10, icon: "🗡️", level: 45 },
+		{ name: "Ring of Annihilation", type: "ring", critHit: 12, icon: "☠️", level: 55 },
+		{ name: "Ring of Ruthless Strikes", type: "ring", critHit: 14, icon: "🔥", level: 65 },
+		{ name: "Ring of Piercing Precision", type: "ring", critHit: 16, icon: "🎯", level: 75 },
+		{ name: "Ring of Focused Fury", type: "ring", critHit: 18, icon: "⚔️", level: 85 },
+		{ name: "Ring of Merciless Strikes", type: "ring", critHit: 20, icon: "🌪️", level: 95 },
+		// Cloak items
 		{ name: "Cloak of Protection", type: "cloak", absorb: 2, icon: "🧥", level: 5 },
 		{ name: "Cloak of Shadows", type: "cloak", absorb: 4, icon: "🌑", level: 15 },
 		{ name: "Cloak of Resilience", type: "cloak", absorb: 6, icon: "🛡️", level: 25 },
@@ -596,17 +617,17 @@
 		{ name: "Cloak of Eternal Protection", type: "cloak", absorb: 16, icon: "🌟", level: 75 },
 		{ name: "Cloak of Invulnerability", type: "cloak", absorb: 18, icon: "🔒", level: 85 },
 		{ name: "Cloak of Unbreakable Will", type: "cloak", absorb: 20, icon: "💪", level: 95 },
-		// Necklace items // @todo implement
-		{ name: "Necklace of Fortune", type: "necklace", magicFind: 1.2, icon: "🔮", level: 20 },
-		{ name: "Necklace of Prosperity", type: "necklace", magicFind: 1.4, icon: "💰", level: 40 },
-		{ name: "Necklace of Serendipity", type: "necklace", magicFind: 1.6, icon: "🍀", level: 60 },
-		{ name: "Necklace of Abundance", type: "necklace", magicFind: 1.8, icon: "🌟", level: 80 },
-		// Charm items // @todo implement
-		{ name: "Charm of Wisdom", type: "charm", bonusExp: 1.1, icon: "📚", level: 10 },
-		{ name: "Charm of Enlightenment", type: "charm", bonusExp: 1.3, icon: "🌟", level: 30 },
-		{ name: "Charm of Insight", type: "charm", bonusExp: 1.5, icon: "🔍", level: 50 },
-		{ name: "Charm of Mastery", type: "charm", bonusExp: 1.7, icon: "🎓", level: 70 },
-		{ name: "Charm of Ascendancy", type: "charm", bonusExp: 1.9, icon: "⚡", level: 90 },
+		// Necklace items
+		{ name: "Necklace of Fortune", type: "necklace", magicFind: 20, icon: "🔮", level: 20 },
+		{ name: "Necklace of Prosperity", type: "necklace", magicFind: 40, icon: "💰", level: 40 },
+		{ name: "Necklace of Serendipity", type: "necklace", magicFind: 60, icon: "🍀", level: 60 },
+		{ name: "Necklace of Abundance", type: "necklace", magicFind: 80, icon: "🌟", level: 80 },
+		// Charm items
+		{ name: "Charm of Wisdom", type: "charm", bonusExp: 10, icon: "📚", level: 10 },
+		{ name: "Charm of Enlightenment", type: "charm", bonusExp: 30, icon: "🌟", level: 30 },
+		{ name: "Charm of Insight", type: "charm", bonusExp: 50, icon: "🔍", level: 50 },
+		{ name: "Charm of Mastery", type: "charm", bonusExp: 70, icon: "🎓", level: 70 },
+		{ name: "Charm of Ascendancy", type: "charm", bonusExp: 90, icon: "⚡", level: 90 },
 		// Belt items // @todo implement
 		{ name: "Leather Belt", type: "belt", bonusHP: 14, icon: "⚕️", level: 7 },
 		{ name: "Chain Belt", type: "belt", bonusHP: 34, icon: "🏋️", level: 17 },
@@ -709,7 +730,10 @@
 				return level * 10;
 			case "ring":
 			case "cloak":
-				return level * 5;	
+				return level * 5;
+			case "charm":
+			case "necklace":
+				return level * 50;	
 			case "consumable":
 				return level * 2;
 			case "soulstone":
@@ -827,7 +851,7 @@
 		updateGameInfo(`Starting adventure...`);
 		const enemy = generateRandomEnemy(player.level);
 		updateGameInfo(`An enemy ${enemy.icon} ${enemy.name} has appeared!`);
-		updateGameInfo(`It has ${getEnemyMaxHP(enemy)} HP, ${getEnemyDamage(enemy)} DMG, ${getEnemyDefense(enemy)} DEF, ${getEnemyAccuracy(enemy)} ACC, ${getEnemyEvasion(enemy)} EVA , ${getEnemyCritical(enemy)} CRI , ${getEnemyAbsorb(enemy)} ABS`);
+		updateGameInfo(`It has ${getEnemyMaxHP(enemy)} HP, ${getEnemyDamage(enemy)} DMG, ${getEnemyDefense(enemy)} DEF, ${getEnemyAccuracy(enemy)} ACC, ${getEnemyEvasion(enemy)} EVA , ${getEnemyCritHit(enemy)} CRI , ${getEnemyAbsorb(enemy)} ABS`);
 		enemy.currentHP = getEnemyMaxHP(enemy);
 		battle(enemy);
 		
@@ -878,7 +902,7 @@
 
 		for (let i = 0; i < numEnemies; i++) {
 		  updateGameInfo(`An enemy ${enemy.icon} ${enemy.name} has appeared!`);
-		  updateGameInfo( `It has ${getEnemyMaxHP(enemy)} HP, ${getEnemyDamage(enemy)} DMG, ${getEnemyDefense(enemy)} DEF, ${getEnemyAccuracy(enemy)} ACC, ${getEnemyEvasion(enemy)} EVA, ${getEnemyCritical(enemy)} CRI, ${getEnemyAbsorb(enemy)} ABS`
+		  updateGameInfo( `It has ${getEnemyMaxHP(enemy)} HP, ${getEnemyDamage(enemy)} DMG, ${getEnemyDefense(enemy)} DEF, ${getEnemyAccuracy(enemy)} ACC, ${getEnemyEvasion(enemy)} EVA, ${getEnemyCritHit(enemy)} CRI, ${getEnemyAbsorb(enemy)} ABS`
 		  );
 		  enemy.currentHP = getEnemyMaxHP(enemy);
 		  battle(enemy);
@@ -918,7 +942,7 @@
 		  const enemy = generateRandomEnemy(player.level - 2);
 		  updateGameInfo(`An enemy ${enemy.icon} ${enemy.name} has appeared!`);
 		  updateGameInfo(
-			`It has ${getEnemyMaxHP(enemy)} HP, ${getEnemyDamage(enemy)} DMG, ${getEnemyDefense(enemy)} DEF, ${getEnemyAccuracy(enemy)} ACC, ${getEnemyEvasion(enemy)} EVA, ${getEnemyCritical(enemy)} CRI, ${getEnemyAbsorb(enemy)} ABS`
+			`It has ${getEnemyMaxHP(enemy)} HP, ${getEnemyDamage(enemy)} DMG, ${getEnemyDefense(enemy)} DEF, ${getEnemyAccuracy(enemy)} ACC, ${getEnemyEvasion(enemy)} EVA, ${getEnemyCritHit(enemy)} CRI, ${getEnemyAbsorb(enemy)} ABS`
 		  );
 		  enemy.currentHP = getEnemyMaxHP(enemy);
 		  battle(enemy);
@@ -1046,7 +1070,7 @@
 		const adjustmentFactor = levelDifference >= 0 ? 1 / (1 + levelDifference) : 1 - levelDifference / playerLevel;
 
 		// Apply the adjustment factor to the experience points
-		const experiencePoints = Math.floor(baseExperience * enemyLevel * adjustmentFactor);
+		const experiencePoints = Math.floor(baseExperience * enemyLevel * adjustmentFactor * (1 + player.bonusExp / 100));
 
 		return experiencePoints;
 	}
@@ -1063,14 +1087,14 @@
 		const basePlayerDefense = player.defense + calculateEquippedArmorDefense();
 		const basePlayerAccuracy = player.accuracy + calculateEquippedGlovesAccuracy();
 		const basePlayerEvasion = player.evasion + calculateEquippedTrinketEvasion();
-		const basePlayerCritical = player.critical + calculateEquippedRingCritical();
+		const basePlayerCritHit = player.critHit + calculateEquippedRingCritHit();
 		const basePlayerAbsorb = player.absorb + calculateEquippedCloakAbsorb();
 
 		const baseEnemyDamage = getEnemyDamage(enemy);
 		const baseEnemyDefense = getEnemyDefense(enemy);
 		const baseEnemyAccuracy = getEnemyAccuracy(enemy);
 		const baseEnemyEvasion = getEnemyEvasion(enemy);
-		const baseEnemyCritical = getEnemyCritical(enemy);
+		const baseEnemyCritHit = getEnemyCritHit(enemy);
 		const baseEnemyAbsorb = getEnemyAbsorb(enemy);
 	
 		const playerDamageReduction = calculateDamageReduction(basePlayerDefense);
@@ -1086,9 +1110,9 @@
 			// Player's Turn
 			if (Math.random() < playerHitChance) {
 				let playerDamageDealt = playerDamage;
-				if (Math.random() < player.critical / 100) {
-					const criticalMultiplier = 1 + (player.critical / 100);
-					playerDamageDealt = Math.ceil(playerDamageDealt * criticalMultiplier);
+				if (Math.random() < player.critHit / 100) {
+					const critHitMultiplier = 1 + (player.critHit / 100);
+					playerDamageDealt = Math.ceil(playerDamageDealt * critHitMultiplier);
 					updateGameInfo(`Critical Hit! You attack the ${enemy.icon} ${enemy.name} dealing ${playerDamageDealt} damage!`);
 				} else {
 					updateGameInfo(`You attack the ${enemy.icon} ${enemy.name} dealing ${playerDamageDealt} damage!`);
@@ -1108,9 +1132,9 @@
 			// Enemy's Turn
 			if (Math.random() < enemyHitChance) {
 				let enemyDamageDealt = enemyDamage;
-				if (Math.random() < enemy.critical / 100) {
-					const criticalMultiplier = 1 + (enemy.critical / 100);
-					enemyDamageDealt = Math.ceil(enemyDamageDealt * criticalMultiplier);
+				if (Math.random() < enemy.critHit / 100) {
+					const critHitMultiplier = 1 + (enemy.critHit / 100);
+					enemyDamageDealt = Math.ceil(enemyDamageDealt * critHitMultiplier);
 					updateGameInfo(`Critical Hit! The ${enemy.icon} ${enemy.name} attacks you dealing ${enemyDamageDealt} damage!`);
 				} else {
 					updateGameInfo(`The ${enemy.icon} ${enemy.name} attacks you dealing ${enemyDamageDealt} damage!`);
@@ -1196,10 +1220,12 @@
 		document.getElementById("playerAccuracy").textContent = `${player.accuracy} (+${calculateEquippedGlovesAccuracy()})`;
 		document.getElementById("playerEvasion").textContent = `${player.evasion} (+${calculateEquippedTrinketEvasion()})`;
 		document.getElementById("playerAccuracy").textContent = `${player.accuracy} (+${calculateEquippedGlovesAccuracy()})`;
-		document.getElementById("playerCritical").textContent = `${player.critical} (+${calculateEquippedRingCritical()})`;
+		document.getElementById("playerCritHit").textContent = `${player.critHit} (+${calculateEquippedRingCritHit()})`;
 		document.getElementById("playerAbsorb").textContent = `${player.absorb} (+${calculateEquippedCloakAbsorb()})`;
 		document.getElementById("playerExperience").textContent = `${player.experience} / ${getNextLevelExperience()}`;
 		document.getElementById("playerMoney").textContent = player.money;
+		document.getElementById("playerBonusExp").textContent = `${player.bonusExp} (+${calculateEquippedCharmBonusExp()})`;
+		document.getElementById("playerMagicFind").textContent = `${player.magicFind} (+${calculateEquippedNecklaceMagicFind()})`;
 		updatePlayerCurrentHP();
 	}
 
@@ -1249,9 +1275,9 @@
 		}
 	}
 
-	function calculateEquippedRingCritical() {
+	function calculateEquippedRingCritHit() {
 		if (player.ring) {
-			return player.ring.critical;
+			return player.ring.critHit;
 		} else {
 			return 0;
 		}
@@ -1260,6 +1286,22 @@
 	function calculateEquippedCloakAbsorb() {
 		if (player.cloak) {
 			return player.cloak.absorb;
+		} else {
+			return 0;
+		}
+	}
+
+	function calculateEquippedCharmBonusExp() {
+		if (player.charm) {
+			return player.charm.bonusExp;
+		} else {
+			return 0;
+		}
+	}
+
+	function calculateEquippedNecklaceMagicFind() {
+		if (player.necklace) {
+			return player.necklace.magicFind;
 		} else {
 			return 0;
 		}
@@ -1283,7 +1325,7 @@
 		if (player.level % 10 == 0) player.regeneration += 1;
 		if (player.level % 5 == 0) player.accuracy += 1;
 		if (player.level % 5 == 0) player.evasion += 1;
-		if (player.level % 5 == 0) player.critical += 1;
+		if (player.level % 5 == 0) player.critHit += 1;
 		if (player.level % 5 == 0) player.absorb += 1;
 		updateGameInfo(`Congratulations! You leveled up to level ${player.level}.`);
 		updatePlayerStats();
@@ -1315,6 +1357,10 @@
 			} else if (item === player.ring) {
 				itemElement.classList.add("equipped");
 			} else if (item === player.cloak) {
+				itemElement.classList.add("equipped");
+			} else if (item === player.charm) {
+				itemElement.classList.add("equipped");
+			} else if (item === player.necklace) {
 				itemElement.classList.add("equipped");
 			}
 	
@@ -1357,6 +1403,12 @@
 		} else if (item.type === "cloak") {
 			player.cloak = item;
 			updateGameInfo(`Equipped cloak: ${item.name}`);
+		} else if (item.type === "charm") {
+			player.charm = item;
+			updateGameInfo(`Equipped charm: ${item.name}`);
+		} else if (item.type === "necklace") {
+			player.necklace = item;
+			updateGameInfo(`Equipped necklace: ${item.name}`);
 		}
 		updatePlayerStats();
 		showInventoryScreen();
