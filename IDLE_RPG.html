@@ -105,7 +105,7 @@
 </head>
 <body>
 	<div id="header-container">
-		<h1>Welcome to the RPG game!</h1>
+		<h1>Fantasy Clicker Battles</h1>
 		<div>
 			<h2>Player Stats:</h2>
 			<p id="playerStats">
@@ -133,6 +133,9 @@
 				<button id="btnBuy">💰 Buy Items</button>
 				<button id="btnSell">💎 Sell Items</button>
 				<button id="btnGamble">🎲 Gamble Money</button>
+
+				<button id="btnLevel">Level Up</button>
+				<button id="btnMoney">Add Money</button>
 			</div>
 
 			<div id="adventure-screen" class="hidden">
@@ -207,7 +210,7 @@
 
 	<script>
 
-	const hpDelay = 1000;
+	const hpDelay = 333;
 
 	// Define the player object
 	const player = {
@@ -806,7 +809,7 @@
 	// Function to start an adventure
 	function startAdventure() {
 		updateGameInfo(`Starting adventure...`);
-		const enemy = generateRandomEnemy();
+		const enemy = generateRandomEnemy(player.level);
 		updateGameInfo(`An enemy ${enemy.icon} ${enemy.name} has appeared!`);
 		updateGameInfo(`It has ${getEnemyMaxHP(enemy)} HP, ${getEnemyDamage(enemy)} DMG, ${getEnemyDefense(enemy)} DEF, ${getEnemyAccuracy(enemy)} ACC, ${getEnemyEvasion(enemy)} EVA`);
 		enemy.currentHP = getEnemyMaxHP(enemy);
@@ -832,7 +835,7 @@
 	// Function to start a boss
 	function startBoss() {
 		updateGameInfo(`Starting boss...`);
-		const boss = generateRandomBoss();
+		const boss = generateRandomBoss(player.level);
 		updateGameInfo(`An boss ${boss.icon} ${boss.name} has appeared!`);
 		boss.currentHP = getEnemyMaxHP(boss);
 		battle(boss);
@@ -855,8 +858,8 @@
 	}
 
 	function startQuest() {
-		const enemy = generateRandomEnemy();
-		const numEnemies = getRandomNumber(2, 5);
+		const enemy = generateRandomEnemy(player.level - 1);
+		const numEnemies = getRandomNumber(2, 4);
 		updateGameInfo(generateRandomIntro(enemy.name, numEnemies));
 
 		let totalReward = 0;
@@ -896,32 +899,32 @@
 	function startDungeon() {
 		updateGameInfo("You enter the dungeon...");
 
-		const numEnemies = getRandomNumber(3, 6);
+		const numEnemies = getRandomNumber(2, 4);
 		let defeatedEnemies = 0;
 
 		for (let i = 0; i < numEnemies; i++) {
-		  const enemy = generateRandomEnemy();
+		  const enemy = generateRandomEnemy(player.level - 1);
 		  updateGameInfo(`An enemy ${enemy.icon} ${enemy.name} has appeared!`);
 		  updateGameInfo(
-		    `It has ${getEnemyMaxHP(enemy)} HP, ${getEnemyDamage(enemy)} DMG, ${getEnemyDefense(enemy)} DEF, ${getEnemyAccuracy(enemy)} ACC, ${getEnemyEvasion(enemy)} EVA`
+			`It has ${getEnemyMaxHP(enemy)} HP, ${getEnemyDamage(enemy)} DMG, ${getEnemyDefense(enemy)} DEF, ${getEnemyAccuracy(enemy)} ACC, ${getEnemyEvasion(enemy)} EVA`
 		  );
 		  enemy.currentHP = getEnemyMaxHP(enemy);
 		  battle(enemy);
 
 		  if (player.currentHP > 0) {
-		    if (enemy.currentHP <= 0) {
-		      defeatedEnemies++;
-		      const experiencePoints = calculateExperiencePoints(enemy);
-		      player.experience += experiencePoints;
-		      updatePlayerStats();
-		      updateGameInfo(`You defeated the ${enemy.icon} ${enemy.name}!`);
-		      checkLevelUp();
-		    } else {
-		      updateGameInfo(`The battle with the ${enemy.icon} ${enemy.name} ended prematurely. The enemy escaped!`);
-		    }
+			if (enemy.currentHP <= 0) {
+			  defeatedEnemies++;
+			  const experiencePoints = calculateExperiencePoints(enemy);
+			  player.experience += experiencePoints;
+			  updatePlayerStats();
+			  updateGameInfo(`You defeated the ${enemy.icon} ${enemy.name}!`);
+			  checkLevelUp();
+			} else {
+			  updateGameInfo(`The battle with the ${enemy.icon} ${enemy.name} ended prematurely. The enemy escaped!`);
+			}
 		  } else {
-		    updateGameInfo("You were defeated!");
-		    break;
+			updateGameInfo("You were defeated!");
+			break;
 		  }
 		}
 
@@ -1000,10 +1003,11 @@
 	}
 
 	// Function to generate a random enemy based on player's level
-	function generateRandomEnemy() {
-		const playerArea = Math.floor(player.level / 10);
+	function generateRandomEnemy(maxLevel) {
+		const validatedMaxLevel = Math.max(1, maxLevel);
+		const playerArea = Math.floor(validatedMaxLevel / 10);
 		const filteredEnemies = enemies.filter((enemy) => {	
-			const levelDifference = player.level - enemy.level;
+			const levelDifference = validatedMaxLevel - enemy.level;
 			const enemyArea = Math.floor(enemy.level / 10);
 			// @fixme this is not what i want to do !
 			return levelDifference >= 0 && levelDifference <= 5 && playerArea - enemyArea <= 1;
@@ -1013,8 +1017,9 @@
 	}
 
 	// Function to generate a random boss based on player's level
-	function generateRandomBoss() {
-		const filteredBosses = bosses.filter((boss) => boss.level <= player.level + 10);
+	function generateRandomBoss(maxLevel) {
+		const validatedMaxLevel = Math.max(1, maxLevel);
+		const filteredBosses = bosses.filter((boss) => boss.level <= validatedMaxLevel + 10);
 		const randomIndex = Math.floor(Math.random() * filteredBosses.length);
 		return filteredBosses[randomIndex];
 	}
@@ -1249,7 +1254,7 @@
 			// Check if the item is a potion
 			if (item.type === "consumable") {
 				itemElement.addEventListener("click", () => {
-				usePotion(item);
+					usePotion(item);
 				});
 			}
 	
@@ -1295,13 +1300,26 @@
 	}
 
 	// Function to handle the buy screen
-	// I bought knife ??
+	let filteredItems = [];
+	const itemClickHandlers = [];
+
 	function showBuyScreen() {
 		const buyScreen = document.getElementById("buy-screen");
 		const shopItems = document.getElementById("shop-item-list");
 		shopItems.innerHTML = "";
-	
-		const filteredItems = shopItemsList.filter((shopItem) => shopItem.level >= player.level - 6 && shopItem.level <= player.level + 6);
+		
+		filteredItems = shopItemsList.filter((shopItem) => shopItem.level >= player.level - 15 && shopItem.level <= player.level);
+		
+		// Clean up previous event listeners
+		const buyButton = document.getElementById("btnBuyItem");
+		buyButton.removeEventListener("click", buyButtonClickHandler);
+		
+		// Remove previous item click handlers
+		itemClickHandlers.forEach((handler) => {
+			const { element, clickHandler } = handler;
+			element.removeEventListener("click", clickHandler);
+		});
+		itemClickHandlers.length = 0;
 
 		// Display items available for purchase
 		for (let i = 0; i < filteredItems.length; i++) {
@@ -1311,24 +1329,26 @@
 			itemElement.classList.add("item");
 			itemElement.setAttribute("data-index", i); // Store the index of the item as a data attribute
 		
-			itemElement.addEventListener("click", () => {
-				selectItemToBuy(itemElement);
-			});
+			const clickHandler = () => selectItemToBuy(itemElement);
+
+			itemElement.addEventListener("click", clickHandler);
+			itemClickHandlers.push({ element: itemElement, clickHandler });
 			shopItems.appendChild(itemElement);
 		}
-	
+		
 		showScreen("buy-screen");
-	
-		// Add event listener to the "Buy" button
-		const buyButton = document.getElementById("btnBuyItem");
-		buyButton.addEventListener("click", () => {
-			const selectedItem = document.querySelector("#shop-item-list .selected");
-			if (selectedItem) {
-				const itemIndex = parseInt(selectedItem.getAttribute("data-index"));
-				const selectedItemObj = filteredItems[itemIndex];
-				buyItem(selectedItemObj);
-			}
-		});
+		
+		// Set up new event listener for "Buy" button
+		buyButton.addEventListener("click", buyButtonClickHandler);
+	}
+
+	function buyButtonClickHandler() {
+		const selectedItem = document.querySelector("#shop-item-list .selected");
+		if (selectedItem) {
+		  const itemIndex = parseInt(selectedItem.getAttribute("data-index"));
+		  const selectedItemObj = filteredItems[itemIndex];
+		  buyItem(selectedItemObj);
+		}
 	}
 
 	// Function to select an item to buy
@@ -1358,38 +1378,49 @@
 		showBuyScreen();
 	}
 
-	// Function to handle the sell screen
 	function showSellScreen() {
-		const sellScreen = document.getElementById("sell-screen");
-		const sellItems = document.getElementById("sell-item-list");
-		sellItems.innerHTML = "";
+	  const sellScreen = document.getElementById("sell-screen");
+	  const sellItems = document.getElementById("sell-item-list");
+	  sellItems.innerHTML = "";
 	
-		// Display items available for selling
-		for (let i = 0; i < player.inventory.length; i++) {
-			const item = player.inventory[i];
-			const itemElement = document.createElement("div");
-			itemElement.textContent = `${item.icon} ${item.name} - Value: ${calculateItemValue(item)}`;
-			itemElement.classList.add("item");
-			itemElement.setAttribute("data-index", i); // Store the index of the item as a data attribute
+	  // Clean up previous event listeners
+	  const sellButton = document.getElementById("btnSellItem");
+	  sellButton.removeEventListener("click", sellButtonClickHandler);
+	
+	  // Remove previous item click handlers
+	  const itemElements = document.querySelectorAll("#sell-item-list .item");
+	  itemElements.forEach((itemElement) => {
+		itemElement.removeEventListener("click", itemClickHandler);
+	  });
+	
+	  // Display items available for selling
+	  for (let i = 0; i < player.inventory.length; i++) {
+		const item = player.inventory[i];
+		const itemElement = document.createElement("div");
+		itemElement.textContent = `${item.icon} ${item.name} - Value: ${calculateItemValue(item)}`;
+		itemElement.classList.add("item");
+		itemElement.setAttribute("data-index", i); // Store the index of the item as a data attribute
 		
-			itemElement.addEventListener("click", () => {
-				selectItemToSell(itemElement);
-			});
-			sellItems.appendChild(itemElement);
+		const itemClickHandler = () => {
+			selectItemToSell(itemElement);
+		};
+		itemElement.addEventListener("click", itemClickHandler);
+		sellItems.appendChild(itemElement);
+	  }
+	
+	  showScreen("sell-screen");
+	
+	  // Set up new event listener for "Sell" button
+	  sellButton.addEventListener("click", sellButtonClickHandler);
+	}
+	
+	function sellButtonClickHandler() {
+		const selectedItem = document.querySelector("#sell-item-list .selected");
+		if (selectedItem) {
+			const itemIndex = parseInt(selectedItem.getAttribute("data-index"));
+			const selectedItemObj = player.inventory[itemIndex];
+			sellItem(selectedItemObj);
 		}
-	
-		showScreen("sell-screen");
-	
-		// Add event listener to the "Sell" button
-		const sellButton = document.getElementById("btnSellItem");
-		sellButton.addEventListener("click", () => {
-			const selectedItem = document.querySelector("#sell-item-list .selected");
-			if (selectedItem) {
-				const itemIndex = parseInt(selectedItem.getAttribute("data-index"));
-				const selectedItemObj = player.inventory[itemIndex];
-				sellItem(selectedItemObj);
-			}
-		});
 	}
 
 	// Function to select an item to sell
@@ -1439,30 +1470,31 @@
 	// Function to handle the gambling logic
 	function gambleMoney(amount) {
 		if (amount <= player.money) {
-		const symbols = ["🗡️", "🛡️", "🔮", "👑"]; // Array of symbols representing medieval fantasy elements
-		const spinResult = []; // Array to store the spin result
-	
-		// Spin the slot machine
-		for (let i = 0; i < 3; i++) {
-			const randomIndex = Math.floor(Math.random() * symbols.length);
-			spinResult.push(symbols[randomIndex]);
-		}
-	
-		updateGameInfo("Spinning the slot machine...");
-		updateGameInfo("Result: " + spinResult.join(" "));
-	
-		if (spinResult[0] === spinResult[1] && spinResult[1] === spinResult[2]) {
-			// Player wins
-			const winnings = amount * 3;
-			playerMoney += winnings;
-			updateGameInfo("Congratulations! You won " + winnings + " money!");
-		} else {
-			// Player loses
-			playerMoney -= amount;
-			updateGameInfo("Oh no! You lost " + amount + " money.");
-		}
+			const symbols = ["🗡️", "🛡️", "🔮", "👑"]; // Array of symbols representing medieval fantasy elements
+			const spinResult = []; // Array to store the spin result
+			
+			// Spin the slot machine
+			for (let i = 0; i < 3; i++) {
+				const randomIndex = Math.floor(Math.random() * symbols.length);
+				spinResult.push(symbols[randomIndex]);
+			}
+			
+			updateGameInfo("Spinning the slot machine...");
+			updateGameInfo("Result: " + spinResult.join(" "));
+			
+			if (spinResult[0] === spinResult[1] && spinResult[1] === spinResult[2]) {
+				// Player wins
+				const winnings = amount * 3;
+				player.money += winnings;
+				updateGameInfo("Congratulations! You won " + winnings + " money!");
+			} else {
+				// Player loses
+				player.money -= amount;
+				updateGameInfo("Oh no! You lost " + amount + " money.");
+			}
 	
 			updateGameInfo("Your current balance is: " + player.money + " money.");
+			updatePlayerStats();
 		} else {
 			updateGameInfo("Not enough money to gamble.");
 		}
@@ -1510,7 +1542,7 @@
 	// Initialize the game
 	function init() {
 		updatePlayerStats();
-		updateGameInfo("Welcome to the RPG game!");
+		updateGameInfo("Fantasy Clicker Battles");
 	
 		// Add event listeners to buttons
 		document.getElementById("btnAdventure").addEventListener("click", () => {
@@ -1561,9 +1593,20 @@
 			showGambleScreen();
 		});
 
+		document.getElementById("btnLevel").addEventListener("click", () => {
+			player.experience += 9999999999;
+			checkLevelUp();
+		});
+
+		document.getElementById("btnMoney").addEventListener("click", () => {
+			player.money += 1000;
+			updatePlayerStats();
+		});
+
 		const backToMainButtons = document.querySelectorAll(".btnBackToMain");
+
 		backToMainButtons.forEach((button) => {
-		button.addEventListener("click", showMainScreen);
+			button.addEventListener("click", showMainScreen);
 		});
 	
 		// Initialize the game
@@ -1575,12 +1618,6 @@
 	}
 
 	init();
-
-	for (var i = 1; i < 36; i++) {
-		player.experience += 10000000000;
-		checkLevelUp();
-		player.money = 10000000000;
-	}
 
 	</script>
 </body>
