@@ -1311,7 +1311,7 @@
 
 	// Function to generate loot
 	function generateLoot(level) {
-		const filteredItems = lootItems.filter((item) => item.level <= level);
+		const filteredItems = itemsList.filter((item) => item.level <= level);
 		const randomIndex = Math.floor(Math.random() * filteredItems.length);
 		return filteredItems[randomIndex];
 	}
