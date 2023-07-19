@@ -170,14 +170,12 @@
 				<button class="btnBackToMain">🔙 Back to Main</button>
 				<h4>Buy Items</h4>
 				<div id="shop-item-list"></div>
-				<button id="btnBuyItem">💰 Buy</button>
 			</div>
 
 			<div id="sell-screen" class="hidden">
 				<button class="btnBackToMain">🔙 Back to Main</button>
 				<h4>Sell Items</h4>
 				<div id="sell-item-list"></div>
-				<button id="btnSellItem">💎 Sell</button>
 			</div>
 		</div>
 
@@ -1531,68 +1529,27 @@
 	}
 
 	// Function to handle the buy screen
-	let filteredItems = [];
-	const itemClickHandlers = [];
-
 	function showBuyScreen() {
-		const buyScreen = document.getElementById("buy-screen");
 		const shopItems = document.getElementById("shop-item-list");
 		shopItems.innerHTML = "";
 		
 		filteredItems = itemsList.filter((shopItem) => shopItem.level >= player.level - 15 && shopItem.level <= player.level);
-		
-		// Clean up previous event listeners
-		const buyButton = document.getElementById("btnBuyItem");
-		buyButton.removeEventListener("click", buyButtonClickHandler);
-		
-		// Remove previous item click handlers
-		itemClickHandlers.forEach((handler) => {
-			const { element, clickHandler } = handler;
-			element.removeEventListener("click", clickHandler);
-		});
-		itemClickHandlers.length = 0;
 
 		// Display items available for purchase
 		for (let i = 0; i < filteredItems.length; i++) {
 			const item = filteredItems[i];
-			const itemElement = document.createElement("div");
+			const itemElement = document.createElement("button");
 			itemElement.textContent = `${item.icon} ${item.name} - Cost: ${getItemCost(item)}`;
 			itemElement.classList.add("item");
-			itemElement.setAttribute("data-index", i); // Store the index of the item as a data attribute
 		
-			const clickHandler = () => selectItemToBuy(itemElement);
+			itemElement.addEventListener("click", () => {
+				buyItem(item);
+			});
 
-			itemElement.addEventListener("click", clickHandler);
-			itemClickHandlers.push({ element: itemElement, clickHandler });
 			shopItems.appendChild(itemElement);
 		}
 		
 		showScreen("buy-screen");
-		
-		// Set up new event listener for "Buy" button
-		buyButton.addEventListener("click", buyButtonClickHandler);
-	}
-
-	function buyButtonClickHandler() {
-		const selectedItem = document.querySelector("#shop-item-list .selected");
-		if (selectedItem) {
-		  const itemIndex = parseInt(selectedItem.getAttribute("data-index"));
-		  const selectedItemObj = filteredItems[itemIndex];
-		  buyItem(selectedItemObj);
-		}
-	}
-
-	// Function to select an item to buy
-	function selectItemToBuy(itemElement) {
-		// Remove the "selected" class from all items
-		const shopItems = document.getElementById("shop-item-list");
-		const items = shopItems.getElementsByClassName("item");
-		for (let i = 0; i < items.length; i++) {
-			items[i].classList.remove("selected");
-		}
-	
-		// Add the "selected" class to the clicked item
-		itemElement.classList.add("selected");
 	}
 
 	// Function to buy an item from the shop
@@ -1609,69 +1566,28 @@
 		showBuyScreen();
 	}
 
+	// Function to handle the sell screen
 	function showSellScreen() {
-	  const sellScreen = document.getElementById("sell-screen");
-	  const sellItems = document.getElementById("sell-item-list");
-	  sellItems.innerHTML = "";
-	
-	  // Clean up previous event listeners
-	  const sellButton = document.getElementById("btnSellItem");
-	  sellButton.removeEventListener("click", sellButtonClickHandler);
-	
-	  // Remove previous item click handlers
-	  const itemElements = document.querySelectorAll("#sell-item-list .item");
-	  itemElements.forEach((itemElement) => {
-		itemElement.removeEventListener("click", itemClickHandler);
-	  });
-	
-	  // Display items available for selling
-	  for (let i = 0; i < player.inventory.length; i++) {
-		const item = player.inventory[i];
-		const itemElement = document.createElement("div");
-		itemElement.textContent = `${item.icon} ${item.name} - Value: ${calculateItemValue(item)}`;
-		itemElement.classList.add("item");
-		itemElement.setAttribute("data-index", i); // Store the index of the item as a data attribute
-		
-		const itemClickHandler = () => {
-			selectItemToSell(itemElement);
-		};
-		itemElement.addEventListener("click", itemClickHandler);
-		sellItems.appendChild(itemElement);
-	  }
-	
-	  showScreen("sell-screen");
-	
-	  // Set up new event listener for "Sell" button
-	  sellButton.addEventListener("click", sellButtonClickHandler);
-	}
-	
-	function sellButtonClickHandler() {
-		const selectedItem = document.querySelector("#sell-item-list .selected");
-		if (selectedItem) {
-			const itemIndex = parseInt(selectedItem.getAttribute("data-index"));
-			const selectedItemObj = player.inventory[itemIndex];
-			sellItem(selectedItemObj);
-		}
-	}
-
-	// Function to select an item to sell
-	function selectItemToSell(itemElement) {
-		// Remove the "selected" class from all items
 		const sellItems = document.getElementById("sell-item-list");
-		const items = sellItems.getElementsByClassName("item");
-		for (let i = 0; i < items.length; i++) {
-			items[i].classList.remove("selected");
+		sellItems.innerHTML = "";
+	
+		// Display items available for selling
+		for (let i = 0; i < player.inventory.length; i++) {
+			const item = player.inventory[i];
+			const itemElement = document.createElement("button");
+			itemElement.textContent = `${item.icon} ${item.name} - Value: ${calculateItemValue(item)}`;
+			itemElement.classList.add("item");
+	
+			itemElement.addEventListener("click", () => {
+				sellItem(item);
+			});
+	
+			sellItems.appendChild(itemElement);
 		}
 	
-		// Add the "selected" class to the clicked item
-		itemElement.classList.add("selected");
+		showScreen("sell-screen");
 	}
 	
-	// Function to calculate the value of an item for selling
-	function calculateItemValue(item) {
-		return getItemCost(item) / 2;
-	}
-
 	// Function to sell an item
 	function sellItem(item) {
 		const itemIndex = player.inventory.indexOf(item);
@@ -1683,6 +1599,11 @@
 			updatePlayerStats();
 		}
 		showSellScreen();
+	}
+
+	// Function to calculate the value of an item for selling
+	function calculateItemValue(item) {
+		return getItemCost(item) / 2;
 	}
 	
 	// Function to handle the gambling logic
