@@ -3,18 +3,21 @@
 <head>
 	<title>Fantasy Clicker Battles</title>
 	<style>
+		html {
+			height: 100vh;
+		}
 		body {
+			height: 100vh;
 			font-family: "Courier New", Courier, monospace;
 			margin: 0;
 			padding: 0;
 		}
 
 		/* Define the squared button styles */
-		button,
-		input {
+		button {
 			display: inline-block;
 			padding: 10px;
-			margin-bottom: 10px;
+			margin: 5px;
 			background-color: white;
 			border: 1px solid black;
 			text-decoration: none;
@@ -22,6 +25,7 @@
 			text-transform: uppercase;
 			font-weight:  bold;
 			transition: background-color 0.3s ease;
+			width: 100%;
 		}
 
 		/* Add hover effect to the buttons */
@@ -29,23 +33,29 @@
 			background-color: #f0f0f0;
 		}
 
-		#header-container {
-			padding: 10px;
+		#game-container {
+			height: 100vh;
+			display: flex;
+			width: 100%;
+			align-items: center;
 		}
 
-		#game-container {
+		.flex-container {
 			display: flex;
-			width:  100%;
+			justify-content: space-between;
 		}
 
 		#main-screens {
-			width: 66%;
+			width: 33vw;
 			padding: 10px;
 		}
 
 		#information-screen {
-			width:  100%;
-			padding:  10px;
+			width: 66vw;
+			height: 80vh;
+			padding: 10px;
+			display: flex;
+			flex-direction: column;
 		}
 
 		#game-info {
@@ -109,77 +119,87 @@
 		}
 	</style>
 </head>
-<body>
-	<div id="header-container">
-		<h1>Fantasy Clicker Battles</h1>
-		<div>
-			<h2>Player Stats:</h2>
-			<p id="playerStats">
-				🎚️: <span id="playerLevel"></span> |
-				💖: <span id="playerCurrentHP"></span>/<span id="playerMaxHP"></span> |
-				💚: <span id="playerRegeneration"></span> |
-				⚔️: <span id="playerDamage"></span> |
-				🛡️: <span id="playerDefense"></span> |
-				🎯: <span id="playerAccuracy"></span> |
-				🌪️: <span id="playerEvasion"></span> |
-				💥: <span id="playerCritHit"></span> |
-				🔒: <span id="playerAbsorb"></span> |
-				🌟: <span id="playerExperience"></span> |
-				💰: <span id="playerMoney"></span> |
-				💫: <span id="playerBonusLoot"></span> |
-				🏆: <span id="playerBonusExp"></span>
-			</p>
-		</div>
-	</div>
-	
+<body>	
 	<div id="game-container">
 		<div id="main-screens">
 			<div id="main-screen">
-				<h2>Main Screen</h2>
-				<button id="btnExploration">🗺️ Go to Exploration</button>
-				<button id="btnChallenge">⚔️ Engage in a Challenge</button>
-				<button id="btnMission">🔍 Start a Mission</button>
-				<button id="btnEncounter">🚀 Embark on an Encounter</button>
-				<button id="btnInventory">🎒 See your Inventory</button>
-				<button id="btnBuy">💰 Buy Items</button>
-				<button id="btnSell">💎 Sell Items</button>
-				<button id="btnGamble">🎲 Gamble Money</button>
+				<div class="flex-container">
+					<button id="btnExploration">🗺️ Exploration</button>
+				</div>
+				<div class="flex-container">
+					<button id="btnChallenge">⚔️ Challenge</button>
+					<button id="btnMission">🔍 Mission</button>
+					<button id="btnEncounter">🚀 Encounter</button>
+				</div>
+				<div class="flex-container">
+					<button id="btnAreas">🗺️ Areas</button>
+				</div>
+				<div class="flex-container">
+					<button id="btnInventory">🎒 Inventory</button>
+					<button id="btnBuy">💰 Buy</button>
+					<button id="btnSell">💎 Sell</button>
+				</div>
+				<div class="flex-container">
+					<button id="btnGamble">🎲 Gamble</button>
+					<button id="btnHeal">💊 Heal</button>
+				</div>
+				<div class="flex-container">
+					<button id="btnExperience">🐞 Experience</button>
+					<button id="btnMoney">🐞 Money</button>
+				</div>
+				<div class="flex-container">
+					<button id="btnSave">💾 Save</button>
+					<button id="btnLoad">📂 Load</button>
+					<button id="btnReset">🔄 Reset</button>
+				</div>
+			</div>
 
-				<button id="btnLevel">Level Up</button>
-				<button id="btnMoney">Add Money</button>
+			<div id="areas-screen" class="hidden">
+				<button class="btnBackToMain">🔙 Back to Main</button>
+				<h4>Areas</h4>
+				<div id="area-list"></div>
 			</div>
 
 			<div id="inventory-screen" class="hidden">
 				<button class="btnBackToMain">🔙 Back to Main</button>
-				<h2>Inventory</h2>
+				<h4>Inventory</h4>
 				<div id="item-list"></div>
 			</div>
 
 			<div id="buy-screen" class="hidden">
 				<button class="btnBackToMain">🔙 Back to Main</button>
-				<h2>Buy Items</h2>
+				<h4>Buy Items</h4>
 				<div id="shop-item-list"></div>
 				<button id="btnBuyItem">💰 Buy</button>
 			</div>
 
 			<div id="sell-screen" class="hidden">
 				<button class="btnBackToMain">🔙 Back to Main</button>
-				<h2>Sell Items</h2>
+				<h4>Sell Items</h4>
 				<div id="sell-item-list"></div>
 				<button id="btnSellItem">💎 Sell</button>
-			</div>
-
-			<div id="gamble-screen" class="hidden">
-				<button class="btnBackToMain">🔙 Back to Main</button>
-				<h2>Gamble Money</h2>
-				<p id="gamble-info">Bet an amount of money and try your luck!</p>
-				<input type="number" id="gamble-amount" min="1" max="100" value="1">
-				<button id="btnGambleMoney">🎲 Gamble</button>
 			</div>
 		</div>
 
 		<div id="information-screen">
-			<h2>Game Information:</h2>
+			<h4>🗺️: <span id="playerCurrentArea"></span></h4>
+			<div>
+				<p id="playerStats">
+					🎚️: <span id="playerLevel"></span> |
+					💖: <span id="playerCurrentHP"></span>/<span id="playerMaxHP"></span> |
+					💚: <span id="playerRegeneration"></span> |
+					⚔️: <span id="playerDamage"></span> |
+					🛡️: <span id="playerDefense"></span> |
+					🎯: <span id="playerAccuracy"></span> |
+					🌪️: <span id="playerEvasion"></span> |
+					💥: <span id="playerCritHit"></span> |
+					🔒: <span id="playerAbsorb"></span> |
+					🌟: <span id="playerExperience"></span> |
+					💰: <span id="playerMoney"></span> |
+					💫: <span id="playerBonusLoot"></span> |
+					🏆: <span id="playerBonusExp"></span>
+				</p>
+			</div>
 			<div id="game-info">
 				<div id="message-container"></div>
 			</div>
@@ -195,12 +215,13 @@
 		Mission: fight a group of the same enemy and get coins
 		Dungeon : fight a group of different enemies and get loots
 		Items: inventory / sell / buy (mandatory)
+		Save / Load / Reset
+		Debug - Level / Money
+		Rest: pay to be full life (remove potions ?)
 
 		@todo
 		Area: manage your current area (mandatory)
-		Rest: pay to be full life (remove potions ?)
 
-		Save / Load / Reset
 
 		@later
 		Craft : buy crafting items / make recipes /
@@ -355,29 +376,47 @@
 				{ level: 99, experience: 485100 },
 				{ level: 100, experience: 495000 }
 			],
-			areasNames: [
-				"Shimmering Meadows",
-				"Whispering Forest",
-				"Crystal Caverns",
-				"Crimson Citadel",
-				"Stormy Peaks",
-				"Lost Catacombs",
-				"Celestial Observatory",
-				"Frozen Tundra",
-				"Volcanic Depths",
-				"Cursed Catacombs"
-			],
-			areaDescriptors: [
-				"Shimmering Meadows is a picturesque landscape filled with vibrant wildflowers and lush greenery. Crystal-clear streams meander through the meadows, reflecting the sunlight and creating a dazzling display. The air is fresh and fragrant, carrying the scent of blooming flowers. It is a serene and tranquil place, inviting adventurers to explore its natural beauty.",
-				"Whispering Forest is an enchanted realm dominated by towering ancient trees. The dense canopy casts a mesmerizing pattern of light and shadow on the forest floor. Soft whispers seem to emanate from the trees, creating an otherworldly ambiance. The air is cool and crisp, and the ground is covered in a carpet of moss and fallen leaves. It is a place of mystery and magic, where secrets are whispered among the ancient trees.",
-				"Crystal Caverns is a subterranean wonderland adorned with shimmering crystals of various hues. The cavern walls glisten with an ethereal glow, creating a breathtaking sight. Stalactites and stalagmites form intricate formations, giving the cave an otherworldly appearance. The air is cool and tinged with a hint of mineral scent. It is a place where the beauty of the underground world unfolds, waiting to be discovered.",
-				"Crimson Citadel stands tall amidst a rugged landscape, its imposing architecture evoking a sense of power and mystery. The citadel is adorned with intricate carvings and towering spires that reach for the sky. Fiery torches illuminate the halls, casting dancing shadows. The air is thick with an aura of danger and forbidden knowledge. It is a place of dark allure, where only the boldest dare to venture.",
-				"Stormy Peaks is a realm of towering mountains and relentless storms. Jagged cliffs and rocky terrain create a treacherous landscape. Thunder rumbles through the peaks, accompanied by flashes of lightning that light up the dark sky. Winds howl fiercely, carrying a sense of raw power. It is a place where nature's fury reigns supreme, testing the resilience and bravery of those who dare to conquer it.",
-				"Lost Catacombs lie hidden beneath the surface, a labyrinthine maze of ancient tunnels and forgotten chambers. Crumbling pillars and eerie statues line the passageways, exuding an aura of decay and mystery. Flickering torches cast long shadows, adding to the sense of foreboding. The air is thick with the scent of dampness and ancient secrets. It is a place where the past lingers, waiting to be unearthed.",
-				"Celestial Observatory is a celestial haven perched atop a high peak. The observatory offers a panoramic view of the star-studded night sky, where constellations twinkle in their eternal dance. Telescopes and instruments stand ready to unravel the mysteries of the cosmos. The air is crisp and tinged with the scent of fresh air and anticipation. It is a place where the wonders of the universe unfold, inviting stargazers and dreamers.",
-				"Frozen Tundra stretches as far as the eye can see, a frozen wasteland cloaked in eternal winter. Snow-covered plains and icy peaks dominate the landscape, glistening in the pale sunlight. Frosty winds whip through the tundra, biting at exposed skin. The air is filled with a sense of icy solitude and quietude. It is a place of harsh beauty, where survival is a constant battle against the elements.",
-				"Volcanic Depths is a fiery abyss filled with molten rock and intense heat. Rivers of lava flow through the depths, casting an ominous glow on the jagged rock formations. Sulfurous fumes fill the air, creating an acrid and suffocating atmosphere. Tremors shake the ground, a constant reminder of the volatile nature of the place. It is a realm of searing danger and untamed power, where only the most fearless dare to tread.",
-				"Cursed Catacombs hold the remnants of a forgotten civilization, entwined with dark magic and cursed energies. Crumbling tombs and crypts line the underground passages, bearing eerie inscriptions and macabre symbols. Flickering candles barely illuminate the desolate corridors, shrouded in an eternal twilight. The air is heavy with a sense of ancient curses and restless spirits. It is a place where the line between life and death blurs, testing the resolve of intrepid explorers."
+			areas: [
+				{
+				  name: "Shimmering Meadows",
+				  description: "Shimmering Meadows is a picturesque landscape filled with vibrant wildflowers and lush greenery. Crystal-clear streams meander through the meadows, reflecting the sunlight and creating a dazzling display. The air is fresh and fragrant, carrying the scent of blooming flowers. It is a serene and tranquil place, inviting adventurers to explore its natural beauty.",
+				},
+				{
+				  name: "Whispering Forest",
+				  description: "Whispering Forest is an enchanted realm dominated by towering ancient trees. The dense canopy casts a mesmerizing pattern of light and shadow on the forest floor. Soft whispers seem to emanate from the trees, creating an otherworldly ambiance. The air is cool and crisp, and the ground is covered in a carpet of moss and fallen leaves. It is a place of mystery and magic, where secrets are whispered among the ancient trees.",
+				},
+				{
+				  name: "Crystal Caverns",
+				  description: "Crystal Caverns is a subterranean wonderland adorned with shimmering crystals of various hues. The cavern walls glisten with an ethereal glow, creating a breathtaking sight. Stalactites and stalagmites form intricate formations, giving the cave an otherworldly appearance. The air is cool and tinged with a hint of mineral scent. It is a place where the beauty of the underground world unfolds, waiting to be discovered.",
+				},
+				{
+				  name: "Crimson Citadel",
+				  description: "Crimson Citadel stands tall amidst a rugged landscape, its imposing architecture evoking a sense of power and mystery. The citadel is adorned with intricate carvings and towering spires that reach for the sky. Fiery torches illuminate the halls, casting dancing shadows. The air is thick with an aura of danger and forbidden knowledge. It is a place of dark allure, where only the boldest dare to venture.",
+				},
+				{
+				  name: "Stormy Peaks",
+				  description: "Stormy Peaks is a realm of towering mountains and relentless storms. Jagged cliffs and rocky terrain create a treacherous landscape. Thunder rumbles through the peaks, accompanied by flashes of lightning that light up the dark sky. Winds howl fiercely, carrying a sense of raw power. It is a place where nature's fury reigns supreme, testing the resilience and bravery of those who dare to conquer it.",
+				},
+				{
+				  name: "Lost Catacombs",
+				  description: "Lost Catacombs lie hidden beneath the surface, a labyrinthine maze of ancient tunnels and forgotten chambers. Crumbling pillars and eerie statues line the passageways, exuding an aura of decay and mystery. Flickering torches cast long shadows, adding to the sense of foreboding. The air is thick with the scent of dampness and ancient secrets. It is a place where the past lingers, waiting to be unearthed.",
+				},
+				{
+				  name: "Celestial Observatory",
+				  description: "Celestial Observatory is a celestial haven perched atop a high peak. The observatory offers a panoramic view of the star-studded night sky, where constellations twinkle in their eternal dance. Telescopes and instruments stand ready to unravel the mysteries of the cosmos. The air is crisp and tinged with the scent of fresh air and anticipation. It is a place where the wonders of the universe unfold, inviting stargazers and dreamers.",
+				},
+				{
+				  name: "Frozen Tundra",
+				  description: "Frozen Tundra stretches as far as the eye can see, a frozen wasteland cloaked in eternal winter. Snow-covered plains and icy peaks dominate the landscape, glistening in the pale sunlight. Frosty winds whip through the tundra, biting at exposed skin. The air is filled with a sense of icy solitude and quietude. It is a place of harsh beauty, where survival is a constant battle against the elements.",
+				},
+				{
+				  name: "Volcanic Depths",
+				  description: "Volcanic Depths is a fiery abyss filled with molten rock and intense heat. Rivers of lava flow through the depths, casting an ominous glow on the jagged rock formations. Sulfurous fumes fill the air, creating an acrid and suffocating atmosphere. Tremors shake the ground, a constant reminder of the volatile nature of the place. It is a realm of searing danger and untamed power, where only the most fearless dare to tread.",
+				},
+				{
+				  name: "Cursed Catacombs",
+				  description: "Cursed Catacombs hold the remnants of a forgotten civilization, entwined with dark magic and cursed energies. Crumbling tombs and crypts line the underground passages, bearing eerie inscriptions and macabre symbols. Flickering candles barely illuminate the desolate corridors, shrouded in an eternal twilight. The air is heavy with a sense of ancient curses and restless spirits. It is a place where the line between life and death blurs, testing the resolve of intrepid explorers.",
+				},
 			],
 			enemies: [
 				// Shimmering Meadows
@@ -513,7 +552,7 @@
 				// Area - Cursed Catacombs
 				{ name: "Soul Reaper", level: 100, type: "Undead", icon: "🌑👤☠️", currentHP: 0 }
 			],
-			shopItemsList: [
+			itemsList: [
 				// Armor items
 				{ name: "Leather Armor", stat: "defense", defense: 5, icon: "🥼", level: 5 },
 				{ name: "Chainmail Armor", stat: "defense", defense: 10, icon: "🔗", level: 10 },
@@ -645,6 +684,7 @@
 				{ name: "Bulwark Shield", stat: "block", block: 45, icon: "🛡️", level: 89 },
 				{ name: "Colossus Shield", stat: "block", block: 50, icon: "🗿", level: 99 },
 			],
+			// Unused
 			lootItems: [
 				// Weapon items
 				{ name: "Staff of Tranquility", stat: "damage", damage: 3, icon: "🏮", level: 3 },
@@ -760,7 +800,7 @@
 	const areas = gameConfigData.areas;
 	const enemies = gameConfigData.enemies;
 	const bosses = gameConfigData.bosses;
-	const shopItemsList = gameConfigData.shopItemsList;
+	const itemsList = gameConfigData.itemsList;
 	const peopleInNeed = gameConfigData.peopleInNeed;
 	const aidRequests = gameConfigData.aidRequests;
 	const enemyDescriptors = gameConfigData.enemyDescriptors;
@@ -795,7 +835,8 @@
 		bonusLootItem: null,
 		inventory: [],
 		money: 0,
-		experience: 0
+		experience: 0,
+		currentArea: areas[0]
 	};
 
 	const getItemCost = (item) => {
@@ -930,112 +971,21 @@
 		return modifiedChance;
 	};
 
-	// Function to start an adventure
-	function startExploration() {
-		updateGameInfo(`Starting exploration...`);
-		const enemy = generateRandomEnemy(player.level);
-		updateGameInfo(`An enemy ${enemy.icon} ${enemy.name} has appeared!`);
-		updateGameInfo(`It has ${getEnemyMaxHP(enemy)} HP, ${getEnemyDamage(enemy)} DMG, ${getEnemyDefense(enemy)} DEF, ${getEnemyAccuracy(enemy)} ACC, ${getEnemyEvasion(enemy)} EVA , ${getEnemyCritHit(enemy)} CRI , ${getEnemyAbsorb(enemy)} ABS`);
+	function generateEnemyInfo(enemy) {
+		return `An enemy ${enemy.icon} ${enemy.name} has appeared!\n` +
+		   `It has ${getEnemyMaxHP(enemy)} HP, ${getEnemyDamage(enemy)} DMG, ${getEnemyDefense(enemy)} DEF, ${getEnemyAccuracy(enemy)} ACC, ${getEnemyEvasion(enemy)} EVA, ${getEnemyCritHit(enemy)} CRI, ${getEnemyAbsorb(enemy)} ABS`;
+	}
+
+	function performBattle(enemy) {
+		updateGameInfo(generateEnemyInfo(enemy));
 		enemy.currentHP = getEnemyMaxHP(enemy);
 		battle(enemy);
-		
-		if (player.currentHP > 0) {
-			if (enemy.currentHP <= 0) {
-				const experiencePoints = calculateExperiencePoints(enemy);
-				player.experience += experiencePoints;
-				updatePlayerStats();
-				updateGameInfo(`You gained ${experiencePoints} experience points!`);
-				checkLevelUp();
-			} else {
-				updateGameInfo(`The battle with the ${enemy.icon} ${enemy.name} ended prematurely. The enemy escaped!`);
-			}
-		} else {
-			updateGameInfo("You were defeated!");
-		}
+		battleAndCheckResult(enemy);
 	}
 
-	// Function to start a challenge
-	function startChallenge() {
-		updateGameInfo("Starting the challenge...");
-		const boss = generateRandomBoss(player.level);
-		updateGameInfo(`An boss ${boss.icon} ${boss.name} has appeared!`);
-		boss.currentHP = getEnemyMaxHP(boss);
-		battle(boss);
-		
+	function battleAndCheckResult(enemy) {
 		if (player.currentHP > 0) {
-			if (boss.currentHP <= 0) {
-				const experiencePoints = calculateExperiencePoints(boss);
-				player.experience += experiencePoints;
-				updatePlayerStats();
-				updateGameInfo(`You defeated the ${boss.icon} ${boss.name} and gained ${experiencePoints} experience points!`);
-				checkLevelUp();
-			} else {
-				updateGameInfo(`The battle with the ${boss.icon} ${boss.name} ended prematurely. The boss escaped!`);
-			}
-		} else {
-			updateGameInfo("You were defeated!");
-		}
-	}
-
-	// Function to start a mission
-	function startMission() {
-		const enemy = generateRandomEnemy(player.level - 2);
-		const numEnemies = getRandomNumber(2, 3);
-		updateGameInfo(generateRandomIntro(enemy.name, numEnemies));
-
-		let totalReward = 0;
-
-		for (let i = 0; i < numEnemies; i++) {
-		  updateGameInfo(`An enemy ${enemy.icon} ${enemy.name} has appeared!`);
-		  updateGameInfo( `It has ${getEnemyMaxHP(enemy)} HP, ${getEnemyDamage(enemy)} DMG, ${getEnemyDefense(enemy)} DEF, ${getEnemyAccuracy(enemy)} ACC, ${getEnemyEvasion(enemy)} EVA, ${getEnemyCritHit(enemy)} CRI, ${getEnemyAbsorb(enemy)} ABS`
-		  );
-		  enemy.currentHP = getEnemyMaxHP(enemy);
-		  battle(enemy);
-
-		  if (player.currentHP > 0) {
 			if (enemy.currentHP <= 0) {
-				const reward = calculateMissionReward(enemy, numEnemies);
-				totalReward += reward;
-				const experiencePoints = calculateExperiencePoints(enemy);
-				player.experience += experiencePoints;
-				updatePlayerStats();
-				updateGameInfo(`You have defeated the ${enemy.icon} ${enemy.name}!`);
-				checkLevelUp();
-			} else {
-			  updateGameInfo(`The battle with the ${enemy.icon} ${enemy.name} ended prematurely. The enemy escaped!`);
-			}
-		  } else {
-			updateGameInfo("You were defeated!");
-			break;
-		  }
-		}
-
-		if (player.currentHP > 0) {
-		  updateGameInfo(`Mission completed! Total reward: ${totalReward} coins.`);
-		  player.money += totalReward;
-		  updatePlayerStats();
-		}
-	}
-
-	// Function to start encounter
-	function startEncounter() {
-		updateGameInfo("You engage in the encounter...");
-
-		const numEnemies = getRandomNumber(2, 3);
-		let defeatedEnemies = 0;
-
-		for (let i = 0; i < numEnemies; i++) {
-		  const enemy = generateRandomEnemy(player.level - 2);
-		  updateGameInfo(`An enemy ${enemy.icon} ${enemy.name} has appeared!`);
-		  updateGameInfo(
-			`It has ${getEnemyMaxHP(enemy)} HP, ${getEnemyDamage(enemy)} DMG, ${getEnemyDefense(enemy)} DEF, ${getEnemyAccuracy(enemy)} ACC, ${getEnemyEvasion(enemy)} EVA, ${getEnemyCritHit(enemy)} CRI, ${getEnemyAbsorb(enemy)} ABS`
-		  );
-		  enemy.currentHP = getEnemyMaxHP(enemy);
-		  battle(enemy);
-
-		  if (player.currentHP > 0) {
-			if (enemy.currentHP <= 0) {
-				defeatedEnemies++;
 				const experiencePoints = calculateExperiencePoints(enemy);
 				player.experience += experiencePoints;
 				updatePlayerStats();
@@ -1044,20 +994,87 @@
 			} else {
 				updateGameInfo(`The battle with the ${enemy.icon} ${enemy.name} ended prematurely. The enemy escaped!`);
 			}
-		  } else {
-			updateGameInfo("You were defeated!");
-			break;
-		  }
+		} else {
+		  updateGameInfo("You were defeated!");
+		}
+	}
+
+	function startExploration() {
+		updateGameInfo(`Starting exploration...`);
+		const enemy = generateRandomEnemy(player.level);
+		performBattle(enemy);
+	}
+
+	function startChallenge() {
+		updateGameInfo("Starting the challenge...");
+		const boss = generateRandomBoss(player.level);
+		performBattle(boss);
+	}
+
+	function startMission() {
+		updateGameInfo("Starting the mission...");
+		const enemy = generateRandomEnemy(player.level - 2);
+		const numEnemies = getRandomNumber(2, 3);
+		updateGameInfo(generateRandomIntro(enemy.name, numEnemies));
+		let totalReward = 0;
+		let isMissionFailed = false;
+
+		for (let i = 0; i < numEnemies; i++) {
+			performBattle(enemy);
+
+			if (player.currentHP <= 0) {
+				isMissionFailed = true;
+				break;
+			}
+
+			totalReward += calculateMissionReward(enemy, numEnemies);
+		}
+
+		if (!isMissionFailed) {
+			updateGameInfo(`Mission completed! Total reward: ${totalReward} coins.`);
+			player.money += totalReward;
+			updatePlayerStats();
+		} else {
+			updateGameInfo("Mission failed! You were defeated.");
+		}
+	}
+
+	function startEncounter() {
+		updateGameInfo("You engage in the encounter...");
+		const numEnemies = getRandomNumber(2, 3);
+		let defeatedEnemies = 0;
+		let isEncounterFailed = false;
+
+		for (let i = 0; i < numEnemies; i++) {
+			const enemy = generateRandomEnemy(player.level - 2);
+			performBattle(enemy);
+
+			if (player.currentHP <= 0) {
+				isEncounterFailed = true;
+				break;
+			}
+
+			if (enemy.currentHP <= 0) {
+				defeatedEnemies++;
+			} else {
+				break;
+			}
 		}
 
 		updateGameInfo(`Encounter completed!`);
 
-		if (player.currentHP > 0) {
-			for (var i = 0; i < defeatedEnemies; i++) {
-				if (Math.random() < 0.5) {
-					const loot = generateLoot(player.level);
-					player.inventory.push(loot);
-					updateGameInfo(`You received ${loot.name} as loot.`);
+		if (isEncounterFailed) {
+			updateGameInfo("Encounter failed! You were defeated.");
+		} else {
+			updateGameInfo("Encounter completed!");
+		
+			if (player.currentHP > 0) {
+				for (let i = 0; i < defeatedEnemies; i++) {
+					if (Math.random() < 0.5) {
+						const loot = generateLoot(player.level);
+						player.inventory.push(loot);
+						updateGameInfo(`You received ${loot.name} as loot.`);
+					}
 				}
 			}
 		}
@@ -1116,25 +1133,38 @@
 	}
 
 	// Function to generate a random enemy based on player's level
-	function generateRandomEnemy(maxLevel) {
+	function findEntitiesInAreaAndLevelRange(entities, maxLevel, isBoss = false) {
 		const validatedMaxLevel = Math.max(1, maxLevel);
-		const playerArea = Math.floor(validatedMaxLevel / 10);
-		const filteredEnemies = enemies.filter((enemy) => {	
-			const levelDifference = validatedMaxLevel - enemy.level;
-			const enemyArea = Math.floor(enemy.level / 10);
-			// @fixme this is not what i want to do !
-			return levelDifference >= 0 && levelDifference <= 5 && playerArea - enemyArea <= 1;
-		});
-		const randomIndex = Math.floor(Math.random() * filteredEnemies.length);
-		return filteredEnemies[randomIndex];
-	}
+		const playerCurrentAreaIndex = areas.findIndex((area) => area === player.currentArea);
 
-	// Function to generate a random boss based on player's level
+		const eligibleEntities = entities.filter((entity) => {
+			const entityAreaIndex = Math.floor((entity.level - 1) / 10);
+			return entityAreaIndex === playerCurrentAreaIndex && entity.level <= validatedMaxLevel && (isBoss ? entity.level % 10 === 0 : true);
+		});
+	
+		if (eligibleEntities.length === 0) {
+			const firstEnemyOfArea = entities.find((entity) => {
+				const entityAreaIndex = Math.floor((entity.level - 1) / 10);
+				return entityAreaIndex === playerCurrentAreaIndex;
+			});
+			return firstEnemyOfArea ? [firstEnemyOfArea] : [];
+		}
+
+		return eligibleEntities;
+	}
+	
+	function generateRandomEntity(entities) {
+		return entities[Math.floor(Math.random() * entities.length)];
+	}
+	
+	function generateRandomEnemy(maxLevel) {
+		const eligibleEnemies = findEntitiesInAreaAndLevelRange(enemies, maxLevel);
+		return generateRandomEntity(eligibleEnemies);
+	}
+	
 	function generateRandomBoss(maxLevel) {
-		const validatedMaxLevel = Math.max(1, maxLevel);
-		const filteredBosses = bosses.filter((boss) => boss.level <= validatedMaxLevel + 10);
-		const randomIndex = Math.floor(Math.random() * filteredBosses.length);
-		return filteredBosses[randomIndex];
+		const eligibleBosses = findEntitiesInAreaAndLevelRange(bosses, maxLevel, true);
+		return generateRandomEntity(eligibleBosses);
 	}
 
 	// Function to calculate experience points gained from defeating an enemy
@@ -1290,6 +1320,7 @@
 
 	// Function to update player stats on the screen
 	function updatePlayerStats() {
+		document.getElementById("playerCurrentArea").textContent = player.currentArea.name;
 		document.getElementById("playerLevel").textContent = player.level;
 		document.getElementById("playerCurrentHP").textContent = player.currentHP;
 		document.getElementById("playerMaxHP").textContent = player.maxHP;
@@ -1408,6 +1439,32 @@
 		updatePlayerStats();
 	}
 
+	// Function to show the areas screen
+	function showAreasScreen() {
+		updateGameInfo(`You are currently in ${player.currentArea.name}.`);
+
+		const areasScreen = document.getElementById("areas-screen");
+		const areaList = document.getElementById("area-list");
+		areaList.innerHTML = "";
+
+		// Display the list of areas
+		for (let i = 0; i < areas.length; i++) {
+			const area = areas[i];
+			const areaButton = document.createElement("button");
+			areaButton.textContent = area.name;
+			areaButton.addEventListener("click", () => {
+				// Update the currentArea property in the player object
+				player.currentArea = area;
+				updateGameInfo(`You have entered the ${area.name}.`);
+				updateGameInfo(`${area.description}.`);
+				updatePlayerStats();
+			});
+			areaList.appendChild(areaButton);
+		}
+	
+		showScreen("areas-screen");
+	}
+
 	// Function to handle the inventory screen
 	function showInventoryScreen() {
 		const inventoryScreen = document.getElementById("inventory-screen");
@@ -1482,7 +1539,7 @@
 		const shopItems = document.getElementById("shop-item-list");
 		shopItems.innerHTML = "";
 		
-		filteredItems = shopItemsList.filter((shopItem) => shopItem.level >= player.level - 15 && shopItem.level <= player.level);
+		filteredItems = itemsList.filter((shopItem) => shopItem.level >= player.level - 15 && shopItem.level <= player.level);
 		
 		// Clean up previous event listeners
 		const buyButton = document.getElementById("btnBuyItem");
@@ -1627,23 +1684,11 @@
 		}
 		showSellScreen();
 	}
-
-	// Function to handle the gamble screen
-	function showGambleScreen() {
-		showScreen("gamble-screen");
-	
-		const gambleAmountInput = document.getElementById("gamble-amount");
-		const gambleButton = document.getElementById("btnGambleMoney");
-	
-		gambleButton.addEventListener("click", () => {
-			const gambleAmount = parseInt(gambleAmountInput.value);
-			gambleMoney(gambleAmount);
-		});
-	}
 	
 	// Function to handle the gambling logic
-	function gambleMoney(amount) {
-		if (amount <= player.money) {
+	function gambleMoney() {
+		const gamblingCost = 10;
+		if (gamblingCost <= player.money) {
 			const symbols = ["🗡️", "🛡️", "🔮", "👑"]; // Array of symbols representing medieval fantasy elements
 			const spinResult = []; // Array to store the spin result
 			
@@ -1658,19 +1703,41 @@
 			
 			if (spinResult[0] === spinResult[1] && spinResult[1] === spinResult[2]) {
 				// Player wins
-				const winnings = amount * 3;
+				const winnings = gamblingCost * 3;
 				player.money += winnings;
 				updateGameInfo("Congratulations! You won " + winnings + " money!");
 			} else {
 				// Player loses
-				player.money -= amount;
-				updateGameInfo("Oh no! You lost " + amount + " money.");
+				player.money -= gamblingCost;
+				updateGameInfo("Oh no! You lost " + gamblingCost + " money.");
 			}
 	
 			updateGameInfo("Your current balance is: " + player.money + " money.");
 			updatePlayerStats();
 		} else {
 			updateGameInfo("Not enough money to gamble.");
+		}
+	}
+
+	function healForMoney() {
+		// Check if the player's HP is already full
+		if (player.currentHP === player.maxHP) {
+			updateGameInfo("Your HP is already full!");
+			return; // Exit the function early to avoid any further actions
+		}
+
+		// Deducting money and increasing health accordingly
+		const healingCost = 10;
+		if (player.money >= healingCost) {
+			player.money -= healingCost;
+			player.currentHP += 10; // Assuming each healing costs 10 money and heals 10 HP
+			if (player.currentHP > player.maxHP) {
+				player.currentHP = player.maxHP; // Ensure the HP doesn't exceed the maxHP
+			}
+			updateGameInfo("You've been healed!");
+			updatePlayerStats();
+		} else {
+			updateGameInfo("You don't have enough money to heal!");
 		}
 	}
 
@@ -1713,53 +1780,62 @@
 		setTimeout(hpLoop, hpDelay);
 	}
 
+	// Function to save player data to localStorage
+	function savePlayerData() {
+		localStorage.setItem("playerData", JSON.stringify(player));
+		alert("Player data saved!");
+	}
+	
+	// Function to load player data from localStorage
+	function loadPlayerData() {
+		const savedData = localStorage.getItem("playerData");
+		if (savedData) {
+			Object.assign(player, JSON.parse(savedData));
+			updatePlayerStats();
+			alert("Player data loaded!");
+		} else {
+			alert("No saved data found!");
+		}
+	}
+	
+	// Function to reset player data
+	function resetPlayerData() {
+		localStorage.removeItem("playerData");
+		location.reload(); // Refresh the page to reset the player object to its initial state
+	}
+
 	// Initialize the game
 	function init() {
 		updatePlayerStats();
 		updateGameInfo("Fantasy Clicker Battles");
 	
 		// Add event listeners to buttons
-		document.getElementById("btnExploration").addEventListener("click", () => {
-			startExploration();
-		});
-	
-		document.getElementById("btnChallenge").addEventListener("click", () => {
-			startChallenge();
-		});
+		document.getElementById("btnExploration").addEventListener("click", startExploration);
+		document.getElementById("btnChallenge").addEventListener("click", startChallenge);
+		document.getElementById("btnMission").addEventListener("click", startMission);
+		document.getElementById("btnEncounter").addEventListener("click", startEncounter);
+		document.getElementById("btnAreas").addEventListener("click", showAreasScreen);
+		document.getElementById("btnInventory").addEventListener("click", showInventoryScreen);
+		document.getElementById("btnBuy").addEventListener("click", showBuyScreen);
+		document.getElementById("btnSell").addEventListener("click", showSellScreen);
+		document.getElementById("btnGamble").addEventListener("click", gambleMoney);
+		document.getElementById("btnHeal").addEventListener("click", healForMoney);
 
-		document.getElementById("btnMission").addEventListener("click", () => {
-			startMission();
-		});
-
-		document.getElementById("btnEncounter").addEventListener("click", () => {
-			startEncounter();
-		});
-
-		document.getElementById("btnInventory").addEventListener("click", () => {
-			showInventoryScreen();
-		});
-	
-		document.getElementById("btnBuy").addEventListener("click", () => {
-			showBuyScreen();
-		});
-	
-		document.getElementById("btnSell").addEventListener("click", () => {
-			showSellScreen();
-		});
-
-		document.getElementById("btnGamble").addEventListener("click", () => {
-			showGambleScreen();
-		});
-
-		document.getElementById("btnLevel").addEventListener("click", () => {
-			player.experience += 9999999999;
+		document.getElementById("btnExperience").addEventListener("click", () => {
+			player.experience += 5000;
+			updateGameInfo("Adding 5000 experience...");
 			checkLevelUp();
 		});
 
 		document.getElementById("btnMoney").addEventListener("click", () => {
-			player.money += 1000;
+			player.money += 5000;
+			updateGameInfo("Adding 5000 money...");
 			updatePlayerStats();
 		});
+
+		document.getElementById("btnSave").addEventListener("click", savePlayerData);
+		document.getElementById("btnLoad").addEventListener("click", loadPlayerData);
+		document.getElementById("btnReset").addEventListener("click", resetPlayerData);
 
 		const backToMainButtons = document.querySelectorAll(".btnBackToMain");
 
