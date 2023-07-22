@@ -133,6 +133,8 @@
 				</div>
 				<div class="flex-container">
 					<button id="btnAreas">🗺️ Areas</button>
+					<button id="btnStats">📊 Stats</button>
+					<button id="btnEquipped">🛡️ Equipped</button>
 				</div>
 				<div class="flex-container">
 					<button id="btnInventory">🎒 Inventory</button>
@@ -182,13 +184,35 @@
 				<div id="sell-item-list"></div>
 			</div>
 
+			<div id="stats-screen" class="hidden">
+				<button class="btnBackToMain">🔙 Back to Main</button>
+				<h2>Player Stats</h2>
+				<div class="stat-list">
+					<ul id="playerStatsList"></ul>
+				</div>
+			</div>
+
+			<div id="equipped-screen" class="hidden">
+				<button class="btnBackToMain">🔙 Back to Main</button>
+				<h2>Equipped Items</h2>
+				<div class="equipped-list">
+					<ul id="equippedItemsList"></ul>
+				</div>
+			</div>
+
 			<div id="gather-screen" class="hidden">
 				<button class="btnBackToMain">🔙 Back to Main</button>
 				<h2>Gather Resources</h2>
-				<button id="btnGatherr">Gather</button>
-			
-				<!-- Display gathering XP -->
 				<p id="gathering-xp">Gathering XP: 0</p>
+				<button id="btnGatherr">Gather</button>
+				<div id="gather-item-list"></div>
+			</div>
+
+			<div id="crafting-screen" class="hidden">
+				<button class="btnBackToMain">🔙 Back to Main</button>
+				<h2>Crafting</h2>
+				<p id="crafting-xp">Crafting XP: 0</p>
+				<div id="crafting-recipes-list"></div>
 			</div>
 
 		</div>
@@ -200,16 +224,8 @@
 					🎚️: <span id="playerLevel"></span> |
 					💖: <span id="playerCurrentHP"></span>/<span id="playerMaxHP"></span> |
 					💚: <span id="playerRegeneration"></span> |
-					⚔️: <span id="playerDamage"></span> |
-					🛡️: <span id="playerDefense"></span> |
-					🎯: <span id="playerPrecision"></span> |
-					🌪️: <span id="playerEvasion"></span> |
-					💥: <span id="playerCritical"></span> |
-					🔒: <span id="playerResistance"></span> |
 					🌟: <span id="playerExperience"></span> |
-					💰: <span id="playerMoney"></span> |
-					💫: <span id="playerBonusLoot"></span> |
-					🏆: <span id="playerBonusExp"></span>
+					💰: <span id="playerMoney"></span>
 				</p>
 			</div>
 			<div id="game-info">
@@ -246,12 +262,22 @@
 			You can gather X items from low to high levels
 			You can sell them
 			Add a gather level for more efficiency
+			Critical Success Failure, gather more if lower level
+			Add gatherers ?
 
 		Craft : buy crafting items / make recipes /
 			You can use only 1 crafted item at the same time, it improves one stat only, and last for a few fights
 			Three ingredients, one is the same for every recipe, one for the stat upgraded and one for the level
-			You only gather the "level" ingredient, the rest is bought or looted
-			Add a craft level for more efficiency
+			You only gather the "level" ingredient, the rest is bought or looted ?
+			Add a craft level for more efficiency, Critical Success Failure
+			You may sell them as well to make a little profit
+
+		Upgrading : you can upgrade items
+		   Display the list of items
+		   For each item, make an upgrading cost depending on its value
+		   You have 50% chance of upgrading one level then 25 then 12 then...
+		   You can also go lower but you have 50% of gowing lower then 25 then 12...
+		   Save just a stat containg the upgrading level (base 0) on each items
 
 		Spells : handle your spells, you can choose where to spend points, level 5 max for each spell
 			Make 5 generic spells, use them in battle, add them for enemies
@@ -304,112 +330,126 @@
 
 	<script>
 
+	// Helper function to get a random number between min and max (inclusive)
+	function getRandomNumber(min, max) {
+		return Math.floor(Math.random() * (max - min + 1)) + min;
+	}
+
 	const gameHash = window.location.hash.slice(1);
 	const game = gameHash;
 
+	const levelUpRequirements = [
+		{ level: 2, experience: 100 },
+		{ level: 3, experience: 300 },
+		{ level: 4, experience: 600 },
+		{ level: 5, experience: 1000 },
+		{ level: 6, experience: 1500 },
+		{ level: 7, experience: 2100 },
+		{ level: 8, experience: 2800 },
+		{ level: 9, experience: 3600 },
+		{ level: 10, experience: 4500 },
+		{ level: 11, experience: 5500 },
+		{ level: 12, experience: 6600 },
+		{ level: 13, experience: 7800 },
+		{ level: 14, experience: 9100 },
+		{ level: 15, experience: 10500 },
+		{ level: 16, experience: 12000 },
+		{ level: 17, experience: 13600 },
+		{ level: 18, experience: 15300 },
+		{ level: 19, experience: 17100 },
+		{ level: 20, experience: 19000 },
+		{ level: 21, experience: 21000 },
+		{ level: 22, experience: 23100 },
+		{ level: 23, experience: 25300 },
+		{ level: 24, experience: 27600 },
+		{ level: 25, experience: 30000 },
+		{ level: 26, experience: 32500 },
+		{ level: 27, experience: 35100 },
+		{ level: 28, experience: 37800 },
+		{ level: 29, experience: 40600 },
+		{ level: 30, experience: 43500 },
+		{ level: 31, experience: 46500 },
+		{ level: 32, experience: 49600 },
+		{ level: 33, experience: 52800 },
+		{ level: 34, experience: 56100 },
+		{ level: 35, experience: 59500 },
+		{ level: 36, experience: 63000 },
+		{ level: 37, experience: 66600 },
+		{ level: 38, experience: 70300 },
+		{ level: 39, experience: 74100 },
+		{ level: 40, experience: 78000 },
+		{ level: 41, experience: 82000 },
+		{ level: 42, experience: 86100 },
+		{ level: 43, experience: 90300 },
+		{ level: 44, experience: 94600 },
+		{ level: 45, experience: 99000 },
+		{ level: 46, experience: 103500 },
+		{ level: 47, experience: 108100 },
+		{ level: 48, experience: 112800 },
+		{ level: 49, experience: 117600 },
+		{ level: 50, experience: 122500 },
+		{ level: 51, experience: 127500 },
+		{ level: 52, experience: 132600 },
+		{ level: 53, experience: 137800 },
+		{ level: 54, experience: 143100 },
+		{ level: 55, experience: 148500 },
+		{ level: 56, experience: 154000 },
+		{ level: 57, experience: 159600 },
+		{ level: 58, experience: 165300 },
+		{ level: 59, experience: 171100 },
+		{ level: 60, experience: 177000 },
+		{ level: 61, experience: 183000 },
+		{ level: 62, experience: 189100 },
+		{ level: 63, experience: 195300 },
+		{ level: 64, experience: 201600 },
+		{ level: 65, experience: 208000 },
+		{ level: 66, experience: 214500 },
+		{ level: 67, experience: 221100 },
+		{ level: 68, experience: 227800 },
+		{ level: 69, experience: 234600 },
+		{ level: 70, experience: 241500 },
+		{ level: 71, experience: 248500 },
+		{ level: 72, experience: 255600 },
+		{ level: 73, experience: 262800 },
+		{ level: 74, experience: 270100 },
+		{ level: 75, experience: 277500 },
+		{ level: 76, experience: 285000 },
+		{ level: 77, experience: 292600 },
+		{ level: 78, experience: 300300 },
+		{ level: 79, experience: 308100 },
+		{ level: 80, experience: 316000 },
+		{ level: 81, experience: 324000 },
+		{ level: 82, experience: 332100 },
+		{ level: 83, experience: 340300 },
+		{ level: 84, experience: 348600 },
+		{ level: 85, experience: 357000 },
+		{ level: 86, experience: 365500 },
+		{ level: 87, experience: 374100 },
+		{ level: 88, experience: 382800 },
+		{ level: 89, experience: 391600 },
+		{ level: 90, experience: 400500 },
+		{ level: 91, experience: 409500 },
+		{ level: 92, experience: 418600 },
+		{ level: 93, experience: 427800 },
+		{ level: 94, experience: 437100 },
+		{ level: 95, experience: 446500 },
+		{ level: 96, experience: 456000 },
+		{ level: 97, experience: 465600 },
+		{ level: 98, experience: 475300 },
+		{ level: 99, experience: 485100 },
+		{ level: 100, experience: 495000 }
+	];
+
+	const baseIngredient = { name: "Base Ingredient", icon: "🧪", type: "baseIngredient" }; // The base ingredient for all recipes
+
+	const statUpgrades = [
+		{ stat: "damage", item: { name: "Upgrade damageStat", icon: "🌿", type "statUpgrade" } }, // @todo stat: "damageStat"
+		{ stat: "defense", item: { name: "Upgrade defenseStat", icon: "🔮" } }
+		// Add more stat upgrades as needed
+	];
+
 	const gameConfig = {
 		fantasyClickerBattles: {
-			levelUpRequirements:[
-				{ level: 2, experience: 100 },
-				{ level: 3, experience: 300 },
-				{ level: 4, experience: 600 },
-				{ level: 5, experience: 1000 },
-				{ level: 6, experience: 1500 },
-				{ level: 7, experience: 2100 },
-				{ level: 8, experience: 2800 },
-				{ level: 9, experience: 3600 },
-				{ level: 10, experience: 4500 },
-				{ level: 11, experience: 5500 },
-				{ level: 12, experience: 6600 },
-				{ level: 13, experience: 7800 },
-				{ level: 14, experience: 9100 },
-				{ level: 15, experience: 10500 },
-				{ level: 16, experience: 12000 },
-				{ level: 17, experience: 13600 },
-				{ level: 18, experience: 15300 },
-				{ level: 19, experience: 17100 },
-				{ level: 20, experience: 19000 },
-				{ level: 21, experience: 21000 },
-				{ level: 22, experience: 23100 },
-				{ level: 23, experience: 25300 },
-				{ level: 24, experience: 27600 },
-				{ level: 25, experience: 30000 },
-				{ level: 26, experience: 32500 },
-				{ level: 27, experience: 35100 },
-				{ level: 28, experience: 37800 },
-				{ level: 29, experience: 40600 },
-				{ level: 30, experience: 43500 },
-				{ level: 31, experience: 46500 },
-				{ level: 32, experience: 49600 },
-				{ level: 33, experience: 52800 },
-				{ level: 34, experience: 56100 },
-				{ level: 35, experience: 59500 },
-				{ level: 36, experience: 63000 },
-				{ level: 37, experience: 66600 },
-				{ level: 38, experience: 70300 },
-				{ level: 39, experience: 74100 },
-				{ level: 40, experience: 78000 },
-				{ level: 41, experience: 82000 },
-				{ level: 42, experience: 86100 },
-				{ level: 43, experience: 90300 },
-				{ level: 44, experience: 94600 },
-				{ level: 45, experience: 99000 },
-				{ level: 46, experience: 103500 },
-				{ level: 47, experience: 108100 },
-				{ level: 48, experience: 112800 },
-				{ level: 49, experience: 117600 },
-				{ level: 50, experience: 122500 },
-				{ level: 51, experience: 127500 },
-				{ level: 52, experience: 132600 },
-				{ level: 53, experience: 137800 },
-				{ level: 54, experience: 143100 },
-				{ level: 55, experience: 148500 },
-				{ level: 56, experience: 154000 },
-				{ level: 57, experience: 159600 },
-				{ level: 58, experience: 165300 },
-				{ level: 59, experience: 171100 },
-				{ level: 60, experience: 177000 },
-				{ level: 61, experience: 183000 },
-				{ level: 62, experience: 189100 },
-				{ level: 63, experience: 195300 },
-				{ level: 64, experience: 201600 },
-				{ level: 65, experience: 208000 },
-				{ level: 66, experience: 214500 },
-				{ level: 67, experience: 221100 },
-				{ level: 68, experience: 227800 },
-				{ level: 69, experience: 234600 },
-				{ level: 70, experience: 241500 },
-				{ level: 71, experience: 248500 },
-				{ level: 72, experience: 255600 },
-				{ level: 73, experience: 262800 },
-				{ level: 74, experience: 270100 },
-				{ level: 75, experience: 277500 },
-				{ level: 76, experience: 285000 },
-				{ level: 77, experience: 292600 },
-				{ level: 78, experience: 300300 },
-				{ level: 79, experience: 308100 },
-				{ level: 80, experience: 316000 },
-				{ level: 81, experience: 324000 },
-				{ level: 82, experience: 332100 },
-				{ level: 83, experience: 340300 },
-				{ level: 84, experience: 348600 },
-				{ level: 85, experience: 357000 },
-				{ level: 86, experience: 365500 },
-				{ level: 87, experience: 374100 },
-				{ level: 88, experience: 382800 },
-				{ level: 89, experience: 391600 },
-				{ level: 90, experience: 400500 },
-				{ level: 91, experience: 409500 },
-				{ level: 92, experience: 418600 },
-				{ level: 93, experience: 427800 },
-				{ level: 94, experience: 437100 },
-				{ level: 95, experience: 446500 },
-				{ level: 96, experience: 456000 },
-				{ level: 97, experience: 465600 },
-				{ level: 98, experience: 475300 },
-				{ level: 99, experience: 485100 },
-				{ level: 100, experience: 495000 }
-			],
 			areas: [
 				{
 				  name: "Shimmering Meadows",
@@ -766,16 +806,16 @@
 				{ name: "Celestial Garb", type: "stat", stat: "defense", defense: 100, icon: "🌟", level: 100 }
 			],
 			gatheringItems: [
-			  { name: "Healing Herb", type: "gathering", level: 1, icon: "🌿" },
-			  { name: "Mystic Mushroom", type: "gathering", level: 5, icon: "🍄" },
-			  { name: "Silverleaf", type: "gathering", level: 10, icon: "🍃" },
-			  { name: "Dragon's Tongue", type: "gathering", level: 20, icon: "🐉" },
-			  { name: "Moonflower", type: "gathering", level: 30, icon: "🌼" },
-			  { name: "Ghost Orchid", type: "gathering", level: 40, icon: "👻" },
-			  { name: "Basilisk's Breath", type: "gathering", level: 50, icon: "🐍" },
-			  { name: "Phoenix Feather", type: "gathering", level: 60, icon: "🔥" },
-			  { name: "Witch's Thistle", type: "gathering", level: 70, icon: "🧙‍♀️" },
-			  { name: "Eternal Blossom", type: "gathering", level: 80, icon: "🌸" },
+				{ name: "Healing Herb", type: "gathering", level: 1, icon: "🌿" },
+				{ name: "Mystic Mushroom", type: "gathering", level: 2, icon: "🍄" },
+				{ name: "Silverleaf", type: "gathering", level: 3, icon: "🍃" },
+				{ name: "Dragon's Tongue", type: "gathering", level: 4, icon: "🐉" },
+				{ name: "Moonflower", type: "gathering", level: 5, icon: "🌼" },
+				{ name: "Ghost Orchid", type: "gathering", level: 6, icon: "👻" },
+				{ name: "Basilisk's Breath", type: "gathering", level: 7, icon: "🐍" },
+				{ name: "Phoenix Feather", type: "gathering", level: 8, icon: "🔥" },
+				{ name: "Witch's Thistle", type: "gathering", level: 9, icon: "🧙‍♀️" },
+				{ name: "Eternal Blossom", type: "gathering", level: 10, icon: "🌸" }
 			],
 			peopleInNeed: [
 				"The distressed villagers",
@@ -842,7 +882,6 @@
 
 	const gameConfigData = gameConfig[game];
 
-	const levelUpRequirements = gameConfigData.levelUpRequirements;
 	const areas = gameConfigData.areas;
 	const enemies = gameConfigData.enemies;
 	const bosses = gameConfigData.bosses;
@@ -857,6 +896,7 @@
 
 	const hpDelay = 200;
 
+	// Player
 	const player = {
 		name: "Player",
 		level: 1,
@@ -888,6 +928,147 @@
 		craftingXP: 0
 	};
 
+	// Function to regenerate player's HP every second
+	function regenerateHP() {
+		if (player.currentHP < player.maxHP) {
+			player.currentHP = Math.min(player.maxHP, player.currentHP + player.regeneration + calculateEquippedRegeneration());
+			updatePlayerCurrentHP();
+		}
+	}
+	
+	// Function to update player's HP display
+	function updatePlayerCurrentHP() {
+		const currentHPElement = document.getElementById("playerCurrentHP");
+		currentHPElement.textContent = player.currentHP;
+	}
+
+	function hpLoop() {
+		regenerateHP();
+
+		// Wait for a specified delay before displaying the next message
+		setTimeout(hpLoop, hpDelay);
+	}
+
+	// Function to handle leveling up and increasing player stats
+	function levelUp() {
+		player.maxHP += 5;
+		player.currentHP = player.maxHP;
+		player.damage += 2;
+		player.defense += 2;
+		if (player.level % 5 == 0) player.precision += 1;
+		if (player.level % 5 == 0) player.evasion += 1;
+		if (player.level % 10 == 0) player.regeneration += 1;
+		if (player.level % 5 == 0) player.critical += 1;
+		if (player.level % 5 == 0) player.resistance += 1;
+		updateGameInfo(`Congratulations! You leveled up to level ${player.level}.`);
+		updatePlayerStats();
+	}
+
+	function checkLevelUp() {
+		const currentLevel = player.level;
+		const experiencePoints = player.experience;
+
+		for (let i = 0; i < levelUpRequirements.length; i++) {
+			const requirement = levelUpRequirements[i];
+			if (currentLevel < requirement.level && experiencePoints >= requirement.experience) {
+				player.level = requirement.level;
+				player.experience = requirement.experience;
+				levelUp();
+				updatePlayerStats();
+				break;
+			}
+		}
+	}
+
+	// Function to update player stats on the screen
+	function updatePlayerStats() {
+		document.getElementById("playerCurrentArea").textContent = player.currentArea.name;
+		document.getElementById("playerLevel").textContent = player.level;
+		document.getElementById("playerCurrentHP").textContent = player.currentHP;
+		document.getElementById("playerMaxHP").textContent = player.maxHP;
+		document.getElementById("playerRegeneration").textContent = `${player.regeneration} (+${calculateEquippedRegeneration()})`;
+		document.getElementById("playerExperience").textContent = `${player.experience} / ${getNextLevelExperience()}`;
+		document.getElementById("playerMoney").textContent = player.money;
+		updatePlayerCurrentHP();
+	}
+
+	function getNextLevelExperience() {
+		const nextLevelRequirement = levelUpRequirements.find((requirement) => requirement.level === player.level + 1);
+		return nextLevelRequirement ? nextLevelRequirement.experience : "MAX";
+	}
+
+	function calculateEquippedDefense() {
+		if (player.defenseItem) {
+			return player.defenseItem.defense;
+		} else {
+			return 0;
+		}
+	}
+
+	function calculateEquippedDamage() {
+		if (player.damageItem) {
+			return player.damageItem.damage;
+		} else {
+			return 0;
+		}
+	}
+
+	function calculateEquippedRegeneration() {
+		if (player.renerationItem) {
+			return player.renerationItem.regeneration;
+		} else {
+			return 0;
+		}
+	}
+
+	function calculateEquippedPrecision() {
+		if (player.precisionItem) {
+			return player.precisionItem.precision;
+		} else {
+			return 0;
+		}
+	}
+
+	function calculateEquippedEvasion() {
+		if (player.evasionItem) {
+			return player.evasionItem.evasion;
+		} else {
+			return 0;
+		}
+	}
+
+	function calculateEquippedCritical() {
+		if (player.criticalItem) {
+			return player.criticalItem.critical;
+		} else {
+			return 0;
+		}
+	}
+
+	function calculateEquippedResistance() {
+		if (player.resistanceItem) {
+			return player.resistanceItem.resistance;
+		} else {
+			return 0;
+		}
+	}
+
+	function calculateEquippedBonusExp() {
+		if (player.bonusExpItem) {
+			return player.bonusExpItem.bonusExp;
+		} else {
+			return 0;
+		}
+	}
+
+	function calculateEquippedBonusLoot() {
+		if (player.bonusLootItem) {
+			return player.bonusLootItem.bonusLoot;
+		} else {
+			return 0;
+		}
+	}
+
 	const getItemCost = (item) => {
 		const { type, stat, level } = item;
 	
@@ -917,6 +1098,7 @@
 		}
 	};
 
+	// Enemies
 	// instead of getter fill array ?
 	// @idea maybe do bonuses for each area like first enemies are stronger in evasion, then in critical, then in absorbtion...
 	const getEnemyMaxHP = (enemy) => {
@@ -1031,165 +1213,7 @@
 	function generateEnemyInfo(enemy) {
 		return `An enemy ${enemy.icon} ${enemy.name} has appeared!\n` +
 		   `It has ${getEnemyMaxHP(enemy)} HP, ${getEnemyDamage(enemy)} DMG, ${getEnemyDefense(enemy)} DEF, ${getEnemyPrecision(enemy)} ACC, ${getEnemyEvasion(enemy)} EVA, ${getEnemyCritical(enemy)} CRI, ${getEnemyResistance(enemy)} ABS`;
-	}
-
-	function performBattle(enemy) {
-		updateGameInfo(generateEnemyInfo(enemy));
-		enemy.currentHP = getEnemyMaxHP(enemy);
-		battle(enemy);
-		battleAndCheckResult(enemy);
-	}
-
-	function battleAndCheckResult(enemy) {
-		if (player.currentHP > 0) {
-			if (enemy.currentHP <= 0) {
-				const experiencePoints = calculateExperiencePoints(enemy);
-				player.experience += experiencePoints;
-				updatePlayerStats();
-				updateGameInfo(`You defeated the ${enemy.icon} ${enemy.name}!`);
-				checkLevelUp();
-			} else {
-				updateGameInfo(`The battle with the ${enemy.icon} ${enemy.name} ended prematurely. The enemy escaped!`);
-			}
-		} else {
-		  updateGameInfo("You were defeated!");
-		}
-	}
-
-	function startExploration() {
-		updateGameInfo(`Starting exploration...`);
-		const enemy = generateRandomEnemy(player.level);
-		performBattle(enemy);
-	}
-
-	function startChallenge() {
-		updateGameInfo("Starting the challenge...");
-		const boss = generateRandomBoss(player.level);
-		performBattle(boss);
-	}
-
-	function startMission() {
-		updateGameInfo("Starting the mission...");
-		const enemy = generateRandomEnemy(player.level - 2);
-		const numEnemies = getRandomNumber(2, 3);
-		updateGameInfo(generateRandomIntro(enemy.name, numEnemies));
-		let totalReward = 0;
-		let isMissionFailed = false;
-
-		for (let i = 0; i < numEnemies; i++) {
-			performBattle(enemy);
-
-			if (player.currentHP <= 0) {
-				isMissionFailed = true;
-				break;
-			}
-
-			totalReward += calculateMissionReward(enemy, numEnemies);
-		}
-
-		if (!isMissionFailed) {
-			updateGameInfo(`Mission completed! Total reward: ${totalReward} coins.`);
-			player.money += totalReward;
-			updatePlayerStats();
-		} else {
-			updateGameInfo("Mission failed! You were defeated.");
-		}
-	}
-
-	function startEncounter() {
-		updateGameInfo("You engage in the encounter...");
-		const numEnemies = getRandomNumber(2, 3);
-		let defeatedEnemies = 0;
-		let isEncounterFailed = false;
-
-		for (let i = 0; i < numEnemies; i++) {
-			const enemy = generateRandomEnemy(player.level - 2);
-			performBattle(enemy);
-
-			if (player.currentHP <= 0) {
-				isEncounterFailed = true;
-				break;
-			}
-
-			if (enemy.currentHP <= 0) {
-				defeatedEnemies++;
-			} else {
-				break;
-			}
-		}
-
-		updateGameInfo(`Encounter completed!`);
-
-		if (isEncounterFailed) {
-			updateGameInfo("Encounter failed! You were defeated.");
-		} else {
-			updateGameInfo("Encounter completed!");
-		
-			if (player.currentHP > 0) {
-				for (let i = 0; i < defeatedEnemies; i++) {
-					if (Math.random() < 0.5) {
-						const loot = generateLoot(player.level);
-						if (loot){
-							player.inventory.push(loot);
-							updateGameInfo(`You received ${loot.name} as loot.`);
-						}
-					}
-				}
-			}
-		}
-	}
-
-	function generateRandomIntro(enemyType, numEnemies) {
-		const personInNeed = peopleInNeed[Math.floor(Math.random() * peopleInNeed.length)];
-		const aidRequest = aidRequests[Math.floor(Math.random() * aidRequests.length)];
-		const enemyDescriptor = enemyDescriptors[Math.floor(Math.random() * enemyDescriptors.length)];
-		const groupPhrase = groupPhrases[Math.floor(Math.random() * groupPhrases.length)];
-		const actionVerb = actionVerbs[Math.floor(Math.random() * actionVerbs.length)];
-		const location = locations[Math.floor(Math.random() * locations.length)];
-
-		return `${personInNeed} ${aidRequest}! ${groupPhrase} ${numEnemies} ${enemyDescriptor} ${enemyType} is ${actionVerb} ${location}!`;
-	}
-
-	function calculateMissionReward(enemy, numEnemies) {
-		const enemyLevel = enemy.level;
-		const playerLevel = player.level;
-		
-		const baseReward = numEnemies * 10; // Base reward based on the number of enemies
-		
-		// Calculate the level difference modifier
-		const levelDifference = playerLevel - enemyLevel;
-		let levelModifier = 1;
-		
-		if (levelDifference > 0) {
-			levelModifier -= levelDifference * 0.1;
-		}
-		
-		// Calculate the final reward
-		const finalReward = Math.max(1, Math.round(baseReward * levelModifier));
-		
-		return finalReward;
-	}
-	
-	// Helper function to get a random number between min and max (inclusive)
-	function getRandomNumber(min, max) {
-		return Math.floor(Math.random() * (max - min + 1)) + min;
-	}
-
-	function checkLevelUp() {
-		const currentLevel = player.level;
-		const experiencePoints = player.experience;
-
-		for (let i = 0; i < levelUpRequirements.length; i++) {
-			const requirement = levelUpRequirements[i];
-			if (currentLevel < requirement.level && experiencePoints >= requirement.experience) {
-				player.level = requirement.level;
-				player.experience = requirement.experience;
-				levelUp();
-				updatePlayerStats();
-				break;
-			}
-		}
-	}
+	};
 
 	// Function to generate a random enemy based on player's level
 	function findEntitiesInAreaAndLevelRange(entities, maxLevel, isBoss = false) {
@@ -1224,27 +1248,6 @@
 	function generateRandomBoss(maxLevel) {
 		const eligibleBosses = findEntitiesInAreaAndLevelRange(bosses, maxLevel, true);
 		return generateRandomEntity(eligibleBosses);
-	}
-
-	// Function to calculate experience points gained from defeating an enemy
-	function calculateExperiencePoints(enemy) {
-		const baseExperience = 25;
-		const enemyLevel = enemy.level;
-
-		// Calculate the level difference between player and enemy
-		const levelDifference = player.level - enemy.level;
-
-		// Determine the adjustment factor based on the level difference
-		const adjustmentFactor = levelDifference >= 0 ? 1 / (1 + levelDifference) : 1 - levelDifference / playerLevel;
-
-		// Apply the adjustment factor to the experience points
-		const experiencePoints = Math.floor(baseExperience * enemyLevel * adjustmentFactor * (1 + player.bonusExp / 100));
-
-		return experiencePoints;
-	}
-
-	function calculateDamageReduction(defense){
-		return defense / (defense + 50);
 	}
 
 	// Function to handle the battle between the player and an enemy
@@ -1346,6 +1349,10 @@
 		}
 	}
 
+	function calculateDamageReduction(defense){
+		return defense / (defense + 50);
+	}
+
 	function calculateHitChance(attackerAttack, defenderDefense, attackerPrecision, defenderEvasion) {
 		const baseHitChance = 0.8; // Base hit chance value
 		const maxHitChance = 0.95; // Maximum hit chance value
@@ -1384,125 +1391,158 @@
 		return filteredItems[randomIndex];
 	}
 
-	// Function to update player stats on the screen
-	function updatePlayerStats() {
-		document.getElementById("playerCurrentArea").textContent = player.currentArea.name;
-		document.getElementById("playerLevel").textContent = player.level;
-		document.getElementById("playerCurrentHP").textContent = player.currentHP;
-		document.getElementById("playerMaxHP").textContent = player.maxHP;
-		document.getElementById("playerRegeneration").textContent = `${player.regeneration} (+${calculateEquippedRegeneration()})`;
-		document.getElementById("playerDamage").textContent = `${player.damage} (+${calculateEquippedDamage()})`;
-		document.getElementById("playerDefense").textContent = `${player.defense} (+${calculateEquippedDefense()})`;
-		document.getElementById("playerPrecision").textContent = `${player.precision} (+${calculateEquippedPrecision()})`;
-		document.getElementById("playerEvasion").textContent = `${player.evasion} (+${calculateEquippedEvasion()})`;
-		document.getElementById("playerCritical").textContent = `${player.critical} (+${calculateEquippedCritical()})`;
-		document.getElementById("playerResistance").textContent = `${player.resistance} (+${calculateEquippedResistance()})`;
-		document.getElementById("playerExperience").textContent = `${player.experience} / ${getNextLevelExperience()}`;
-		document.getElementById("playerMoney").textContent = player.money;
-		document.getElementById("playerBonusExp").textContent = `${player.bonusExp} (+${calculateEquippedBonusExp()})`;
-		document.getElementById("playerBonusLoot").textContent = `${player.bonusLoot} (+${calculateEquippedBonusLoot()})`;
-		updatePlayerCurrentHP();
+	function performBattle(enemy) {
+		updateGameInfo(generateEnemyInfo(enemy));
+		enemy.currentHP = getEnemyMaxHP(enemy);
+		battle(enemy);
+		battleAndCheckResult(enemy);
 	}
 
-	function getNextLevelExperience() {
-		const nextLevelRequirement = levelUpRequirements.find((requirement) => requirement.level === player.level + 1);
-		return nextLevelRequirement ? nextLevelRequirement.experience : "MAX";
-	}
-
-	function calculateEquippedDefense() {
-		if (player.defenseItem) {
-			return player.defenseItem.defense;
+	function battleAndCheckResult(enemy) {
+		if (player.currentHP > 0) {
+			if (enemy.currentHP <= 0) {
+				const experiencePoints = calculateExperiencePoints(enemy);
+				player.experience += experiencePoints;
+				updatePlayerStats();
+				updateGameInfo(`You defeated the ${enemy.icon} ${enemy.name}!`);
+				checkLevelUp();
+			} else {
+				updateGameInfo(`The battle with the ${enemy.icon} ${enemy.name} ended prematurely. The enemy escaped!`);
+			}
 		} else {
-			return 0;
+		  updateGameInfo("You were defeated!");
 		}
 	}
 
-	function calculateEquippedDamage() {
-		if (player.damageItem) {
-			return player.damageItem.damage;
+	// Function to calculate experience points gained from defeating an enemy
+	function calculateExperiencePoints(enemy) {
+		const baseExperience = 25;
+		const enemyLevel = enemy.level;
+
+		// Calculate the level difference between player and enemy
+		const levelDifference = player.level - enemy.level;
+
+		// Determine the adjustment factor based on the level difference
+		const adjustmentFactor = levelDifference >= 0 ? 1 / (1 + levelDifference) : 1 - levelDifference / playerLevel;
+
+		// Apply the adjustment factor to the experience points
+		const experiencePoints = Math.floor(baseExperience * enemyLevel * adjustmentFactor * (1 + player.bonusExp / 100));
+
+		return experiencePoints;
+	}
+
+	function startExploration() {
+		updateGameInfo(`Starting exploration...`);
+		const enemy = generateRandomEnemy(player.level);
+		performBattle(enemy);
+	}
+
+	function startChallenge() {
+		updateGameInfo("Starting the challenge...");
+		const boss = generateRandomBoss(player.level);
+		performBattle(boss);
+	}
+
+	function startMission() {
+		updateGameInfo("Starting the mission...");
+		const enemy = generateRandomEnemy(player.level - 2);
+		const numEnemies = getRandomNumber(2, 3);
+		updateGameInfo(generateRandomIntro(enemy.name, numEnemies));
+		let totalReward = 0;
+		let isMissionFailed = false;
+
+		for (let i = 0; i < numEnemies; i++) {
+			performBattle(enemy);
+
+			if (player.currentHP <= 0) {
+				isMissionFailed = true;
+				break;
+			}
+
+			totalReward += calculateMissionReward(enemy, numEnemies);
+		}
+
+		if (!isMissionFailed) {
+			updateGameInfo(`Mission completed! Total reward: ${totalReward} coins.`);
+			player.money += totalReward;
+			updatePlayerStats();
 		} else {
-			return 0;
+			updateGameInfo("Mission failed! You were defeated.");
 		}
 	}
 
-	function calculateEquippedRegeneration() {
-		if (player.renerationItem) {
-			return player.renerationItem.regeneration;
-		} else {
-			return 0;
+	function generateRandomIntro(enemyType, numEnemies) {
+		const personInNeed = peopleInNeed[Math.floor(Math.random() * peopleInNeed.length)];
+		const aidRequest = aidRequests[Math.floor(Math.random() * aidRequests.length)];
+		const enemyDescriptor = enemyDescriptors[Math.floor(Math.random() * enemyDescriptors.length)];
+		const groupPhrase = groupPhrases[Math.floor(Math.random() * groupPhrases.length)];
+		const actionVerb = actionVerbs[Math.floor(Math.random() * actionVerbs.length)];
+		const location = locations[Math.floor(Math.random() * locations.length)];
+
+		return `${personInNeed} ${aidRequest}! ${groupPhrase} ${numEnemies} ${enemyDescriptor} ${enemyType} is ${actionVerb} ${location}!`;
+	}
+
+	function calculateMissionReward(enemy, numEnemies) {
+		const enemyLevel = enemy.level;
+		const playerLevel = player.level;
+		
+		const baseReward = numEnemies * 10; // Base reward based on the number of enemies
+		
+		// Calculate the level difference modifier
+		const levelDifference = playerLevel - enemyLevel;
+		let levelModifier = 1;
+		
+		if (levelDifference > 0) {
+			levelModifier -= levelDifference * 0.1;
 		}
+		
+		// Calculate the final reward
+		const finalReward = Math.max(1, Math.round(baseReward * levelModifier));
+		
+		return finalReward;
 	}
 
-	function calculateEquippedPrecision() {
-		if (player.precisionItem) {
-			return player.precisionItem.precision;
-		} else {
-			return 0;
+	function startEncounter() {
+		updateGameInfo("You engage in the encounter...");
+		const numEnemies = getRandomNumber(2, 3);
+		let defeatedEnemies = 0;
+		let isEncounterFailed = false;
+
+		for (let i = 0; i < numEnemies; i++) {
+			const enemy = generateRandomEnemy(player.level - 2);
+			performBattle(enemy);
+
+			if (player.currentHP <= 0) {
+				isEncounterFailed = true;
+				break;
+			}
+
+			if (enemy.currentHP <= 0) {
+				defeatedEnemies++;
+			} else {
+				break;
+			}
 		}
-	}
 
-	function calculateEquippedEvasion() {
-		if (player.evasionItem) {
-			return player.evasionItem.evasion;
+		updateGameInfo(`Encounter completed!`);
+
+		if (isEncounterFailed) {
+			updateGameInfo("Encounter failed! You were defeated.");
 		} else {
-			return 0;
+			updateGameInfo("Encounter completed!");
+		
+			if (player.currentHP > 0) {
+				for (let i = 0; i < defeatedEnemies; i++) {
+					if (Math.random() < 0.5) {
+						const loot = generateLoot(player.level);
+						if (loot){
+							player.inventory.push(loot);
+							updateGameInfo(`You received ${loot.name} as loot.`);
+						}
+					}
+				}
+			}
 		}
-	}
-
-	function calculateEquippedCritical() {
-		if (player.criticalItem) {
-			return player.criticalItem.critical;
-		} else {
-			return 0;
-		}
-	}
-
-	function calculateEquippedResistance() {
-		if (player.resistanceItem) {
-			return player.resistanceItem.resistance;
-		} else {
-			return 0;
-		}
-	}
-
-	function calculateEquippedBonusExp() {
-		if (player.bonusExpItem) {
-			return player.bonusExpItem.bonusExp;
-		} else {
-			return 0;
-		}
-	}
-
-	function calculateEquippedBonusLoot() {
-		if (player.bonusLootItem) {
-			return player.bonusLootItem.bonusLoot;
-		} else {
-			return 0;
-		}
-	}
-
-	// Function to update the game information
-	function updateGameInfo(message) {
-		const gameInfoElement = document.getElementById("game-info");
-		const messageElement = document.createElement("div");
-		messageElement.innerHTML = message;
-		messageElement.classList.add("game-message"); // Apply a CSS class for styling
-		gameInfoElement.insertBefore(messageElement, gameInfoElement.firstChild);
-	}
-
-	// Function to handle leveling up and increasing player stats
-	function levelUp() {
-		player.maxHP += 5;
-		player.currentHP = player.maxHP;
-		player.damage += 2;
-		player.defense += 2;
-		if (player.level % 5 == 0) player.precision += 1;
-		if (player.level % 5 == 0) player.evasion += 1;
-		if (player.level % 10 == 0) player.regeneration += 1;
-		if (player.level % 5 == 0) player.critical += 1;
-		if (player.level % 5 == 0) player.resistance += 1;
-		updateGameInfo(`Congratulations! You leveled up to level ${player.level}.`);
-		updatePlayerStats();
 	}
 
 	// Function to show the areas screen
@@ -1531,35 +1571,46 @@
 		showScreen("areas-screen");
 	}
 
+	// Function to show the gather screen
 	function showGatherScreen() {
+		const gatherItems = document.getElementById("gather-item-list");
+		gatherItems.innerHTML = "";
+	
 		updateGameInfo("You are now gathering resources.");
 		
-		const gatherScreen = document.getElementById("gather-screen");
-		const gatherButton = document.getElementById("btnGatherr");
-		gatherButton.addEventListener("click", gatherResource);
-		
-		// Get the maximum level of gathered item based on player's level and gatheringXP
+		// Get the maximum level of gathered item based on player's gatheringXP
 		const maxGatherLevel = getMaxGatherLevel(player);
-
-		// Display the gathering items on the gather screen
-		const gatheringItemsScreen = document.createElement("div");
-		gatheringItemsScreen.setAttribute("id", "gathering-items-screen");
-		gatheringItemsScreen.innerHTML = "<h2>Gathering Items</h2>";
-		
-		// @todo debugme !
+	
 		const itemList = document.createElement("ul");
 		for (const item of gatheringItems) {
 			const listItem = document.createElement("li");
+			const itemName = document.createElement("span");
+			const itemInfo = document.createElement("small");
+	
 			if (item.level <= maxGatherLevel) {
-				listItem.textContent = `${item.name} - You can gather this item.`;
+				itemName.textContent = item.name;
+				itemInfo.textContent = "You can gather this item.";
 			} else {
-				listItem.textContent = `${item.name} - You can't gather this item yet.`;
+				itemName.textContent = item.name;
+				itemInfo.textContent = "You can't gather this item yet.";
 			}
+	
+			// Append icon if available
+			if (item.icon) {
+				const itemIcon = document.createElement("span");
+				itemIcon.innerHTML = item.icon;
+				listItem.appendChild(itemIcon);
+			}
+	
+			// Append item name and "You can" / "You can't" <small> element
+			listItem.appendChild(itemName);
+			listItem.appendChild(document.createElement("br"));
+			listItem.appendChild(itemInfo);
+	
 			itemList.appendChild(listItem);
 		}
-		
-		gatheringItemsScreen.appendChild(itemList);
-		gatherScreen.appendChild(gatheringItemsScreen);
+	
+		gatherItems.appendChild(itemList);
 		
 		showScreen("gather-screen");
 	}
@@ -1570,7 +1621,7 @@
 	}
 
 	function gatherResource() {
-		// Get the maximum level of gathered item based on player's level and gatheringXP
+		// Get the maximum level of gathered item based on player's gatheringXP
 		const maxGatherLevel = getMaxGatherLevel(player);
 
 		// Randomly choose an item from the gatheringItems array based on maxGatherLevel
@@ -1605,6 +1656,102 @@
 		
 		// Add gathered items to the player's inventory here
 		player.inventory.push(gatheredItem);
+	}
+
+	// Function to dynamically generate crafting recipes
+	function generateCraftingRecipes() {
+		const craftingRecipes = [];
+	
+		// Generate crafting recipes for each stat upgrade and the power multiplier
+		for (const statUpgrade of statUpgrades) {
+			for (const gatheredItem of gatheringItems) {
+				const recipe = {
+					name: `${statUpgrade.stat} Crafting - Level ${gatheredItem.level}`,
+					stat: statUpgrade.stat,
+					craftXP: 10 * gatheredItem.level,
+					baseIngredient: baseIngredient,
+					statUpgradeItem: statUpgrade.item,
+					powerMultiplierItem: gatheredItem
+				};
+	
+				craftingRecipes.push(recipe);
+			}
+		}
+	
+		return craftingRecipes;
+	}
+	
+	const craftingRecipes = generateCraftingRecipes();
+
+	// Function to display the crafting screen
+	function showCraftingScreen() {
+		const craftingScreen = document.getElementById("crafting-screen");
+		craftingScreen.innerHTML = "";
+		
+		// Display buttons for buying base ingredient and stat upgrade items
+		const buyItemsDiv = document.createElement("div");
+		buyItemsDiv.setAttribute("id", "buy-items");
+		const buyBaseIngredientBtn = document.createElement("button");
+		buyBaseIngredientBtn.textContent = `Buy ${baseIngredient.name} - ${baseIngredient.icon}`;
+		buyBaseIngredientBtn.addEventListener("click", () => {
+			buyItem(baseIngredient);
+		});
+		buyItemsDiv.appendChild(buyBaseIngredientBtn);
+		
+		for (const statUpgrade of statUpgrades) {
+			const buyStatUpgradeBtn = document.createElement("button");
+			buyStatUpgradeBtn.textContent = `Buy ${statUpgrade.item.name} - ${statUpgrade.item.icon}`;
+			buyStatUpgradeBtn.addEventListener("click", () => {
+				buyItem(statUpgrade.item);
+			});
+			buyItemsDiv.appendChild(buyStatUpgradeBtn);
+		}
+		
+		craftingScreen.appendChild(buyItemsDiv);
+		
+		// Display buttons for crafting recipes
+		const craftingRecipesDiv = document.createElement("div");
+		craftingRecipesDiv.setAttribute("id", "crafting-recipes");
+		
+		// Function to handle crafting a recipe
+		function craftRecipe(recipe) {
+			// Increase the player's craftingXP when a recipe is crafted
+			player.craftingXP += recipe.craftXP;
+			// Implement the crafting logic here (check ingredients, apply effects, etc.)
+			// You can also add crafted items to the player's inventory
+			// Show a success or failure message to the player
+			updatePlayerCraftingXP();
+		}
+
+		for (const statUpgrade of statUpgrades) {
+			const statDetails = document.createElement("details");
+			const statSummary = document.createElement("summary");
+			statSummary.textContent = `${statUpgrade.stat} Recipes`;
+			statDetails.appendChild(statSummary);
+
+			for (const recipe of craftingRecipes) {
+				if (recipe.stat === statUpgrade.stat) {
+					const recipeBtn = document.createElement("button");
+					recipeBtn.textContent = `${recipe.name} - Craft XP: ${recipe.craftXP}`;
+					recipeBtn.addEventListener("click", () => {
+					  craftRecipe(recipe);
+					});
+					statDetails.appendChild(recipeBtn);
+				}
+			}
+
+			craftingRecipesDiv.appendChild(statDetails);
+		}
+
+		craftingScreen.appendChild(craftingRecipesDiv);
+
+		showScreen("crafting-screen");
+	}
+	
+	// Function to update the display of player's craftingXP
+	function updatePlayerCraftingXP() {
+	  const craftingXPDisplay = document.getElementById("crafting-xp");
+	  craftingXPDisplay.textContent = `Crafting XP: ${player.craftingXP}`;
 	}
 
 	// Function to handle the inventory screen
@@ -1731,7 +1878,7 @@
 	
 		showScreen("sell-screen");
 	}
-	
+
 	// Function to sell an item
 	function sellItem(item) {
 		const itemIndex = player.inventory.indexOf(item);
@@ -1748,6 +1895,83 @@
 	// Function to calculate the value of an item for selling
 	function calculateItemValue(item) {
 		return Math.ceil(getItemCost(item) / 2);
+	}
+
+	// Function to show the sell screen
+	function showStatsScreen() {
+		const statList = document.getElementById("playerStatsList");
+		statList.innerHTML = "";
+
+		const stats = [
+			{ label: "Level", value: `🎚 ${player.level}` },
+			{ label: "HP", value: `💖 ${player.currentHP} / ${player.maxHP}` },
+			{ label: "Regeneration", value: `💚 ${player.regeneration} (+${calculateEquippedRegeneration()})` },
+			{ label: "Damage", value: `⚔️ ${player.damage} (+${calculateEquippedDamage()})` },
+			{ label: "Defense", value: `🛡️ ${player.defense} (+${calculateEquippedDefense()})` },
+			{ label: "Precision", value: `🎯 ${player.precision} (+${calculateEquippedPrecision()})` },
+			{ label: "Evasion", value: `🌪️ ${player.evasion} (+${calculateEquippedEvasion()})` },
+			{ label: "Critical", value: `💥 ${player.critical} (+${calculateEquippedCritical()})` },
+			{ label: "Resistance", value: `🔒 ${player.resistance} (+${calculateEquippedResistance()})` },
+			{ label: "Experience", value: `🌟 ${player.experience} / ${getNextLevelExperience()}` },
+			{ label: "Bonus Exp", value: `💫 ${player.bonusExp} (+${calculateEquippedBonusExp()})` },
+			{ label: "Bonus Loot", value: `🏆 ${player.bonusLoot} (+${calculateEquippedBonusLoot()})` }
+		];
+	
+		// Create and append list items for each stat
+		stats.forEach(stat => {
+			const statItem = document.createElement("li");
+			statItem.textContent = `${stat.label}: ${stat.value}`;
+			statList.appendChild(statItem);
+		});
+
+		showScreen("stats-screen");
+	}
+
+	// Function to show the equipped items
+	function showEquippedScreen() {
+		const equippedItemsList = document.getElementById("equippedItemsList");
+		equippedItemsList.innerHTML = ""; // Clear the previous list items
+	
+		const equippedItems = [
+			{ slot: "Damage", item: player.damageItem },
+			{ slot: "Defense", item: player.defenseItem },
+			{ slot: "Regeneration", item: player.regenerationItem },
+			{ slot: "Precision", item: player.precisionItem },
+			{ slot: "Evasion", item: player.evasionItem },
+			{ slot: "Critical", item: player.criticalItem },
+			{ slot: "Resistance", item: player.resistanceItem },
+			{ slot: "Bonus Exp", item: player.bonusExpItem },
+			{ slot: "Bonus Loot", item: player.bonusLootItem }
+		];
+	
+		// Create and append list items for each equipped item
+		equippedItems.forEach(equipped => {
+			const equippedItem = equipped.item;
+			const equippedItemSlot = equipped.slot;
+	
+			const listItem = document.createElement("li");
+			listItem.classList.add("equipped-item");
+	
+			const itemIcon = document.createElement("span");
+			itemIcon.classList.add("equipped-item-icon");
+			itemIcon.textContent = equippedItem ? equippedItem.icon : "❌"; // Display a cross if the slot is empty
+	
+			const itemName = document.createElement("span");
+			itemName.classList.add("equipped-item-name");
+			itemName.textContent = equippedItem ? equippedItem.name : "Empty";
+	
+			const itemSlot = document.createElement("span");
+			itemSlot.classList.add("equipped-item-slot");
+			itemSlot.textContent = `[${equippedItemSlot}]`;
+
+			listItem.appendChild(itemIcon);
+			listItem.appendChild(itemName);
+			listItem.appendChild(itemSlot);
+	
+			equippedItemsList.appendChild(listItem);
+		});
+	
+		showScreen("equipped-screen");
 	}
 	
 	// Function to handle the gambling logic
@@ -1806,6 +2030,15 @@
 		}
 	}
 
+	// Function to update the game information
+	function updateGameInfo(message) {
+		const gameInfoElement = document.getElementById("game-info");
+		const messageElement = document.createElement("div");
+		messageElement.innerHTML = message;
+		messageElement.classList.add("game-message"); // Apply a CSS class for styling
+		gameInfoElement.insertBefore(messageElement, gameInfoElement.firstChild);
+	}
+
 	// Function to show the specified screen and hide other screens
 	function showScreen(screenId) {
 		const screens = document.querySelectorAll("#main-screens > div");
@@ -1822,27 +2055,6 @@
 	// Function to show the main screen
 	function showMainScreen() {
 		showScreen("main-screen");
-	}
-
-	// Function to regenerate player's HP every second
-	function regenerateHP() {
-		if (player.currentHP < player.maxHP) {
-			player.currentHP = Math.min(player.maxHP, player.currentHP + player.regeneration + calculateEquippedRegeneration());
-			updatePlayerCurrentHP();
-		}
-	}
-	
-	// Function to update player's HP display
-	function updatePlayerCurrentHP() {
-		const currentHPElement = document.getElementById("playerCurrentHP");
-		currentHPElement.textContent = player.currentHP;
-	}
-
-	function hpLoop() {
-		regenerateHP();
-
-		// Wait for a specified delay before displaying the next message
-		setTimeout(hpLoop, hpDelay);
 	}
 
 	// Function to save player data to localStorage
@@ -1880,8 +2092,11 @@
 		document.getElementById("btnMission").addEventListener("click", startMission);
 		document.getElementById("btnEncounter").addEventListener("click", startEncounter);
 		document.getElementById("btnAreas").addEventListener("click", showAreasScreen);
+		document.getElementById("btnStats").addEventListener("click", showStatsScreen);
+		document.getElementById("btnEquipped").addEventListener("click", showEquippedScreen);
 		document.getElementById("btnGather").addEventListener("click", showGatherScreen);
-		// document.getElementById("btnCraft").addEventListener("click", showCraftScreen);
+		document.getElementById("btnGatherr").addEventListener("click", gatherResource);
+		document.getElementById("btnCraft").addEventListener("click", showCraftingScreen);
 		document.getElementById("btnInventory").addEventListener("click", showInventoryScreen);
 		document.getElementById("btnBuy").addEventListener("click", showBuyScreen);
 		document.getElementById("btnSell").addEventListener("click", showSellScreen);
