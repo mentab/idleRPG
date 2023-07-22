@@ -140,6 +140,10 @@
 					<button id="btnSell">💎 Sell</button>
 				</div>
 				<div class="flex-container">
+					<button id="btnGather">🌿 Gather</button>
+					<button id="btnCraft">🔨 Craft</button>
+				</div>
+				<div class="flex-container">
 					<button id="btnGamble">🎲 Gamble</button>
 					<button id="btnHeal">💊 Heal</button>
 				</div>
@@ -177,6 +181,16 @@
 				<h4>Sell Items</h4>
 				<div id="sell-item-list"></div>
 			</div>
+
+			<div id="gather-screen" class="hidden">
+				<button class="btnBackToMain">🔙 Back to Main</button>
+				<h2>Gather Resources</h2>
+				<button id="btnGatherr">Gather</button>
+			
+				<!-- Display gathering XP -->
+				<p id="gathering-xp">Gathering XP: 0</p>
+			</div>
+
 		</div>
 
 		<div id="information-screen">
@@ -188,10 +202,10 @@
 					💚: <span id="playerRegeneration"></span> |
 					⚔️: <span id="playerDamage"></span> |
 					🛡️: <span id="playerDefense"></span> |
-					🎯: <span id="playerAccuracy"></span> |
+					🎯: <span id="playerPrecision"></span> |
 					🌪️: <span id="playerEvasion"></span> |
-					💥: <span id="playerCritHit"></span> |
-					🔒: <span id="playerAbsorb"></span> |
+					💥: <span id="playerCritical"></span> |
+					🔒: <span id="playerResistance"></span> |
 					🌟: <span id="playerExperience"></span> |
 					💰: <span id="playerMoney"></span> |
 					💫: <span id="playerBonusLoot"></span> |
@@ -222,45 +236,67 @@
 
 
 		@later
+		Stats : Manage your stats
+			You have 2 groups of stat, main and secondary, you can choose where to spend points (like 2 in main, 2 in secondary)
+			Stats that are unique (like HP) are upgraded automatically
+
+		Inventory : display inventory, you can remove your equipped items
+
+		Gather : Fishing/Mining/Hunting
+			You can gather X items from low to high levels
+			You can sell them
+			Add a gather level for more efficiency
+
 		Craft : buy crafting items / make recipes /
 			You can use only 1 crafted item at the same time, it improves one stat only, and last for a few fights
+			Three ingredients, one is the same for every recipe, one for the stat upgraded and one for the level
+			You only gather the "level" ingredient, the rest is bought or looted
+			Add a craft level for more efficiency
 
-		Spells: handle your spells, you can choose where to spend points, level 5 max for each spell
+		Spells : handle your spells, you can choose where to spend points, level 5 max for each spell
 			Make 5 generic spells, use them in battle, add them for enemies
 			at the start of a battle, before the physical part is the spell part
 			spell idea : summon, heal, hurt, hitMore, dmgMore, stun ....
-			Add intelligence / mana ?
+			easier idea : damage/heal/damage but less (every turn)/heal but less (every turn)
+			Add intelligence / willpower / mana ?
 
 		Arena : fight a random generated dude and get ... experience ?
 
 
-		Achievements
+		Achievements : you can get rewards if you killed enemy X Y times...
 		Training
-		Explore ?
+		Explore ? : Maybe it shoule be included in the main module
 		Housing
-		Fishing/Mining/Hunting
 
 		Stats (@reword)
 		---------------
-		// Weapon : Damage
+		// Weapon : Damage - Offense ?
 		// Body Armor : Defense
-		// Soulstone: Health Regen
-		// Potion/Consumable: Healing
-		// Gloves: Accuracy
+
+		// Gloves: Precision
 		// Trinket: Evasion
+
 		// Ring: Critical Hit
-		// Cloak : Damage absorbtion
+		// Cloak : Damage resistancetion
+
+		// Shield: Block
+		// Penetration
+
+		// Soulstone: Health Regen
+		// Belt: Health
+
+		Bonuses / No direct linked stat :
 		// Necklace: Magic Find
 		// Charm: Bonus Experience
-	
-		// Belt: Health Bonus
 		// Amulet: Elemental Damage
-		// Shield: Block
 	
+	
+
 		// Boots: Endurance / Movement Speed
 		// Pants: Stamina
+		// Potion/Consumable: Healing (removed)
 
-		Add pets
+		Add pets ?
 
 	*/
 	</script>
@@ -552,182 +588,194 @@
 			],
 			itemsList: [
 				// Armor items
-				{ name: "Leather Armor", stat: "defense", defense: 5, icon: "🥼", level: 5 },
-				{ name: "Chainmail Armor", stat: "defense", defense: 10, icon: "🔗", level: 10 },
-				{ name: "Scale Armor", stat: "defense", defense: 15, icon: "🐉", level: 15 },
-				{ name: "Plate Armor", stat: "defense", defense: 20, icon: "💌", level: 20 },
-				{ name: "Dragonhide Armor", stat: "defense", defense: 25, icon: "🐉", level: 25 },
-				{ name: "Steel Armor", stat: "defense", defense: 30, icon: "⚙️", level: 30 },
-				{ name: "Ironclad Armor", stat: "defense", defense: 35, icon: "🛡️", level: 35 },
-				{ name: "Mithril Armor", stat: "defense", defense: 40, icon: "⛰️", level: 40 },
-				{ name: "Elven Robes", stat: "defense", defense: 45, icon: "🧝", level: 45 },
-				{ name: "Ancient Plate Armor", stat: "defense", defense: 50, icon: "🏰", level: 50 },
-				{ name: "Celestial Vestments", stat: "defense", defense: 55, icon: "✨", level: 55 },
-				{ name: "Shadow Vestments", stat: "defense", defense: 60, icon: "🌑", level: 60 },
-				{ name: "Titanium Mail", stat: "defense", defense: 65, icon: "🦾", level: 65 },
-				{ name: "Voidbane Plate", stat: "defense", defense: 70, icon: "🌌", level: 70 },
-				{ name: "Radiant Armor", stat: "defense", defense: 75, icon: "☀️", level: 75 },
-				{ name: "Crystal Guardian", stat: "defense", defense: 80, icon: "💎", level: 80 },
-				{ name: "Stormforged Plate", stat: "defense", defense: 85, icon: "⚡", level: 85 },
-				{ name: "Ethereal Shroud", stat: "defense", defense: 90, icon: "🌌", level: 90 },
-				{ name: "Divine Raiment", stat: "defense", defense: 95, icon: "✨", level: 95 },
-				{ name: "Infinity Armor", stat: "defense", defense: 100, icon: "♾️", level: 100 },
+				{ name: "Leather Armor", type: "stat", stat: "defense", defense: 5, icon: "🥼", level: 5 },
+				{ name: "Chainmail Armor", type: "stat", stat: "defense", defense: 10, icon: "🔗", level: 10 },
+				{ name: "Scale Armor", type: "stat", stat: "defense", defense: 15, icon: "🐉", level: 15 },
+				{ name: "Plate Armor", type: "stat", stat: "defense", defense: 20, icon: "💌", level: 20 },
+				{ name: "Dragonhide Armor", type: "stat", stat: "defense", defense: 25, icon: "🐉", level: 25 },
+				{ name: "Steel Armor", type: "stat", stat: "defense", defense: 30, icon: "⚙️", level: 30 },
+				{ name: "Ironclad Armor", type: "stat", stat: "defense", defense: 35, icon: "🛡️", level: 35 },
+				{ name: "Mithril Armor", type: "stat", stat: "defense", defense: 40, icon: "⛰️", level: 40 },
+				{ name: "Elven Robes", type: "stat", stat: "defense", defense: 45, icon: "🧝", level: 45 },
+				{ name: "Ancient Plate Armor", type: "stat", stat: "defense", defense: 50, icon: "🏰", level: 50 },
+				{ name: "Celestial Vestments", type: "stat", stat: "defense", defense: 55, icon: "✨", level: 55 },
+				{ name: "Shadow Vestments", type: "stat", stat: "defense", defense: 60, icon: "🌑", level: 60 },
+				{ name: "Titanium Mail", type: "stat", stat: "defense", defense: 65, icon: "🦾", level: 65 },
+				{ name: "Voidbane Plate", type: "stat", stat: "defense", defense: 70, icon: "🌌", level: 70 },
+				{ name: "Radiant Armor", type: "stat", stat: "defense", defense: 75, icon: "☀️", level: 75 },
+				{ name: "Crystal Guardian", type: "stat", stat: "defense", defense: 80, icon: "💎", level: 80 },
+				{ name: "Stormforged Plate", type: "stat", stat: "defense", defense: 85, icon: "⚡", level: 85 },
+				{ name: "Ethereal Shroud", type: "stat", stat: "defense", defense: 90, icon: "🌌", level: 90 },
+				{ name: "Divine Raiment", type: "stat", stat: "defense", defense: 95, icon: "✨", level: 95 },
+				{ name: "Infinity Armor", type: "stat", stat: "defense", defense: 100, icon: "♾️", level: 100 },
 				// Weapon items
-				{ name: "Knife", stat: "damage", damage: 5, icon: "🔪", level: 5 },
-				{ name: "Dagger", stat: "damage", damage: 10, icon: "🗡️", level: 10 },
-				{ name: "Rapier", stat: "damage", damage: 15, icon: "🤺", level: 15 },
-				{ name: "Shortsword", stat: "damage", damage: 20, icon: "🗡️", level: 20 },
-				{ name: "Scimitar", stat: "damage", damage: 25, icon: "🔱", level: 25 },
-				{ name: "Katana", stat: "damage", damage: 30, icon: "🗡️", level: 30 },
-				{ name: "Mace", stat: "damage", damage: 35, icon: "🔨", level: 35 },
-				{ name: "Morningstar", stat: "damage", damage: 40, icon: "🌅", level: 40 },
-				{ name: "Hammer", stat: "damage", damage: 45, icon: "🔨", level: 45 },
-				{ name: "Battleaxe", stat: "damage", damage: 50, icon: "🪓", level: 50 },
-				{ name: "Glaive", stat: "damage", damage: 55, icon: "🍁", level: 55 },
-				{ name: "Spear", stat: "damage", damage: 60, icon: "🌿", level: 60 },
-				{ name: "Warhammer", stat: "damage", damage: 65, icon: "🔨", level: 65 },
-				{ name: "Claymore", stat: "damage", damage: 70, icon: "🗡️", level: 70 },
-				{ name: "Flail", stat: "damage", damage: 75, icon: "🔗", level: 75 },
-				{ name: "Whip", stat: "damage", damage: 80, icon: "👻", level: 80 },
-				{ name: "Halberd", stat: "damage", damage: 85, icon: "🪓", level: 85 },
-				{ name: "Runeblade", stat: "damage", damage: 90, icon: "⚔️", level: 90 },
-				{ name: "Longsword", stat: "damage", damage: 95, icon: "🗡️", level: 95 },
-				{ name: "Excalibur", stat: "damage", damage: 100, icon: "🗡️", level: 100 },
+				{ name: "Knife", type: "stat", stat: "damage", damage: 5, icon: "🔪", level: 5 },
+				{ name: "Dagger", type: "stat", stat: "damage", damage: 10, icon: "🗡️", level: 10 },
+				{ name: "Rapier", type: "stat", stat: "damage", damage: 15, icon: "🤺", level: 15 },
+				{ name: "Shortsword", type: "stat", stat: "damage", damage: 20, icon: "🗡️", level: 20 },
+				{ name: "Scimitar", type: "stat", stat: "damage", damage: 25, icon: "🔱", level: 25 },
+				{ name: "Katana", type: "stat", stat: "damage", damage: 30, icon: "🗡️", level: 30 },
+				{ name: "Mace", type: "stat", stat: "damage", damage: 35, icon: "🔨", level: 35 },
+				{ name: "Morningstar", type: "stat", stat: "damage", damage: 40, icon: "🌅", level: 40 },
+				{ name: "Hammer", type: "stat", stat: "damage", damage: 45, icon: "🔨", level: 45 },
+				{ name: "Battleaxe", type: "stat", stat: "damage", damage: 50, icon: "🪓", level: 50 },
+				{ name: "Glaive", type: "stat", stat: "damage", damage: 55, icon: "🍁", level: 55 },
+				{ name: "Spear", type: "stat", stat: "damage", damage: 60, icon: "🌿", level: 60 },
+				{ name: "Warhammer", type: "stat", stat: "damage", damage: 65, icon: "🔨", level: 65 },
+				{ name: "Claymore", type: "stat", stat: "damage", damage: 70, icon: "🗡️", level: 70 },
+				{ name: "Flail", type: "stat", stat: "damage", damage: 75, icon: "🔗", level: 75 },
+				{ name: "Whip", type: "stat", stat: "damage", damage: 80, icon: "👻", level: 80 },
+				{ name: "Halberd", type: "stat", stat: "damage", damage: 85, icon: "🪓", level: 85 },
+				{ name: "Runeblade", type: "stat", stat: "damage", damage: 90, icon: "⚔️", level: 90 },
+				{ name: "Longsword", type: "stat", stat: "damage", damage: 95, icon: "🗡️", level: 95 },
+				{ name: "Excalibur", type: "stat", stat: "damage", damage: 100, icon: "🗡️", level: 100 },
 				// Soulstones items
-				{ name: "Soulstone of Renewal", stat: "regeneration", regeneration: 1, icon: "🕰️", level: 25 },
-				{ name: "Soulstone of Vitality", stat: "regeneration", regeneration: 2, icon: "⌛", level: 50 },
-				{ name: "Soulstone of Resurgence", stat: "regeneration", regeneration: 3, icon: "⏳", level: 75 },
-				{ name: "Soulstone of Awakening", stat: "regeneration", regeneration: 4, icon: "🌅", level: 100 },
+				{ name: "Soulstone of Renewal", type: "stat", stat: "regeneration", regeneration: 1, icon: "🕰️", level: 25 },
+				{ name: "Soulstone of Vitality", type: "stat", stat: "regeneration", regeneration: 2, icon: "⌛", level: 50 },
+				{ name: "Soulstone of Resurgence", type: "stat", stat: "regeneration", regeneration: 3, icon: "⏳", level: 75 },
+				{ name: "Soulstone of Awakening", type: "stat", stat: "regeneration", regeneration: 4, icon: "🌅", level: 100 },
 				// Gloves items
-				{ name: "Leather Gloves", stat: "accuracy", accuracy: 3, icon: "🧤", level: 10 },
-				{ name: "Chainmail Gauntlets", stat: "accuracy", accuracy: 6, icon: "🧤", level: 20 },
-				{ name: "Plated Gauntlets", stat: "accuracy", accuracy: 9, icon: "🧤", level: 30 },
-				{ name: "Dragonhide Gloves", stat: "accuracy", accuracy: 12, icon: "🧤", level: 40 },
-				{ name: "Shadowsteel Gauntlets", stat: "accuracy", accuracy: 15, icon: "🧤", level: 50 },
-				{ name: "Stormforged Handguards", stat: "accuracy", accuracy: 18, icon: "🧤", level: 60 },
-				{ name: "Arcane Gloves", stat: "accuracy", accuracy: 21, icon: "🧤", level: 70 },
-				{ name: "Gloves of the Eternal Sentinel", stat: "accuracy", accuracy: 24, icon: "🧤", level: 80 },
-				{ name: "Divine Touch Gauntlets", stat: "accuracy", accuracy: 27, icon: "🧤", level: 90 },
-				{ name: "Legendary Gauntlets", stat: "accuracy", accuracy: 30, icon: "🧤", level: 100 },
+				{ name: "Leather Gloves", type: "stat", stat: "precision", precision: 3, icon: "🧤", level: 10 },
+				{ name: "Chainmail Gauntlets", type: "stat", stat: "precision", precision: 6, icon: "🧤", level: 20 },
+				{ name: "Plated Gauntlets", type: "stat", stat: "precision", precision: 9, icon: "🧤", level: 30 },
+				{ name: "Dragonhide Gloves", type: "stat", stat: "precision", precision: 12, icon: "🧤", level: 40 },
+				{ name: "Shadowsteel Gauntlets", type: "stat", stat: "precision", precision: 15, icon: "🧤", level: 50 },
+				{ name: "Stormforged Handguards", type: "stat", stat: "precision", precision: 18, icon: "🧤", level: 60 },
+				{ name: "Arcane Gloves", type: "stat", stat: "precision", precision: 21, icon: "🧤", level: 70 },
+				{ name: "Gloves of the Eternal Sentinel", type: "stat", stat: "precision", precision: 24, icon: "🧤", level: 80 },
+				{ name: "Divine Touch Gauntlets", type: "stat", stat: "precision", precision: 27, icon: "🧤", level: 90 },
+				{ name: "Legendary Gauntlets", type: "stat", stat: "precision", precision: 30, icon: "🧤", level: 100 },
 				// Trinkets items
-				{ name: "Simple Trinket", stat: "evasion", evasion: 3, icon: "🔮", level: 10 },
-				{ name: "Ornate Trinket", stat: "evasion", evasion: 6, icon: "🔮", level: 20 },
-				{ name: "Enchanted Trinket", stat: "evasion", evasion: 9, icon: "🔮", level: 30 },
-				{ name: "Mystical Trinket", stat: "evasion", evasion: 12, icon: "🔮", level: 40 },
-				{ name: "Glowing Trinket", stat: "evasion", evasion: 15, icon: "🔮", level: 50 },
-				{ name: "Celestial Trinket", stat: "evasion", evasion: 18, icon: "🔮", level: 60 },
-				{ name: "Whispering Trinket", stat: "evasion", evasion: 21, icon: "🔮", level: 70 },
-				{ name: "Shadow Trinket", stat: "evasion", evasion: 24, icon: "🔮", level: 80 },
-				{ name: "Ethereal Trinket", stat: "evasion", evasion: 27, icon: "🔮", level: 90 },
-				{ name: "Mythical Trinket", stat: "evasion", evasion: 30, icon: "🔮", level: 100 },
+				{ name: "Simple Trinket", type: "stat", stat: "evasion", evasion: 3, icon: "🔮", level: 10 },
+				{ name: "Ornate Trinket", type: "stat", stat: "evasion", evasion: 6, icon: "🔮", level: 20 },
+				{ name: "Enchanted Trinket", type: "stat", stat: "evasion", evasion: 9, icon: "🔮", level: 30 },
+				{ name: "Mystical Trinket", type: "stat", stat: "evasion", evasion: 12, icon: "🔮", level: 40 },
+				{ name: "Glowing Trinket", type: "stat", stat: "evasion", evasion: 15, icon: "🔮", level: 50 },
+				{ name: "Celestial Trinket", type: "stat", stat: "evasion", evasion: 18, icon: "🔮", level: 60 },
+				{ name: "Whispering Trinket", type: "stat", stat: "evasion", evasion: 21, icon: "🔮", level: 70 },
+				{ name: "Shadow Trinket", type: "stat", stat: "evasion", evasion: 24, icon: "🔮", level: 80 },
+				{ name: "Ethereal Trinket", type: "stat", stat: "evasion", evasion: 27, icon: "🔮", level: 90 },
+				{ name: "Mythical Trinket", type: "stat", stat: "evasion", evasion: 30, icon: "🔮", level: 100 },
 				// Ring items
-				{ name: "Ring of Precision", stat: "critHit", critHit: 2, icon: "💍", level: 5 },
-				{ name: "Ring of Blinding Strikes", stat: "critHit", critHit: 4, icon: "✨", level: 15 },
-				{ name: "Ring of Deadly Precision", stat: "critHit", critHit: 6, icon: "🔪", level: 25 },
-				{ name: "Ring of Devastation", stat: "critHit", critHit: 8, icon: "💥", level: 35 },
-				{ name: "Ring of Execution", stat: "critHit", critHit: 10, icon: "🗡️", level: 45 },
-				{ name: "Ring of Annihilation", stat: "critHit", critHit: 12, icon: "☠️", level: 55 },
-				{ name: "Ring of Ruthless Strikes", stat: "critHit", critHit: 14, icon: "🔥", level: 65 },
-				{ name: "Ring of Piercing Precision", stat: "critHit", critHit: 16, icon: "🎯", level: 75 },
-				{ name: "Ring of Focused Fury", stat: "critHit", critHit: 18, icon: "⚔️", level: 85 },
-				{ name: "Ring of Merciless Strikes", stat: "critHit", critHit: 20, icon: "🌪️", level: 95 },
+				{ name: "Ring of Precision", type: "stat", stat: "critical", critical: 2, icon: "💍", level: 5 },
+				{ name: "Ring of Blinding Strikes", type: "stat", stat: "critical", critical: 4, icon: "✨", level: 15 },
+				{ name: "Ring of Deadly Precision", type: "stat", stat: "critical", critical: 6, icon: "🔪", level: 25 },
+				{ name: "Ring of Devastation", type: "stat", stat: "critical", critical: 8, icon: "💥", level: 35 },
+				{ name: "Ring of Execution", type: "stat", stat: "critical", critical: 10, icon: "🗡️", level: 45 },
+				{ name: "Ring of Annihilation", type: "stat", stat: "critical", critical: 12, icon: "☠️", level: 55 },
+				{ name: "Ring of Ruthless Strikes", type: "stat", stat: "critical", critical: 14, icon: "🔥", level: 65 },
+				{ name: "Ring of Piercing Precision", type: "stat", stat: "critical", critical: 16, icon: "🎯", level: 75 },
+				{ name: "Ring of Focused Fury", type: "stat", stat: "critical", critical: 18, icon: "⚔️", level: 85 },
+				{ name: "Ring of Merciless Strikes", type: "stat", stat: "critical", critical: 20, icon: "🌪️", level: 95 },
 				// Cloak items
-				{ name: "Cloak of Protection", stat: "absorb", absorb: 2, icon: "🧥", level: 5 },
-				{ name: "Cloak of Shadows", stat: "absorb", absorb: 4, icon: "🌑", level: 15 },
-				{ name: "Cloak of Resilience", stat: "absorb", absorb: 6, icon: "🛡️", level: 25 },
-				{ name: "Cloak of Warding", stat: "absorb", absorb: 8, icon: "🔮", level: 35 },
-				{ name: "Cloak of Reflection", stat: "absorb", absorb: 10, icon: "🪞", level: 45 },
-				{ name: "Cloak of Absorption", stat: "absorb", absorb: 12, icon: "💦", level: 55 },
-				{ name: "Cloak of Unyielding Defense", stat: "absorb", absorb: 14, icon: "🛡️", level: 65 },
-				{ name: "Cloak of Eternal Protection", stat: "absorb", absorb: 16, icon: "🌟", level: 75 },
-				{ name: "Cloak of Invulnerability", stat: "absorb", absorb: 18, icon: "🔒", level: 85 },
-				{ name: "Cloak of Unbreakable Will", stat: "absorb", absorb: 20, icon: "💪", level: 95 },
+				{ name: "Cloak of Protection", type: "stat", stat: "resistance", resistance: 2, icon: "🧥", level: 5 },
+				{ name: "Cloak of Shadows", type: "stat", stat: "resistance", resistance: 4, icon: "🌑", level: 15 },
+				{ name: "Cloak of Resilience", type: "stat", stat: "resistance", resistance: 6, icon: "🛡️", level: 25 },
+				{ name: "Cloak of Warding", type: "stat", stat: "resistance", resistance: 8, icon: "🔮", level: 35 },
+				{ name: "Cloak of Reflection", type: "stat", stat: "resistance", resistance: 10, icon: "🪞", level: 45 },
+				{ name: "Cloak of Absorption", type: "stat", stat: "resistance", resistance: 12, icon: "💦", level: 55 },
+				{ name: "Cloak of Unyielding Defense", type: "stat", stat: "resistance", resistance: 14, icon: "🛡️", level: 65 },
+				{ name: "Cloak of Eternal Protection", type: "stat", stat: "resistance", resistance: 16, icon: "🌟", level: 75 },
+				{ name: "Cloak of Invulnerability", type: "stat", stat: "resistance", resistance: 18, icon: "🔒", level: 85 },
+				{ name: "Cloak of Unbreakable Will", type: "stat", stat: "resistance", resistance: 20, icon: "💪", level: 95 },
 				// Necklace items
-				{ name: "Necklace of Fortune", stat: "bonusLoot", bonusLoot: 20, icon: "🔮", level: 20 },
-				{ name: "Necklace of Prosperity", stat: "bonusLoot", bonusLoot: 40, icon: "💰", level: 40 },
-				{ name: "Necklace of Serendipity", stat: "bonusLoot", bonusLoot: 60, icon: "🍀", level: 60 },
-				{ name: "Necklace of Abundance", stat: "bonusLoot", bonusLoot: 80, icon: "🌟", level: 80 },
+				{ name: "Necklace of Fortune", type: "stat", stat: "bonusLoot", bonusLoot: 20, icon: "🔮", level: 20 },
+				{ name: "Necklace of Prosperity", type: "stat", stat: "bonusLoot", bonusLoot: 40, icon: "💰", level: 40 },
+				{ name: "Necklace of Serendipity", type: "stat", stat: "bonusLoot", bonusLoot: 60, icon: "🍀", level: 60 },
+				{ name: "Necklace of Abundance", type: "stat", stat: "bonusLoot", bonusLoot: 80, icon: "🌟", level: 80 },
 				// Charm items
-				{ name: "Charm of Wisdom", stat: "bonusExp", bonusExp: 10, icon: "📚", level: 10 },
-				{ name: "Charm of Enlightenment", stat: "bonusExp", bonusExp: 30, icon: "🌟", level: 30 },
-				{ name: "Charm of Insight", stat: "bonusExp", bonusExp: 50, icon: "🔍", level: 50 },
-				{ name: "Charm of Mastery", stat: "bonusExp", bonusExp: 70, icon: "🎓", level: 70 },
-				{ name: "Charm of Ascendancy", stat: "bonusExp", bonusExp: 90, icon: "⚡", level: 90 },
+				{ name: "Charm of Wisdom", type: "stat", stat: "bonusExp", bonusExp: 10, icon: "📚", level: 10 },
+				{ name: "Charm of Enlightenment", type: "stat", stat: "bonusExp", bonusExp: 30, icon: "🌟", level: 30 },
+				{ name: "Charm of Insight", type: "stat", stat: "bonusExp", bonusExp: 50, icon: "🔍", level: 50 },
+				{ name: "Charm of Mastery", type: "stat", stat: "bonusExp", bonusExp: 70, icon: "🎓", level: 70 },
+				{ name: "Charm of Ascendancy", type: "stat", stat: "bonusExp", bonusExp: 90, icon: "⚡", level: 90 },
 				// Belt items // @todo implement
-				{ name: "Leather Belt", stat: "bonusHP", bonusHP: 14, icon: "⚕️", level: 7 },
-				{ name: "Chain Belt", stat: "bonusHP", bonusHP: 34, icon: "🏋️", level: 17 },
-				{ name: "Plated Belt", stat: "bonusHP", bonusHP: 54, icon: "🛡️", level: 27 },
-				{ name: "Reinforced Belt", stat: "bonusHP", bonusHP: 74, icon: "💪", level: 37 },
-				{ name: "Studded Belt", stat: "bonusHP", bonusHP: 94, icon: "🔋", level: 47 },
-				{ name: "Warrior Belt", stat: "bonusHP", bonusHP: 114, icon: "⏱️", level: 57 },
-				{ name: "Guardian Belt", stat: "bonusHP", bonusHP: 134, icon: "🔒", level: 67 },
-				{ name: "Knight Belt", stat: "bonusHP", bonusHP: 154, icon: "🌅", level: 77 },
-				{ name: "Titan Belt", stat: "bonusHP", bonusHP: 174, icon: "🗿", level: 87 },
-				{ name: "Epic Belt", stat: "bonusHP", bonusHP: 194, icon: "🌟", level: 97 },
+				{ name: "Leather Belt", type: "stat", stat: "bonusHP", bonusHP: 14, icon: "⚕️", level: 7 },
+				{ name: "Chain Belt", type: "stat", stat: "bonusHP", bonusHP: 34, icon: "🏋️", level: 17 },
+				{ name: "Plated Belt", type: "stat", stat: "bonusHP", bonusHP: 54, icon: "🛡️", level: 27 },
+				{ name: "Reinforced Belt", type: "stat", stat: "bonusHP", bonusHP: 74, icon: "💪", level: 37 },
+				{ name: "Studded Belt", type: "stat", stat: "bonusHP", bonusHP: 94, icon: "🔋", level: 47 },
+				{ name: "Warrior Belt", type: "stat", stat: "bonusHP", bonusHP: 114, icon: "⏱️", level: 57 },
+				{ name: "Guardian Belt", type: "stat", stat: "bonusHP", bonusHP: 134, icon: "🔒", level: 67 },
+				{ name: "Knight Belt", type: "stat", stat: "bonusHP", bonusHP: 154, icon: "🌅", level: 77 },
+				{ name: "Titan Belt", type: "stat", stat: "bonusHP", bonusHP: 174, icon: "🗿", level: 87 },
+				{ name: "Epic Belt", type: "stat", stat: "bonusHP", bonusHP: 194, icon: "🌟", level: 97 },
 				// Amulet items //@todo implement
-				{ name: "Amulet of Fire", stat: "elementalDamage", elementalDamage: 10, icon: "🔥", level: 18 },
-				{ name: "Amulet of Ice", stat: "elementalDamage", elementalDamage: 20, icon: "❄️", level: 38 },
-				{ name: "Amulet of Lightning", stat: "elementalDamage", elementalDamage: 30, icon: "⚡", level: 58 },
-				{ name: "Amulet of Earth", stat: "elementalDamage", elementalDamage: 40, icon: "🌿", level: 78 },
-				{ name: "Amulet of Elements", stat: "elementalDamage", elementalDamage: 50, icon: "🌍", level: 98 },
+				{ name: "Amulet of Fire", type: "stat", stat: "elementalDamage", elementalDamage: 10, icon: "🔥", level: 18 },
+				{ name: "Amulet of Ice", type: "stat", stat: "elementalDamage", elementalDamage: 20, icon: "❄️", level: 38 },
+				{ name: "Amulet of Lightning", type: "stat", stat: "elementalDamage", elementalDamage: 30, icon: "⚡", level: 58 },
+				{ name: "Amulet of Earth", type: "stat", stat: "elementalDamage", elementalDamage: 40, icon: "🌿", level: 78 },
+				{ name: "Amulet of Elements", type: "stat", stat: "elementalDamage", elementalDamage: 50, icon: "🌍", level: 98 },
 				// Shield items // @todo implement
-				{ name: "Buckler", stat: "block", block: 5, icon: "🛡️", level: 9 },
-				{ name: "Kite Shield", stat: "block", block: 10, icon: "🔰", level: 19 },
-				{ name: "Heater Shield", stat: "block", block: 15, icon: "🔥", level: 29 },
-				{ name: "Round Shield", stat: "block", block: 20, icon: "🔵", level: 39 },
-				{ name: "Tower Shield", stat: "block", block: 25, icon: "⚔️", level: 49 },
-				{ name: "Pavise Shield", stat: "block", block: 30, icon: "🌿", level: 59 },
-				{ name: "Scutum Shield", stat: "block", block: 35, icon: "⚔️", level: 69 },
-				{ name: "Aegis Shield", stat: "block", block: 40, icon: "🔱", level: 79 },
-				{ name: "Bulwark Shield", stat: "block", block: 45, icon: "🛡️", level: 89 },
-				{ name: "Colossus Shield", stat: "block", block: 50, icon: "🗿", level: 99 },
+				{ name: "Buckler", type: "stat", stat: "block", block: 5, icon: "🛡️", level: 9 },
+				{ name: "Kite Shield", type: "stat", stat: "block", block: 10, icon: "🔰", level: 19 },
+				{ name: "Heater Shield", type: "stat", stat: "block", block: 15, icon: "🔥", level: 29 },
+				{ name: "Round Shield", type: "stat", stat: "block", block: 20, icon: "🔵", level: 39 },
+				{ name: "Tower Shield", type: "stat", stat: "block", block: 25, icon: "⚔️", level: 49 },
+				{ name: "Pavise Shield", type: "stat", stat: "block", block: 30, icon: "🌿", level: 59 },
+				{ name: "Scutum Shield", type: "stat", stat: "block", block: 35, icon: "⚔️", level: 69 },
+				{ name: "Aegis Shield", type: "stat", stat: "block", block: 40, icon: "🔱", level: 79 },
+				{ name: "Bulwark Shield", type: "stat", stat: "block", block: 45, icon: "🛡️", level: 89 },
+				{ name: "Colossus Shield", type: "stat", stat: "block", block: 50, icon: "🗿", level: 99 },
 			],
 			// Unused
 			lootItems: [
 				// Weapon items
-				{ name: "Staff of Tranquility", stat: "damage", damage: 3, icon: "🏮", level: 3 },
-				{ name: "Shenlong's Staff", stat: "damage", damage: 7, icon: "🐲", level: 7 },
-				{ name: "Sword of Shadows", stat: "damage", damage: 13, icon: "🌑", level: 13 },
-				{ name: "Kasumi's Blade", stat: "damage", damage: 17, icon: "🌸", level: 17 },
-				{ name: "Maul of Fury", stat: "damage", damage: 23, icon: "🔨", level: 23 },
-				{ name: "Kabuto's Hammer", stat: "damage", damage: 27, icon: "⚒️", level: 27 },
-				{ name: "Blade of Valor", stat: "damage", damage: 33, icon: "⚔️", level: 33 },
-				{ name: "Tidebreaker", stat: "damage", damage: 37, icon: "🌊", level: 37 },
-				{ name: "Viper's Fang", stat: "damage", damage: 43, icon: "🐍", level: 43 },
-				{ name: "Starshard Bow", stat: "damage", damage: 47, icon: "🌠", level: 47 },
-				{ name: "Eclipse Scythe", stat: "damage", damage: 53, icon: "🌑", level: 53 },
-				{ name: "Thunderstrike Axe", stat: "damage", damage: 57, icon: "⚡", level: 57 },
-				{ name: "Frostbite Dagger", stat: "damage", damage: 63, icon: "❄️", level: 63 },
-				{ name: "Soulreaper Scythe", stat: "damage", damage: 67, icon: "☠️", level: 67 },
-				{ name: "Phoenixfire Wand", stat: "damage", damage: 73, icon: "🔥", level: 73 },
-				{ name: "Voidblade Katana", stat: "damage", damage: 77, icon: "🌌", level: 77 },
-				{ name: "Doomhammer", stat: "damage", damage: 83, icon: "💀", level: 83 },
-				{ name: "Divine Staff", stat: "damage", damage: 87, icon: "✨", level: 87 },
-				{ name: "Excalibur", stat: "damage", damage: 93, icon: "⚔️", level: 93 },
-				{ name: "Blade of Eternity", stat: "damage", damage: 97, icon: "♾️", level: 97 },
-				{ name: "Scepter of the Ancients", stat: "damage", damage: 100, icon: "👑", level: 100 },
+				{ name: "Staff of Tranquility", type: "stat", stat: "damage", damage: 3, icon: "🏮", level: 3 },
+				{ name: "Shenlong's Staff", type: "stat", stat: "damage", damage: 7, icon: "🐲", level: 7 },
+				{ name: "Sword of Shadows", type: "stat", stat: "damage", damage: 13, icon: "🌑", level: 13 },
+				{ name: "Kasumi's Blade", type: "stat", stat: "damage", damage: 17, icon: "🌸", level: 17 },
+				{ name: "Maul of Fury", type: "stat", stat: "damage", damage: 23, icon: "🔨", level: 23 },
+				{ name: "Kabuto's Hammer", type: "stat", stat: "damage", damage: 27, icon: "⚒️", level: 27 },
+				{ name: "Blade of Valor", type: "stat", stat: "damage", damage: 33, icon: "⚔️", level: 33 },
+				{ name: "Tidebreaker", type: "stat", stat: "damage", damage: 37, icon: "🌊", level: 37 },
+				{ name: "Viper's Fang", type: "stat", stat: "damage", damage: 43, icon: "🐍", level: 43 },
+				{ name: "Starshard Bow", type: "stat", stat: "damage", damage: 47, icon: "🌠", level: 47 },
+				{ name: "Eclipse Scythe", type: "stat", stat: "damage", damage: 53, icon: "🌑", level: 53 },
+				{ name: "Thunderstrike Axe", type: "stat", stat: "damage", damage: 57, icon: "⚡", level: 57 },
+				{ name: "Frostbite Dagger", type: "stat", stat: "damage", damage: 63, icon: "❄️", level: 63 },
+				{ name: "Soulreaper Scythe", type: "stat", stat: "damage", damage: 67, icon: "☠️", level: 67 },
+				{ name: "Phoenixfire Wand", type: "stat", stat: "damage", damage: 73, icon: "🔥", level: 73 },
+				{ name: "Voidblade Katana", type: "stat", stat: "damage", damage: 77, icon: "🌌", level: 77 },
+				{ name: "Doomhammer", type: "stat", stat: "damage", damage: 83, icon: "💀", level: 83 },
+				{ name: "Divine Staff", type: "stat", stat: "damage", damage: 87, icon: "✨", level: 87 },
+				{ name: "Excalibur", type: "stat", stat: "damage", damage: 93, icon: "⚔️", level: 93 },
+				{ name: "Blade of Eternity", type: "stat", stat: "damage", damage: 97, icon: "♾️", level: 97 },
+				{ name: "Scepter of the Ancients", type: "stat", stat: "damage", damage: 100, icon: "👑", level: 100 },
 				// Armor items
-				{ name: "Elven Robes", stat: "defense", defense: 3, icon: "🧝", level: 3 },
-				{ name: "Phoenix Feather Armor", stat: "defense", defense: 7, icon: "🐦", level: 7 },
-				{ name: "Dragon Scale Armor", stat: "defense", defense: 13, icon: "🐉", level: 13 },
-				{ name: "Celestial Plate Armor", stat: "defense", defense: 17, icon: "✨", level: 17 },
-				{ name: "Shadowguard Vestments", stat: "defense", defense: 23, icon: "👥", level: 23 },
-				{ name: "Tiger Claw Armor", stat: "defense", defense: 27, icon: "🐯", level: 27 },
-				{ name: "Voidweaver Garb", stat: "defense", defense: 33, icon: "🌑", level: 33 },
-				{ name: "Stormsteel Armor", stat: "defense", defense: 37, icon: "⚡", level: 37 },
-				{ name: "Obsidian Scalemail", stat: "defense", defense: 43, icon: "🌋", level: 43 },
-				{ name: "Spiritwalker's Robes", stat: "defense", defense: 47, icon: "👻", level: 47 },
-				{ name: "Lionheart Plate", stat: "defense", defense: 53, icon: "🦁", level: 53 },
-				{ name: "Shadowbane Vestments", stat: "defense", defense: 57, icon: "🌑", level: 57 },
-				{ name: "Phoenixfire Robes", stat: "defense", defense: 63, icon: "🔥", level: 63 },
-				{ name: "Voidshroud Armor", stat: "defense", defense: 67, icon: "🌌", level: 67 },
-				{ name: "Soulweave Vestments", stat: "defense", defense: 73, icon: "🌑", level: 73 },
-				{ name: "Divine Aegis", stat: "defense", defense: 77, icon: "✨", level: 77 },
-				{ name: "Crystal Guardian", stat: "defense", defense: 83, icon: "💎", level: 83 },
-				{ name: "Titanium Fortress", stat: "defense", defense: 87, icon: "🗼", level: 87 },
-				{ name: "Ethereal Shroud", stat: "defense", defense: 93, icon: "🌌", level: 93 },
-				{ name: "Infinity Armor", stat: "defense", defense: 97, icon: "♾️", level: 97 },
-				{ name: "Celestial Garb", stat: "defense", defense: 100, icon: "🌟", level: 100 }
+				{ name: "Elven Robes", type: "stat", stat: "defense", defense: 3, icon: "🧝", level: 3 },
+				{ name: "Phoenix Feather Armor", type: "stat", stat: "defense", defense: 7, icon: "🐦", level: 7 },
+				{ name: "Dragon Scale Armor", type: "stat", stat: "defense", defense: 13, icon: "🐉", level: 13 },
+				{ name: "Celestial Plate Armor", type: "stat", stat: "defense", defense: 17, icon: "✨", level: 17 },
+				{ name: "Shadowguard Vestments", type: "stat", stat: "defense", defense: 23, icon: "👥", level: 23 },
+				{ name: "Tiger Claw Armor", type: "stat", stat: "defense", defense: 27, icon: "🐯", level: 27 },
+				{ name: "Voidweaver Garb", type: "stat", stat: "defense", defense: 33, icon: "🌑", level: 33 },
+				{ name: "Stormsteel Armor", type: "stat", stat: "defense", defense: 37, icon: "⚡", level: 37 },
+				{ name: "Obsidian Scalemail", type: "stat", stat: "defense", defense: 43, icon: "🌋", level: 43 },
+				{ name: "Spiritwalker's Robes", type: "stat", stat: "defense", defense: 47, icon: "👻", level: 47 },
+				{ name: "Lionheart Plate", type: "stat", stat: "defense", defense: 53, icon: "🦁", level: 53 },
+				{ name: "Shadowbane Vestments", type: "stat", stat: "defense", defense: 57, icon: "🌑", level: 57 },
+				{ name: "Phoenixfire Robes", type: "stat", stat: "defense", defense: 63, icon: "🔥", level: 63 },
+				{ name: "Voidshroud Armor", type: "stat", stat: "defense", defense: 67, icon: "🌌", level: 67 },
+				{ name: "Soulweave Vestments", type: "stat", stat: "defense", defense: 73, icon: "🌑", level: 73 },
+				{ name: "Divine Aegis", type: "stat", stat: "defense", defense: 77, icon: "✨", level: 77 },
+				{ name: "Crystal Guardian", type: "stat", stat: "defense", defense: 83, icon: "💎", level: 83 },
+				{ name: "Titanium Fortress", type: "stat", stat: "defense", defense: 87, icon: "🗼", level: 87 },
+				{ name: "Ethereal Shroud", type: "stat", stat: "defense", defense: 93, icon: "🌌", level: 93 },
+				{ name: "Infinity Armor", type: "stat", stat: "defense", defense: 97, icon: "♾️", level: 97 },
+				{ name: "Celestial Garb", type: "stat", stat: "defense", defense: 100, icon: "🌟", level: 100 }
+			],
+			gatheringItems: [
+			  { name: "Healing Herb", type: "gathering", level: 1, icon: "🌿" },
+			  { name: "Mystic Mushroom", type: "gathering", level: 5, icon: "🍄" },
+			  { name: "Silverleaf", type: "gathering", level: 10, icon: "🍃" },
+			  { name: "Dragon's Tongue", type: "gathering", level: 20, icon: "🐉" },
+			  { name: "Moonflower", type: "gathering", level: 30, icon: "🌼" },
+			  { name: "Ghost Orchid", type: "gathering", level: 40, icon: "👻" },
+			  { name: "Basilisk's Breath", type: "gathering", level: 50, icon: "🐍" },
+			  { name: "Phoenix Feather", type: "gathering", level: 60, icon: "🔥" },
+			  { name: "Witch's Thistle", type: "gathering", level: 70, icon: "🧙‍♀️" },
+			  { name: "Eternal Blossom", type: "gathering", level: 80, icon: "🌸" },
 			],
 			peopleInNeed: [
 				"The distressed villagers",
@@ -799,6 +847,7 @@
 	const enemies = gameConfigData.enemies;
 	const bosses = gameConfigData.bosses;
 	const itemsList = gameConfigData.itemsList;
+	const gatheringItems = gameConfigData.gatheringItems;
 	const peopleInNeed = gameConfigData.peopleInNeed;
 	const aidRequests = gameConfigData.aidRequests;
 	const enemyDescriptors = gameConfigData.enemyDescriptors;
@@ -816,50 +865,60 @@
 		damage: 6,
 		defense: 6,
 		regeneration: 1,
-		accuracy: 25,
+		precision: 25,
 		evasion: 25,
-		critHit: 0,
-		absorb: 0,
+		critical: 0,
+		resistance: 0,
 		bonusExp: 0,
 		bonusLoot: 0,
 		damageItem: null,
 		defenseItem: null,
 		regenerationItem: null,
-		accuracyItem: null,
+		precisionItem: null,
 		evasionItem: null,
-		critHitItem: null,
-		absorbItem: null,
+		criticalItem: null,
+		resistanceItem: null,
 		bonusExpItem: null,
 		bonusLootItem: null,
 		inventory: [],
 		money: 0,
 		experience: 0,
-		currentArea: areas[0]
+		currentArea: areas[0],
+		gatheringXP: 0,
+		craftingXP: 0
 	};
 
 	const getItemCost = (item) => {
-		const { stat, level } = item;
-
-		switch (stat) {
-			case "defense":
-			case "damage":
-				return level * 20;
-			case "accuracy":
-			case "evasion":
-				return level * 10;
-			case "critHit":
-			case "absorb":
-				return level * 5;
-			case "bonusExp":
-			case "bonusLoot":
-				return level * 50;
-			case "regeneration":
-			  return level * 100;
-			default:
-			  return 0;
+		const { type, stat, level } = item;
+	
+		if (type === "stat") {
+			switch (stat) {
+				case "defense":
+				case "damage":
+					return level * 20;
+				case "precision":
+				case "evasion":
+					return level * 10;
+				case "critical":
+				case "resistance":
+					return level * 5;
+				case "bonusExp":
+				case "bonusLoot":
+					return level * 50;
+				case "regeneration":
+					return level * 100;
+				default:
+					return 0;
+			}
+		} else if (type === "gathering") {
+			return Math.ceil(level / 2);
+		} else {
+			return 0;
 		}
 	};
 
+	// instead of getter fill array ?
+	// @idea maybe do bonuses for each area like first enemies are stronger in evasion, then in critical, then in absorbtion...
 	const getEnemyMaxHP = (enemy) => {
 		const level = enemy.level;
 		if (level % 10 === 0) {
@@ -899,7 +958,7 @@
 		}
 	};
 
-	const getEnemyAccuracy = (enemy) => {
+	const getEnemyPrecision = (enemy) => {
 		const level = enemy.level;
 		if (level % 10 === 0) {
 			return Math.floor(25 + (level - 1) * 0.6);
@@ -925,7 +984,7 @@
 		}
 	};
 
-	const getEnemyCritHit = (enemy) => {
+	const getEnemyCritical = (enemy) => {
 		const level = enemy.level;
 		if (level % 10 === 0) {
 			return Math.floor(0 + (level - 1) * 0.8);
@@ -938,7 +997,7 @@
 		}
 	};
 
-	const getEnemyAbsorb = (enemy) => {
+	const getEnemyResistance = (enemy) => {
 		const level = enemy.level;
 		if (level % 10 === 0) {
 			return Math.floor(0 + (level - 1) * 0.8);
@@ -971,7 +1030,7 @@
 
 	function generateEnemyInfo(enemy) {
 		return `An enemy ${enemy.icon} ${enemy.name} has appeared!\n` +
-		   `It has ${getEnemyMaxHP(enemy)} HP, ${getEnemyDamage(enemy)} DMG, ${getEnemyDefense(enemy)} DEF, ${getEnemyAccuracy(enemy)} ACC, ${getEnemyEvasion(enemy)} EVA, ${getEnemyCritHit(enemy)} CRI, ${getEnemyAbsorb(enemy)} ABS`;
+		   `It has ${getEnemyMaxHP(enemy)} HP, ${getEnemyDamage(enemy)} DMG, ${getEnemyDefense(enemy)} DEF, ${getEnemyPrecision(enemy)} ACC, ${getEnemyEvasion(enemy)} EVA, ${getEnemyCritical(enemy)} CRI, ${getEnemyResistance(enemy)} ABS`;
 	}
 
 	function performBattle(enemy) {
@@ -1070,8 +1129,10 @@
 				for (let i = 0; i < defeatedEnemies; i++) {
 					if (Math.random() < 0.5) {
 						const loot = generateLoot(player.level);
-						player.inventory.push(loot);
-						updateGameInfo(`You received ${loot.name} as loot.`);
+						if (loot){
+							player.inventory.push(loot);
+							updateGameInfo(`You received ${loot.name} as loot.`);
+						}
 					}
 				}
 			}
@@ -1192,17 +1253,17 @@
 		let turns = 0;
 		const basePlayerDamage = player.damage + calculateEquippedDamage();
 		const basePlayerDefense = player.defense + calculateEquippedDefense();
-		const basePlayerAccuracy = player.accuracy + calculateEquippedAccuracy();
+		const basePlayerPrecision = player.precision + calculateEquippedPrecision();
 		const basePlayerEvasion = player.evasion + calculateEquippedEvasion();
-		const basePlayerCritHit = player.critHit + calculateEquippedCritHit();
-		const basePlayerAbsorb = player.absorb + calculateEquippedAbsorb();
+		const basePlayerCritical = player.critical + calculateEquippedCritical();
+		const basePlayerResistance = player.resistance + calculateEquippedResistance();
 
 		const baseEnemyDamage = getEnemyDamage(enemy);
 		const baseEnemyDefense = getEnemyDefense(enemy);
-		const baseEnemyAccuracy = getEnemyAccuracy(enemy);
+		const baseEnemyPrecision = getEnemyPrecision(enemy);
 		const baseEnemyEvasion = getEnemyEvasion(enemy);
-		const baseEnemyCritHit = getEnemyCritHit(enemy);
-		const baseEnemyAbsorb = getEnemyAbsorb(enemy);
+		const baseEnemyCritical = getEnemyCritical(enemy);
+		const baseEnemyResistance = getEnemyResistance(enemy);
 	
 		const playerDamageReduction = calculateDamageReduction(basePlayerDefense);
 		const enemyDamageReduction = calculateDamageReduction(baseEnemyDefense);
@@ -1210,27 +1271,27 @@
 		const playerDamage = Math.ceil(Math.max(basePlayerDamage * (1 - enemyDamageReduction), 1));
 		const enemyDamage = Math.ceil(Math.max(baseEnemyDamage * (1 - playerDamageReduction), 1));
 
-		const playerHitChance = calculateHitChance(playerDamage, baseEnemyDefense, basePlayerAccuracy, baseEnemyEvasion);
-		const enemyHitChance = calculateHitChance(enemyDamage, basePlayerDefense, baseEnemyAccuracy, basePlayerEvasion);
+		const playerHitChance = calculateHitChance(playerDamage, baseEnemyDefense, basePlayerPrecision, baseEnemyEvasion);
+		const enemyHitChance = calculateHitChance(enemyDamage, basePlayerDefense, baseEnemyPrecision, basePlayerEvasion);
 
 		while (player.currentHP > 0 && enemy.currentHP > 0 && turns < maxTurns) {
 			// Player's Turn
 			if (Math.random() < playerHitChance) {
 				let playerDamageDealt = playerDamage;
-				if (Math.random() < player.critHit / 100) {
-					const critHitMultiplier = 1 + (player.critHit / 100);
-					playerDamageDealt = Math.ceil(playerDamageDealt * critHitMultiplier);
+				if (Math.random() < player.critical / 100) {
+					const criticalMultiplier = 1 + (player.critical / 100);
+					playerDamageDealt = Math.ceil(playerDamageDealt * criticalMultiplier);
 					updateGameInfo(`Critical Hit! You attack the ${enemy.icon} ${enemy.name} dealing ${playerDamageDealt} damage!`);
 				} else {
 					updateGameInfo(`You attack the ${enemy.icon} ${enemy.name} dealing ${playerDamageDealt} damage!`);
 				}
 
 				// Enemy's Damage Absorption
-				if (Math.random() < baseEnemyAbsorb / 100) {
-					const absorptionMultiplier = 1 - (baseEnemyAbsorb / 100);
-					const absorbedDamage = Math.ceil(playerDamageDealt * (1 - absorptionMultiplier));
-					playerDamageDealt -= absorbedDamage;
-					updateGameInfo(`The ${enemy.icon} ${enemy.name} absorbed ${absorbedDamage} of your damage!`);
+				if (Math.random() < baseEnemyResistance / 100) {
+					const absorptionMultiplier = 1 - (baseEnemyResistance / 100);
+					const resistanceedDamage = Math.ceil(playerDamageDealt * (1 - absorptionMultiplier));
+					playerDamageDealt -= resistanceedDamage;
+					updateGameInfo(`The ${enemy.icon} ${enemy.name} resistanceed ${resistanceedDamage} of your damage!`);
 				}
 
 				enemy.currentHP -= playerDamageDealt;
@@ -1239,20 +1300,20 @@
 			// Enemy's Turn
 			if (Math.random() < enemyHitChance) {
 				let enemyDamageDealt = enemyDamage;
-				if (Math.random() < enemy.critHit / 100) {
-					const critHitMultiplier = 1 + (enemy.critHit / 100);
-					enemyDamageDealt = Math.ceil(enemyDamageDealt * critHitMultiplier);
+				if (Math.random() < enemy.critical / 100) {
+					const criticalMultiplier = 1 + (enemy.critical / 100);
+					enemyDamageDealt = Math.ceil(enemyDamageDealt * criticalMultiplier);
 					updateGameInfo(`Critical Hit! The ${enemy.icon} ${enemy.name} attacks you dealing ${enemyDamageDealt} damage!`);
 				} else {
 					updateGameInfo(`The ${enemy.icon} ${enemy.name} attacks you dealing ${enemyDamageDealt} damage!`);
 				}
 
 				// Apply damage absorption
-				if (Math.random() < basePlayerAbsorb / 100) {
-					const absorptionMultiplier = 1 - (basePlayerAbsorb / 100);
-					const absorbedDamage = Math.ceil(enemyDamageDealt * (1 - absorptionMultiplier));
-					enemyDamageDealt -= absorbedDamage;
-					updateGameInfo(`You absorbed ${absorbedDamage} of enemy damage!`);
+				if (Math.random() < basePlayerResistance / 100) {
+					const absorptionMultiplier = 1 - (basePlayerResistance / 100);
+					const resistanceedDamage = Math.ceil(enemyDamageDealt * (1 - absorptionMultiplier));
+					enemyDamageDealt -= resistanceedDamage;
+					updateGameInfo(`You resistanceed ${resistanceedDamage} of enemy damage!`);
 				}
 				
 				player.currentHP -= enemyDamageDealt;
@@ -1269,8 +1330,10 @@
 
 			if (Math.random() < lootChance) {
 				const loot = generateLoot(enemy.level);
-				player.inventory.push(loot);
-				updateGameInfo(`You found a loot: ${loot.name}!`);
+				if (loot) {
+					player.inventory.push(loot);
+					updateGameInfo(`You found a loot: ${loot.name}!`);
+				}
 			}
 
 			if (Math.random() < lootChance * 4) {
@@ -1283,14 +1346,14 @@
 		}
 	}
 
-	function calculateHitChance(attackerAttack, defenderDefense, attackerAccuracy, defenderEvasion) {
+	function calculateHitChance(attackerAttack, defenderDefense, attackerPrecision, defenderEvasion) {
 		const baseHitChance = 0.8; // Base hit chance value
 		const maxHitChance = 0.95; // Maximum hit chance value
 		const minHitChance = 0.05; // Minimum hit chance value
 
-		// Calculate hit chance modifiers based on attacker's accuracy and defender's evasion
-		const accuracyModifier = attackerAccuracy - defenderEvasion;
-		const hitChanceModifier = accuracyModifier * 0.01; // Modify hit chance by 1% per point of accuracy difference
+		// Calculate hit chance modifiers based on attacker's precision and defender's evasion
+		const precisionModifier = attackerPrecision - defenderEvasion;
+		const hitChanceModifier = precisionModifier * 0.01; // Modify hit chance by 1% per point of precision difference
 
 		// Calculate hit chance based on attacker's attack, defender's defense, and hit chance modifiers
 		let hitChance = baseHitChance + hitChanceModifier;
@@ -1312,6 +1375,11 @@
 	// Function to generate loot
 	function generateLoot(level) {
 		const filteredItems = itemsList.filter((item) => item.level <= level);
+		
+		if (filteredItems.length === 0) {
+			return null;
+		}
+		
 		const randomIndex = Math.floor(Math.random() * filteredItems.length);
 		return filteredItems[randomIndex];
 	}
@@ -1325,10 +1393,10 @@
 		document.getElementById("playerRegeneration").textContent = `${player.regeneration} (+${calculateEquippedRegeneration()})`;
 		document.getElementById("playerDamage").textContent = `${player.damage} (+${calculateEquippedDamage()})`;
 		document.getElementById("playerDefense").textContent = `${player.defense} (+${calculateEquippedDefense()})`;
-		document.getElementById("playerAccuracy").textContent = `${player.accuracy} (+${calculateEquippedAccuracy()})`;
+		document.getElementById("playerPrecision").textContent = `${player.precision} (+${calculateEquippedPrecision()})`;
 		document.getElementById("playerEvasion").textContent = `${player.evasion} (+${calculateEquippedEvasion()})`;
-		document.getElementById("playerCritHit").textContent = `${player.critHit} (+${calculateEquippedCritHit()})`;
-		document.getElementById("playerAbsorb").textContent = `${player.absorb} (+${calculateEquippedAbsorb()})`;
+		document.getElementById("playerCritical").textContent = `${player.critical} (+${calculateEquippedCritical()})`;
+		document.getElementById("playerResistance").textContent = `${player.resistance} (+${calculateEquippedResistance()})`;
 		document.getElementById("playerExperience").textContent = `${player.experience} / ${getNextLevelExperience()}`;
 		document.getElementById("playerMoney").textContent = player.money;
 		document.getElementById("playerBonusExp").textContent = `${player.bonusExp} (+${calculateEquippedBonusExp()})`;
@@ -1365,9 +1433,9 @@
 		}
 	}
 
-	function calculateEquippedAccuracy() {
-		if (player.accuracyItem) {
-			return player.accuracyItem.accuracy;
+	function calculateEquippedPrecision() {
+		if (player.precisionItem) {
+			return player.precisionItem.precision;
 		} else {
 			return 0;
 		}
@@ -1381,17 +1449,17 @@
 		}
 	}
 
-	function calculateEquippedCritHit() {
-		if (player.critHitItem) {
-			return player.critHitItem.critHit;
+	function calculateEquippedCritical() {
+		if (player.criticalItem) {
+			return player.criticalItem.critical;
 		} else {
 			return 0;
 		}
 	}
 
-	function calculateEquippedAbsorb() {
-		if (player.absorbItem) {
-			return player.absorbItem.absorb;
+	function calculateEquippedResistance() {
+		if (player.resistanceItem) {
+			return player.resistanceItem.resistance;
 		} else {
 			return 0;
 		}
@@ -1428,11 +1496,11 @@
 		player.currentHP = player.maxHP;
 		player.damage += 2;
 		player.defense += 2;
-		if (player.level % 10 == 0) player.regeneration += 1;
-		if (player.level % 5 == 0) player.accuracy += 1;
+		if (player.level % 5 == 0) player.precision += 1;
 		if (player.level % 5 == 0) player.evasion += 1;
-		if (player.level % 5 == 0) player.critHit += 1;
-		if (player.level % 5 == 0) player.absorb += 1;
+		if (player.level % 10 == 0) player.regeneration += 1;
+		if (player.level % 5 == 0) player.critical += 1;
+		if (player.level % 5 == 0) player.resistance += 1;
 		updateGameInfo(`Congratulations! You leveled up to level ${player.level}.`);
 		updatePlayerStats();
 	}
@@ -1463,6 +1531,82 @@
 		showScreen("areas-screen");
 	}
 
+	function showGatherScreen() {
+		updateGameInfo("You are now gathering resources.");
+		
+		const gatherScreen = document.getElementById("gather-screen");
+		const gatherButton = document.getElementById("btnGatherr");
+		gatherButton.addEventListener("click", gatherResource);
+		
+		// Get the maximum level of gathered item based on player's level and gatheringXP
+		const maxGatherLevel = getMaxGatherLevel(player);
+
+		// Display the gathering items on the gather screen
+		const gatheringItemsScreen = document.createElement("div");
+		gatheringItemsScreen.setAttribute("id", "gathering-items-screen");
+		gatheringItemsScreen.innerHTML = "<h2>Gathering Items</h2>";
+		
+		// @todo debugme !
+		const itemList = document.createElement("ul");
+		for (const item of gatheringItems) {
+			const listItem = document.createElement("li");
+			if (item.level <= maxGatherLevel) {
+				listItem.textContent = `${item.name} - You can gather this item.`;
+			} else {
+				listItem.textContent = `${item.name} - You can't gather this item yet.`;
+			}
+			itemList.appendChild(listItem);
+		}
+		
+		gatheringItemsScreen.appendChild(itemList);
+		gatherScreen.appendChild(gatheringItemsScreen);
+		
+		showScreen("gather-screen");
+	}
+
+	function getMaxGatherLevel(player) {
+		// Calculate the maximum level of gathered item based on gatheringXP
+		return Math.max(Math.floor(player.gatheringXP / 100), 1);
+	}
+
+	function gatherResource() {
+		// Get the maximum level of gathered item based on player's level and gatheringXP
+		const maxGatherLevel = getMaxGatherLevel(player);
+
+		// Randomly choose an item from the gatheringItems array based on maxGatherLevel
+		const availableItems = gatheringItems.filter(item => item.level <= maxGatherLevel);
+		const randomIndex = Math.floor(Math.random() * availableItems.length);
+		const gatheredItem = availableItems[randomIndex];
+		
+		// Calculate the chance of getting a higher level gathered item based on gatheringXP
+		const gatherChance = player.gatheringXP / 1000;
+
+		// Check for a critical failure, higher level gather, or regular success based on chance
+		const roll = Math.random();
+		const criticalFailureChance = 0.05;
+		if (roll < criticalFailureChance) {
+			const lowerLevel = Math.max(1, Math.floor(gatheredItem.level * (1 - gatherChance)));
+			updateGameInfo(`Critical Failure! You gathered a level ${lowerLevel} ${gatheredItem.name}!`);
+			player.gatheringXP += 2;
+		} else if (roll < gatherChance) {
+			// Player successfully gathered a higher level item
+			const higherLevel = Math.ceil(gatheredItem.level * (1 + gatherChance));
+			updateGameInfo(`Critical Success! You gathered a level ${higherLevel} ${gatheredItem.name}!`);
+			player.gatheringXP += 5;
+		} else {
+			// Player successfully gathered the item
+			updateGameInfo(`You gathered a level ${gatheredItem.level} ${gatheredItem.name}.`);
+			player.gatheringXP += 8;
+		}
+
+		// Update the display of gatheringXP
+		const gatheringXPDisplay = document.getElementById("gathering-xp");
+		gatheringXPDisplay.textContent = `Gathering XP: ${player.gatheringXP}`;
+		
+		// Add gathered items to the player's inventory here
+		player.inventory.push(gatheredItem);
+	}
+
 	// Function to handle the inventory screen
 	function showInventoryScreen() {
 		const inventoryScreen = document.getElementById("inventory-screen");
@@ -1478,11 +1622,11 @@
 			const equippedItems = {
 				damage: player.damageItem,
 				defense: player.defenseItem,
-				regeneration: player.regenerationItem,
-				accuracy: player.accuracyItem,
+				precision: player.precisionItem,
 				evasion: player.evasionItem,
-				critHit: player.critHitItem,
-				absorb: player.absorbItem,
+				regeneration: player.regenerationItem,
+				critical: player.criticalItem,
+				resistance: player.resistanceItem,
 				bonusExp: player.bonusExpItem,
 				bonusLoot: player.bonusLootItem
 			};
@@ -1505,11 +1649,11 @@
 		const statMap = {
 			damage: "damageItem",
 			defense: "defenseItem",
-			regeneration: "regenerationItem",
-			accuracy: "accuracyItem",
+			precision: "precisionItem",
 			evasion: "evasionItem",
-			critHit: "critHitItem",
-			absorb: "absorbItem",
+			critical: "criticalItem",
+			resistance: "resistanceItem",
+			regeneration: "regenerationItem",
 			bonusExp: "bonusExpItem",
 			bonusLoot: "bonusLootItem"
 		};
@@ -1521,7 +1665,7 @@
 			player[playerProperty] = item;
 			updateGameInfo(`Equipped ${playerProperty}: ${item.name}`);
 		} else {
-			console.log(`Unsupported item stat: ${stat}`);
+			console.log(`Unsupported item type: "stat", stat: ${stat}`);
 		}
 	
 		updatePlayerStats();
@@ -1603,7 +1747,7 @@
 
 	// Function to calculate the value of an item for selling
 	function calculateItemValue(item) {
-		return getItemCost(item) / 2;
+		return Math.ceil(getItemCost(item) / 2);
 	}
 	
 	// Function to handle the gambling logic
@@ -1736,6 +1880,8 @@
 		document.getElementById("btnMission").addEventListener("click", startMission);
 		document.getElementById("btnEncounter").addEventListener("click", startEncounter);
 		document.getElementById("btnAreas").addEventListener("click", showAreasScreen);
+		document.getElementById("btnGather").addEventListener("click", showGatherScreen);
+		// document.getElementById("btnCraft").addEventListener("click", showCraftScreen);
 		document.getElementById("btnInventory").addEventListener("click", showInventoryScreen);
 		document.getElementById("btnBuy").addEventListener("click", showBuyScreen);
 		document.getElementById("btnSell").addEventListener("click", showSellScreen);
