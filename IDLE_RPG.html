@@ -314,9 +314,48 @@
 
 	<script>
 
-	// Helper function to get a random number between min and max (inclusive)
-	function getRandomNumber(min, max) {
-		return Math.floor(Math.random() * (max - min + 1)) + min;
+	const gameSeed = "fantasyClickerBattles"; // @todo generate a seed and use it for the rest of the game until next reset
+
+	// Helpers
+	const getRandomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+	const xorshift128plus = (seed) => {
+		let x = murmurhash3_32_gc(gameSeed + seed) || 1;
+		x = (x ^ (x >>> 15)) >>> 0;
+		x = (x ^ (x << 10)) >>> 0;
+		x = (x ^ (x >>> 3)) >>> 0;
+	
+		return () => {
+			x += 0x6D2B79F5;
+			x = (x ^ (x >>> 15)) >>> 0;
+			x = (x ^ (x << 10)) >>> 0;
+			x = (x ^ (x >>> 3)) >>> 0;
+			return (x >>> 0) / 0xFFFFFFFF;
+		};
+	}
+
+	const murmurhash3_32_gc = (key) => {
+		let h = 0;
+	
+		for (let i = 0; i < key.length; i++) {
+			let k = key.charCodeAt(i);
+			k = k * 0xcc9e2d51;
+			k = (k << 15) | (k >>> 17);
+			k = k * 0x1b873593;
+	
+			h ^= k;
+			h = (h << 13) | (h >>> 19);
+			h = h * 5 + 0xe6546b64;
+		}
+	
+		h ^= key.length;
+		h ^= h >>> 16;
+		h = h * 0x85ebca6b;
+		h ^= h >>> 13;
+		h = h * 0xc2b2ae35;
+		h ^= h >>> 16;
+	
+		return h >>> 0;
 	}
 
 	const gameHash = window.location.hash.slice(1);
@@ -422,14 +461,6 @@
 		{ level: 98, experience: 475300 },
 		{ level: 99, experience: 485100 },
 		{ level: 100, experience: 495000 }
-	];
-
-	const baseIngredient = { name: "Base Ingredient", icon: "🧪", type: "baseIngredient" }; // The base ingredient for all recipes
-
-	const statUpgrades = [
-		{ stat: "damage", item: { name: "Upgrade damageStat", icon: "🌿", type: "statUpgrade" } }, // @todo stat: "damageStat"
-		{ stat: "defense", item: { name: "Upgrade defenseStat", icon: "🔮" } }
-		// Add more stat upgrades as needed
 	];
 
 	const gameConfig = {
@@ -791,15 +822,38 @@
 			],
 			gatheringItems: [
 				{ name: "Healing Herb", type: "gathering", level: 1, icon: "🌿" },
+				{ name: "Green Leaf", type: "gathering", level: 1, icon: "🍀" },
+				{ name: "Glowing Fungus", type: "gathering", level: 1, icon: "🍄" },
+				{ name: "Shimmering Petals", type: "gathering", level: 1, icon: "🌺" },
+				{ name: "Morning Dew", type: "gathering", level: 1, icon: "🌞" },
+				{ name: "Dandelion Fluff", type: "gathering", level: 1, icon: "🌼" },
 				{ name: "Mystic Mushroom", type: "gathering", level: 2, icon: "🍄" },
+				{ name: "Enchanted Moss", type: "gathering", level: 2, icon: "🍂" },
+				{ name: "Soothing Berries", type: "gathering", level: 2, icon: "🍇" },
+				{ name: "Gleaming Stones", type: "gathering", level: 2, icon: "💎" },
+				{ name: "Golden Petals", type: "gathering", level: 2, icon: "🌼" },
 				{ name: "Silverleaf", type: "gathering", level: 3, icon: "🍃" },
+				{ name: "Moonlight Orchid", type: "gathering", level: 3, icon: "🌕" },
+				{ name: "Twilight Berries", type: "gathering", level: 3, icon: "🍇" },
+				{ name: "Starlight Mushroom", type: "gathering", level: 3, icon: "✨" },
 				{ name: "Dragon's Tongue", type: "gathering", level: 4, icon: "🐉" },
+				{ name: "Serpent Scale", type: "gathering", level: 4, icon: "🐍" },
+				{ name: "Dragonfire Bloom", type: "gathering", level: 4, icon: "🔥" },
 				{ name: "Moonflower", type: "gathering", level: 5, icon: "🌼" },
-				{ name: "Ghost Orchid", type: "gathering", level: 6, icon: "👻" },
-				{ name: "Basilisk's Breath", type: "gathering", level: 7, icon: "🐍" },
-				{ name: "Phoenix Feather", type: "gathering", level: 8, icon: "🔥" },
-				{ name: "Witch's Thistle", type: "gathering", level: 9, icon: "🧙‍♀️" },
-				{ name: "Eternal Blossom", type: "gathering", level: 10, icon: "🌸" }
+				{ name: "Ghost Orchid", type: "gathering", level: 5, icon: "👻" },
+				{ name: "Nightshade Berry", type: "gathering", level: 5, icon: "🌙" },
+				{ name: "Basilisk's Breath", type: "gathering", level: 6, icon: "🐍" },
+				{ name: "Basilisk Scale", type: "gathering", level: 6, icon: "🐉" },
+				{ name: "Venomous Petal", type: "gathering", level: 6, icon: "☠️" },
+				{ name: "Phoenix Feather", type: "gathering", level: 7, icon: "🔥" },
+				{ name: "Phoenix Ash", type: "gathering", level: 7, icon: "🌑" },
+				{ name: "Witch's Thistle", type: "gathering", level: 7, icon: "🧙‍♀️" },
+				{ name: "Enchanted Vines", type: "gathering", level: 8, icon: "🌿" },
+				{ name: "Arcane Essence", type: "gathering", level: 8, icon: "✨" },
+				{ name: "Eternal Blossom", type: "gathering", level: 9, icon: "🌸" },
+				{ name: "Celestial Petal", type: "gathering", level: 9, icon: "🌟" },
+				{ name: "Starfire Crystal", type: "gathering", level: 10, icon: "💫" },
+				{ name: "Moonlight Essence", type: "gathering", level: 10, icon: "🌕" }
 			],
 			peopleInNeed: [
 				"The distressed villagers",
@@ -905,6 +959,51 @@
 	const locations = gameConfigData.locations;
 	const challengeVerbs = gameConfigData.challengeVerbs;
 	const randomEnemies = gameConfigData.randomEnemies;
+
+	const statNames = [
+		"damage",
+		"defense",
+		"precision",
+		"evasion",
+		"critical",
+		"resistance",
+		"block",
+		"penetration"
+	];
+
+	function getRandomIngredient(level, statIndex, ingredientIndex) {
+		const seed = `${level}${statIndex}${ingredientIndex}`;
+		const rng = xorshift128plus(seed);
+		const filteredItems = gatheringItems.filter(item => item.level <= level * 2);
+		const randomIndex = Math.floor(rng() * filteredItems.length);
+		return filteredItems[randomIndex];
+	}
+
+	function generateRecipe(level, statIndex) {
+		const ingredients = [];
+		const ingredientCount = level * 2;
+		for (let ingredientIndex = 0; ingredientIndex < ingredientCount; ingredientIndex++) {
+			const item = getRandomIngredient(level, statIndex, ingredientIndex);
+			ingredients.push(item);
+		}
+		return ingredients;
+	}
+
+	function generateRecipes() {
+		const recipes = {};
+	
+		for (let statIndex = 0; statIndex < statNames.length; statIndex++) {
+			const stat = statNames[statIndex];
+			recipes[stat] = [];
+			for (let level = 1; level <= 5; level++) {
+				recipes[stat].push(generateRecipe(level, statIndex));
+			}
+		}
+	
+		return recipes;
+	}
+
+	const recipes = generateRecipes();
 
 	const hpDelay = 200;
 
@@ -1068,7 +1167,7 @@
 					return 0;
 			}
 		} else if (type === "gathering") {
-			return level / 2;
+			return level * 2;
 		} else {
 			return 0;
 		}
@@ -1515,68 +1614,39 @@
 		}
 	} */
 
-	// Function to show the areas screen
 	function showAreasScreen() {
 		updateGameInfo(`You are currently in ${player.currentArea.name}.`);
-
-		const areasScreen = document.getElementById("areas-screen");
+	
 		const areaList = document.getElementById("area-list");
 		areaList.innerHTML = "";
 
-		// Display the list of areas
-		for (let i = 0; i < areas.length; i++) {
-			const area = areas[i];
+		areas.map(area => {
 			const areaButton = document.createElement("button");
 			areaButton.textContent = area.name;
 			areaButton.addEventListener("click", () => {
-				// Update the currentArea property in the player object
 				player.currentArea = area;
 				updateGameInfo(`You have entered the ${area.name}.`);
 				updateGameInfo(`${area.description}.`);
 				updatePlayerStats();
 			});
 			areaList.appendChild(areaButton);
-		}
+		});
 	
 		showScreen("areas-screen");
 	}
 
-	// Function to show the gather screen
 	function showGatherScreen() {
 		const gatherItems = document.getElementById("gather-item-list");
 		gatherItems.innerHTML = "";
 	
 		updateGameInfo("You are now gathering resources.");
-		
-		// Get the maximum level of gathered item based on player's gatheringXP
+
 		const maxGatherLevel = getMaxGatherLevel(player);
 	
 		const itemList = document.createElement("ul");
 		for (const item of gatheringItems) {
 			const listItem = document.createElement("li");
-			const itemName = document.createElement("span");
-			const itemInfo = document.createElement("small");
-	
-			if (item.level <= maxGatherLevel) {
-				itemName.textContent = item.name;
-				itemInfo.textContent = "You can gather this item.";
-			} else {
-				itemName.textContent = item.name;
-				itemInfo.textContent = "You can't gather this item yet.";
-			}
-	
-			// Append icon if available
-			if (item.icon) {
-				const itemIcon = document.createElement("span");
-				itemIcon.innerHTML = item.icon;
-				listItem.appendChild(itemIcon);
-			}
-	
-			// Append item name and "You can" / "You can't" <small> element
-			listItem.appendChild(itemName);
-			listItem.appendChild(document.createElement("br"));
-			listItem.appendChild(itemInfo);
-	
+			listItem.innerHTML = `${item.name} ${item.icon} (Level ${item.level})<br><small>${item.level <= maxGatherLevel ? "You can gather this item." : "You can't gather this item yet."}</small>`;
 			itemList.appendChild(listItem);
 		}
 	
@@ -1586,136 +1656,123 @@
 	}
 
 	function getMaxGatherLevel(player) {
-		// Calculate the maximum level of gathered item based on gatheringXP
-		return Math.max(Math.floor(player.gatheringXP / 100), 1);
+		return Math.max(Math.floor(player.gatheringXP / 1000), 1);
 	}
 
 	function gatherResource() {
-		// Get the maximum level of gathered item based on player's gatheringXP
 		const maxGatherLevel = getMaxGatherLevel(player);
-
-		// Randomly choose an item from the gatheringItems array based on maxGatherLevel
 		const availableItems = gatheringItems.filter(item => item.level <= maxGatherLevel);
 		const randomIndex = Math.floor(Math.random() * availableItems.length);
 		const gatheredItem = availableItems[randomIndex];
 		
-		// Calculate the chance of getting a higher level gathered item based on gatheringXP
-		const gatherChance = player.gatheringXP / 1000;
-
-		// Check for a critical failure, higher level gather, or regular success based on chance
-		const roll = Math.random();
-		const criticalFailureChance = 0.05;
-		if (roll < criticalFailureChance) {
-			const lowerLevel = Math.max(1, Math.floor(gatheredItem.level * (1 - gatherChance)));
-			updateGameInfo(`Critical Failure! You gathered a level ${lowerLevel} ${gatheredItem.name}!`);
-			player.gatheringXP += 2;
-		} else if (roll < gatherChance) {
-			// Player successfully gathered a higher level item
-			const higherLevel = Math.ceil(gatheredItem.level * (1 + gatherChance));
-			updateGameInfo(`Critical Success! You gathered a level ${higherLevel} ${gatheredItem.name}!`);
-			player.gatheringXP += 5;
-		} else {
-			// Player successfully gathered the item
-			updateGameInfo(`You gathered a level ${gatheredItem.level} ${gatheredItem.name}.`);
-			player.gatheringXP += 8;
-		}
-
-		// Update the display of gatheringXP
+		const levelDifference = maxGatherLevel - gatheredItem.level;
+		const extraGatherChance = Math.min(0.5, levelDifference * 0.05);
+		let totalGathers = 1 + Math.floor(Math.random() * (levelDifference + 1));
+		totalGathers = Math.min(totalGathers, 10);
+		
+		const xpGained = Math.max(1, 5 - levelDifference);
+	
+		updateGameInfo(`You gathered ${totalGathers} ${gatheredItem.name}.`);
+		
+		player.gatheringXP += xpGained * totalGathers;
 		const gatheringXPDisplay = document.getElementById("gathering-xp");
 		gatheringXPDisplay.textContent = `Gathering XP: ${player.gatheringXP}`;
 		
-		// Add gathered items to the player's inventory here
-		player.inventory.push(gatheredItem);
-	}
-
-	// Function to dynamically generate crafting recipes
-	function generateCraftingRecipes() {
-		const craftingRecipes = [];
-	
-		// Generate crafting recipes for each stat upgrade and the power multiplier
-		for (const statUpgrade of statUpgrades) {
-			for (const gatheredItem of gatheringItems) {
-				const recipe = {
-					name: `${statUpgrade.stat} Crafting - Level ${gatheredItem.level}`,
-					stat: statUpgrade.stat,
-					craftXP: 10 * gatheredItem.level,
-					baseIngredient: baseIngredient,
-					statUpgradeItem: statUpgrade.item,
-					powerMultiplierItem: gatheredItem
-				};
-	
-				craftingRecipes.push(recipe);
-			}
+		for (let i = 0; i < totalGathers; i++) {
+			player.inventory.push(gatheredItem);
 		}
-	
-		return craftingRecipes;
 	}
-	
-	const craftingRecipes = generateCraftingRecipes();
 
-	// Function to display the crafting screen
 	function showCraftingScreen() {
-		const craftingScreen = document.getElementById("crafting-screen");
-		craftingScreen.innerHTML = "";
+		const craftingRecipes = document.getElementById("crafting-recipes-list");
+		craftingRecipes.innerHTML = "";
 		
-		// Display buttons for buying base ingredient and stat upgrade items
-		const buyItemsDiv = document.createElement("div");
-		buyItemsDiv.setAttribute("id", "buy-items");
-		const buyBaseIngredientBtn = document.createElement("button");
-		buyBaseIngredientBtn.textContent = `Buy ${baseIngredient.name} - ${baseIngredient.icon}`;
-		buyBaseIngredientBtn.addEventListener("click", () => {
-			buyItem(baseIngredient);
-		});
-		buyItemsDiv.appendChild(buyBaseIngredientBtn);
-		
-		for (const statUpgrade of statUpgrades) {
-			const buyStatUpgradeBtn = document.createElement("button");
-			buyStatUpgradeBtn.textContent = `Buy ${statUpgrade.item.name} - ${statUpgrade.item.icon}`;
-			buyStatUpgradeBtn.addEventListener("click", () => {
-				buyItem(statUpgrade.item);
-			});
-			buyItemsDiv.appendChild(buyStatUpgradeBtn);
-		}
-		
-		craftingScreen.appendChild(buyItemsDiv);
-		
-		// Display buttons for crafting recipes
 		const craftingRecipesDiv = document.createElement("div");
-		craftingRecipesDiv.setAttribute("id", "crafting-recipes");
 		
-		// Function to handle crafting a recipe
-		function craftRecipe(recipe) {
-			// Increase the player's craftingXP when a recipe is crafted
-			player.craftingXP += recipe.craftXP;
-			// Implement the crafting logic here (check ingredients, apply effects, etc.)
-			// You can also add crafted items to the player's inventory
-			// Show a success or failure message to the player
-			updatePlayerCraftingXP();
-		}
-
-		for (const statUpgrade of statUpgrades) {
+		for (const stat of statNames) {
 			const statDetails = document.createElement("details");
 			const statSummary = document.createElement("summary");
-			statSummary.textContent = `${statUpgrade.stat} Recipes`;
+			statSummary.textContent = `${stat} Recipes`;
 			statDetails.appendChild(statSummary);
+		
+			for (const level in recipes[stat]) {
+				const levelRecipe = recipes[stat][level];
+				const recipeBtn = document.createElement("button");
 
-			for (const recipe of craftingRecipes) {
-				if (recipe.stat === statUpgrade.stat) {
-					const recipeBtn = document.createElement("button");
-					recipeBtn.textContent = `${recipe.name} - Craft XP: ${recipe.craftXP}`;
-					recipeBtn.addEventListener("click", () => {
-					  craftRecipe(recipe);
-					});
-					statDetails.appendChild(recipeBtn);
+				// Create a div to hold the ingredient icons inside the button
+				const ingredientsDiv = document.createElement("div");
+
+				for (const ingredient of levelRecipe) {
+					const ingredientIcon = document.createElement("span");
+					ingredientIcon.textContent = ingredient.icon;
+					ingredientsDiv.appendChild(ingredientIcon);
 				}
-			}
 
+				// Append the ingredients div to the button's innerHTML
+				recipeBtn.innerHTML = `Craft of ${stat} ${level}<br>${ingredientsDiv.innerHTML}`;
+
+				recipeBtn.addEventListener("click", () => craftRecipe(levelRecipe));
+
+				statDetails.appendChild(recipeBtn);
+			}
+		
 			craftingRecipesDiv.appendChild(statDetails);
 		}
-
-		craftingScreen.appendChild(craftingRecipesDiv);
-
+		
+		craftingRecipes.appendChild(craftingRecipesDiv);
+		
 		showScreen("crafting-screen");
+	}
+
+	// Function to handle crafting a recipe
+	function craftRecipe(recipe) {
+		// Check if the player has enough ingredients for the recipe
+		if (checkIngredients(recipe)) {
+			// Deduct the ingredients from the player's inventory
+			deductIngredients(recipe);
+			// Increase the player's craftingXP when a recipe is crafted
+			player.craftingXP += 5;
+			// Implement the crafting logic here (apply effects, add crafted item to the inventory, etc.)
+			// @todo
+			// Show a success message to the player
+			updatePlayerCraftingXP();
+		} else {
+			// Show a message to the player indicating they don't have enough ingredients
+		  	updateGameInfo("You don't have enough ingredients to craft this item.");
+		}
+	}
+
+	// Function to check if the player has enough ingredients to craft a recipe
+	function checkIngredients(ingredients) {
+		// Count the occurrences of each ingredient in the recipe
+		const recipeCounts = {};
+		ingredients.forEach((ingredient) => {
+			recipeCounts[ingredient.name] = (recipeCounts[ingredient.name] || 0) + 1;
+		});
+		
+		// Count the occurrences of each ingredient in the player's inventory
+		const inventoryCounts = {};
+		player.inventory.forEach((item) => {
+			inventoryCounts[item.name] = (inventoryCounts[item.name] || 0) + 1;
+		});
+		
+		// Check if the player has enough of each ingredient in the inventory
+		return Object.keys(recipeCounts).every((ingredientName) => {
+			const requiredQuantity = recipeCounts[ingredientName];
+			const countInInventory = inventoryCounts[ingredientName] || 0;
+			return countInInventory >= requiredQuantity;
+		});
+	}
+		
+	// Function to deduct the ingredients from the player's inventory when crafting
+	function deductIngredients(ingredients) {
+		ingredients.forEach((ingredient) => {
+			// Find the first item with the same name in the player's inventory and remove it
+			const index = player.inventory.findIndex((item) => item.name === ingredient.name);
+			if (index !== -1) {
+				player.inventory.splice(index, 1);
+			}
+		});
 	}
 	
 	// Function to update the display of player's craftingXP
@@ -1726,29 +1783,20 @@
 
 	// Function to handle the inventory screen
 	function showInventoryScreen() {
-		const inventoryScreen = document.getElementById("inventory-screen");
 		const inventory = document.getElementById("item-list");
 		inventory.innerHTML = "";
 		
-		// Display player inventory
-		for (let i = 0; i < player.inventory.length; i++) {
-			const item = player.inventory[i];
+		const equippedItems = {};
+		for (const statName of statNames) {
+		  equippedItems[statName] = player[`${statName}Item`];
+		}
+
+		for (const item of player.inventory) {
+			const { icon, name, stat } = item;
 			const itemElement = document.createElement("div");
-			itemElement.textContent = `${item.icon} ${item.name}`;
+			itemElement.textContent = `${icon} ${name}`;
 		
-			const equippedItems = {
-				damage: player.damageItem,
-				defense: player.defenseItem,
-				precision: player.precisionItem,
-				evasion: player.evasionItem,
-				regeneration: player.regenerationItem,
-				critical: player.criticalItem,
-				resistance: player.resistanceItem,
-				bonusExp: player.bonusExpItem,
-				bonusLoot: player.bonusLootItem
-			};
-		
-			if (equippedItems[item.stat] === item) {
+			if (equippedItems[stat] === item) {
 				itemElement.classList.add("equipped");
 			}
 		
@@ -1763,24 +1811,12 @@
 
 	// Function to equip an item from the inventory
 	function equipItem(item) {
-		const statMap = {
-			damage: "damageItem",
-			defense: "defenseItem",
-			precision: "precisionItem",
-			evasion: "evasionItem",
-			critical: "criticalItem",
-			resistance: "resistanceItem",
-			regeneration: "regenerationItem",
-			bonusExp: "bonusExpItem",
-			bonusLoot: "bonusLootItem"
-		};
+		const { icon, name, stat } = item;
+		const playerProperty = `${stat}Item`;
 	
-		const stat = item.stat;
-		const playerProperty = statMap[stat];
-	
-		if (playerProperty) {
+		if (player.hasOwnProperty(playerProperty)) {
 			player[playerProperty] = item;
-			updateGameInfo(`Equipped ${playerProperty}: ${item.name}`);
+			updateGameInfo(`Equipped ${playerProperty}: ${icon} ${name}`);
 		} else {
 			console.log(`Unsupported item type: "stat", stat: ${stat}`);
 		}
@@ -1909,30 +1945,13 @@
 			{ slot: "Bonus Loot", item: player.bonusLootItem }
 		];
 	
-		// Create and append list items for each equipped item
-		equippedItems.forEach(equipped => {
-			const equippedItem = equipped.item;
-			const equippedItemSlot = equipped.slot;
-	
+		// Generate the HTML content for each equipped item and append it to the list
+		equippedItems.forEach(({ slot, item }) => {
+			const itemIconContent = item ? item.icon : "❌"; // Display a cross if the slot is empty
+			const itemNameContent = item ? item.name : "Empty";
 			const listItem = document.createElement("li");
 			listItem.classList.add("equipped-item");
-	
-			const itemIcon = document.createElement("span");
-			itemIcon.classList.add("equipped-item-icon");
-			itemIcon.textContent = equippedItem ? equippedItem.icon : "❌"; // Display a cross if the slot is empty
-	
-			const itemName = document.createElement("span");
-			itemName.classList.add("equipped-item-name");
-			itemName.textContent = equippedItem ? equippedItem.name : "Empty";
-	
-			const itemSlot = document.createElement("span");
-			itemSlot.classList.add("equipped-item-slot");
-			itemSlot.textContent = `[${equippedItemSlot}]`;
-
-			listItem.appendChild(itemIcon);
-			listItem.appendChild(itemName);
-			listItem.appendChild(itemSlot);
-	
+			listItem.innerHTML = `${itemIconContent} ${itemNameContent} [${slot}]`;
 			equippedItemsList.appendChild(listItem);
 		});
 	
