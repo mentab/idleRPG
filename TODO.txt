@@ -1,0 +1,89 @@
+Modules (@reword)
+----------------
+Exploration: fight an enemy or a random encounter (mandatory)
+Challenge: fight a boss
+Mission: fight a group of the same enemy and get coins
+Dungeon : fight a group of different enemies and get loots
+Items: inventory / sell / buy (mandatory)
+Save / Load / Reset
+Debug - Level / Money
+Rest: pay to be full life (remove potions ?)
+
+@todo
+Area: manage your current area (mandatory)
+
+
+@later
+Stats : Manage your stats
+	You have 2 groups of stat, main and secondary, you can choose where to spend points (like 2 in main, 2 in secondary)
+	Stats that are unique (like HP) are upgraded automatically
+
+Inventory : display inventory, you can remove your equipped items
+
+Gather : Fishing/Mining/Hunting
+	You can gather X items from low to high levels
+	You can sell them
+	Add a gather level for more efficiency
+	Critical Success Failure, gather more if lower level
+	Add gatherers ?
+
+Craft : buy crafting items / make recipes /
+	You can use only 1 crafted item at the same time, it improves one stat only, and last for a few fights
+	Three ingredients, one is the same for every recipe, one for the stat upgraded and one for the level
+	You only gather the "level" ingredient, the rest is bought or looted ?
+	Add a craft level for more efficiency, Critical Success Failure
+	You may sell them as well to make a little profit
+
+Upgrading : you can upgrade items
+   Display the list of items
+   For each item, make an upgrading cost depending on its value
+   You have 50% chance of upgrading one level then 25 then 12 then...
+   You can also go lower but you have 50% of gowing lower then 25 then 12...
+   Save just a stat containg the upgrading level (base 0) on each items
+
+Spells : handle your spells, you can choose where to spend points, level 5 max for each spell
+	Make 5 generic spells, use them in battle, add them for enemies
+	at the start of a battle, before the physical part is the spell part
+	spell idea : summon, heal, hurt, hitMore, dmgMore, stun ....
+	easier idea : damage/heal/damage but less (every turn)/heal but less (every turn)
+	Add intelligence / willpower / mana ?
+
+Arena : fight a random generated dude and get ... experience ?
+
+
+Achievements : you can get rewards if you killed enemy X Y times...
+Training
+Explore ? : Maybe it shoule be included in the main module
+Housing
+
+Stats (@reword)
+---------------
+// Weapon : Damage - Offense ?
+// Body Armor : Defense
+
+// Gloves: Precision
+// Trinket: Evasion
+
+// Ring: Critical Hit
+// Cloak : Damage resistancetion
+
+// Shield: Block
+// Penetration
+
+// Soulstone: Health Regen
+// Belt: Health
+
+Bonuses / No direct linked stat :
+// Necklace: Magic Find
+// Charm: Bonus Experience
+// Amulet: Elemental Damage
+
+
+
+// Boots: Endurance / Movement Speed
+// Pants: Stamina
+// Potion/Consumable: Healing (removed)
+
+Add pets ?
+
+Add mini games that give bonus on each fighting screen

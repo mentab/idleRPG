@@ -1,0 +1,97 @@
+html {
+	height: 100%;
+	box-sizing: border-box;
+}
+body {
+	height: 100%;
+	font-family: "Courier New", Courier, monospace;
+	margin: 0;
+	padding: 0;
+}
+
+/* Define the squared button styles */
+button {
+	display: inline-block;
+	padding: 10px;
+	margin: 5px;
+	background-color: white;
+	border: 1px solid black;
+	text-decoration: none;
+	color: black;
+	text-transform: uppercase;
+	font-weight:  bold;
+	transition: background-color 0.3s ease;
+	width: 100%;
+}
+
+/* Add hover effect to the buttons */
+button:hover {
+	background-color: #f0f0f0;
+}
+
+#game-container {
+	height: 100%;
+	display: flex;
+	width: 100%;
+	align-items: center;
+	overflow: hidden;
+}
+
+.flex-container {
+	display: flex;
+	justify-content: space-between;
+}
+
+#main-screens {
+	width: 35%;
+	padding: 10px;
+	height: 100%;
+	overflow: scroll;
+}
+
+#information-screen {
+	width: 65%;
+	height: 100%;
+	padding: 10px;
+	display: flex;
+	flex-direction: column;
+}
+
+#game-info {
+	flex-grow: 1;
+	overflow-y: scroll;
+	border: 1px solid #ccc;
+	padding: 10px;
+}
+
+#message-container {
+	display: flex;
+	flex-direction: column-reverse;
+}
+
+.game-message {
+	border: 1px solid #000000;
+	padding: 5px;
+	margin-bottom: 5px;
+}
+
+#screens {
+	margin-top: 10px;
+}
+
+#screens > div {
+	margin-top: 10px;
+}
+
+.hidden {
+	display: none;
+}
+
+.equipped,
+.selected {
+	font-weight: bold;
+}
+
+.item {
+	cursor: pointer;
+}

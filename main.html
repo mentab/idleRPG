@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Fantasy Clicker Battles</title>
+	<link rel="stylesheet" href="main.css">
+</head>
+<body>	
+	<div id="game-container">
+		<div id="main-screens">
+			<div id="main-screen">
+				<div class="flex-container">
+					<button id="btnExploration">🗺️ Exploration</button>
+				</div>
+				<div class="flex-container">
+					<button id="btnChallenge">⚔️ Challenge</button>
+					<button id="btnMission">🔍 Mission</button>
+					<button id="btnDuel">🤼 Duel</button>
+					<!-- <button id="btnEncounter">🚀 Encounter</button> -->
+				</div>
+				<div class="flex-container">
+					<button id="btnAreas">🗺️ Areas</button>
+					<button id="btnStats">📊 Stats</button>
+					<button id="btnEquipped">🛡️ Equipped</button>
+				</div>
+				<div class="flex-container">
+					<button id="btnInventory">🎒 Inventory</button>
+					<button id="btnBuy">💰 Buy</button>
+					<button id="btnSell">💎 Sell</button>
+				</div>
+				<div class="flex-container">
+					<button id="btnGather">🌿 Gather</button>
+					<button id="btnCraft">🔨 Craft</button>
+				</div>
+				<div class="flex-container">
+					<button id="btnGamble">🎲 Gamble</button>
+					<button id="btnHeal">💊 Heal</button>
+				</div>
+				<div class="flex-container">
+					<button id="btnExperience">🐞 Experience</button>
+					<button id="btnMoney">🐞 Money</button>
+				</div>
+				<div class="flex-container">
+					<button id="btnSave">💾 Save</button>
+					<button id="btnLoad">📂 Load</button>
+					<button id="btnReset">🔄 Reset</button>
+				</div>
+			</div>
+
+			<div id="areas-screen" class="hidden">
+				<button class="btnBackToMain">🔙 Back to Main</button>
+				<h4>Areas</h4>
+				<div id="area-list"></div>
+			</div>
+
+			<div id="inventory-screen" class="hidden">
+				<button class="btnBackToMain">🔙 Back to Main</button>
+				<h4>Inventory</h4>
+				<div id="item-list"></div>
+			</div>
+
+			<div id="buy-screen" class="hidden">
+				<button class="btnBackToMain">🔙 Back to Main</button>
+				<h4>Buy Items</h4>
+				<div id="shop-item-list"></div>
+			</div>
+
+			<div id="sell-screen" class="hidden">
+				<button class="btnBackToMain">🔙 Back to Main</button>
+				<h4>Sell Items</h4>
+				<div id="sell-item-list"></div>
+			</div>
+
+			<div id="stats-screen" class="hidden">
+				<button class="btnBackToMain">🔙 Back to Main</button>
+				<h2>Player Stats</h2>
+				<div class="stat-list">
+					<ul id="playerStatsList"></ul>
+				</div>
+			</div>
+
+			<div id="equipped-screen" class="hidden">
+				<button class="btnBackToMain">🔙 Back to Main</button>
+				<h2>Equipped Items</h2>
+				<div class="equipped-list">
+					<ul id="equippedItemsList"></ul>
+				</div>
+			</div>
+
+			<div id="gather-screen" class="hidden">
+				<button class="btnBackToMain">🔙 Back to Main</button>
+				<h2>Gather Resources</h2>
+				<p id="gathering-xp">Gathering XP: 0</p>
+				<button id="btnGatherr">Gather</button>
+				<div id="gather-item-list"></div>
+			</div>
+
+			<div id="crafting-screen" class="hidden">
+				<button class="btnBackToMain">🔙 Back to Main</button>
+				<h2>Crafting</h2>
+				<p id="crafting-xp">Crafting XP: 0</p>
+				<div id="crafting-recipes-list"></div>
+			</div>
+
+		</div>
+
+		<div id="information-screen">
+			<h4>🗺️: <span id="playerCurrentArea"></span></h4>
+			<div>
+				<p id="playerStats">
+					🎚️: <span id="playerLevel"></span> |
+					💖: <span id="playerCurrentHP"></span>/<span id="playerMaxHP"></span> |
+					💚: <span id="playerRegeneration"></span> |
+					🌟: <span id="playerExperience"></span> |
+					💰: <span id="playerMoney"></span>
+				</p>
+			</div>
+			<div id="game-info">
+				<div id="message-container"></div>
+			</div>
+		</div>
+	</div>
+
+	<script src="main.js" type="module"></script>
+</body>
+</html>
