@@ -1,21 +1,17 @@
 // SellScreen.js
 
 class SellScreen {
-	constructor(gameContainer, player, updateGameInfo, updatePlayerStats) {
-		this.gameContainer = gameContainer;
+	constructor(player, getItemValue, updateGameInfo, updatePlayerStats) {
 		this.player = player;
+		this.getItemValue = getItemValue;
 		this.updateGameInfo = updateGameInfo;
 		this.updatePlayerStats = updatePlayerStats;
 	}
 
 	render() {
-		// Clear the game container
-		this.gameContainer.innerHTML = '';
+		const sellItems = document.getElementById("sell-item-list");
+		sellItems.innerHTML = "";
 
-		const sellItems = document.createElement('div');
-		sellItems.id = 'sell-item-list';
-
-		// Display items available for selling
 		for (let i = 0; i < this.player.inventory.length; i++) {
 			const item = this.player.inventory[i];
 			const itemElement = document.createElement('button');
@@ -26,8 +22,6 @@ class SellScreen {
 
 			sellItems.appendChild(itemElement);
 		}
-
-		this.gameContainer.appendChild(sellItems);
 	}
 
 	sellItem(item) {
@@ -43,7 +37,7 @@ class SellScreen {
 	}
 
 	calculateItemSellPrice(item) {
-		Math.ceil(getItemValue(item) / 2)
+		Math.ceil(this.getItemValue(item) / 2)
 	}
 }
 

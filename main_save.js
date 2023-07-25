@@ -3,6 +3,7 @@ const gameSeed = "fantasyClickerBattles"; // @todo generate a seed and use it fo
 // Helpers
 const getRandomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
+/*
 const xorshift128plus = (seed) => {
 	let x = murmurhash3_32_gc(gameSeed + seed) || 1;
 	x = (x ^ (x >>> 15)) >>> 0;
@@ -41,6 +42,7 @@ const murmurhash3_32_gc = (key) => {
 
 	return h >>> 0;
 }
+*/
 
 const gameHash = window.location.hash.slice(1);
 const game = gameHash;
@@ -654,7 +656,7 @@ const statNames = [
 	"block",
 	"penetration"
 ];
-
+/*
 function getRandomIngredient(level, statIndex, ingredientIndex) {
 	const seed = `${level}${statIndex}${ingredientIndex}`;
 	const rng = xorshift128plus(seed);
@@ -688,6 +690,8 @@ function generateRecipes() {
 }
 
 const recipes = generateRecipes();
+*/
+
 
 const hpDelay = 200;
 
@@ -722,7 +726,7 @@ const player = {
 	gatheringXP: 0,
 	craftingXP: 0
 };
-
+/*
 // Function to regenerate player's HP every second
 function regenerateHP() {
 	if (player.currentHP < player.maxHP) {
@@ -743,8 +747,9 @@ function hpLoop() {
 	// Wait for a specified delay before displaying the next message
 	setTimeout(hpLoop, hpDelay);
 }
-
+*/
 // Function to handle leveling up and increasing player stats
+/*
 function levelUp() {
 	player.maxHP += 5;
 	player.currentHP = player.maxHP;
@@ -774,8 +779,10 @@ function checkLevelUp() {
 		}
 	}
 }
+*/
 
 // Function to update player stats on the screen
+/*
 function updatePlayerStats() {
 	document.getElementById("playerCurrentArea").textContent = player.currentArea.name;
 	document.getElementById("playerLevel").textContent = player.level;
@@ -785,13 +792,16 @@ function updatePlayerStats() {
 	document.getElementById("playerExperience").textContent = `${player.experience} / ${getNextLevelExperience()}`;
 	document.getElementById("playerMoney").textContent = player.money;
 	updatePlayerCurrentHP();
-}
+}*/
 
+/*
 function getNextLevelExperience() {
 	const nextLevelRequirement = levelUpRequirements.find((requirement) => requirement.level === player.level + 1);
 	return nextLevelRequirement ? nextLevelRequirement.experience : "MAX";
 }
+*/
 
+/*
 function calculateEquippedStat(itemType) {
 	const item = player[itemType + "Item"];
 	if (item) {
@@ -827,6 +837,7 @@ const calculateEquippedCritical = () => calculateEquippedStat("critical");
 const calculateEquippedResistance = () => calculateEquippedStat("resistance");
 const calculateEquippedBonusExp = () => calculateEquippedStat("bonusExp");
 const calculateEquippedBonusLoot = () => calculateEquippedStat("bonusLoot");
+*/
 
 /*
 const getItemValue = (item) => {
@@ -864,6 +875,7 @@ const calculateItemSellPrice = (item) => Math.ceil(getItemValue(item) / 2);
 */
 
 // Enemies
+/*
 const ATTRIBUTES = {
 	maxHP: {
 	  base: 15,
@@ -1257,6 +1269,7 @@ function generateDuelChallengeSentence(enemy) {
 function calculateDuelRewardXP(enemy) {
 	return calculateExperiencePoints(enemy) * 2;
 }
+*/
 
 /* function startEncounter() {
 	updateGameInfo("You engage in the encounter...");

@@ -1,8 +1,7 @@
 // InventoryScreen.js
 
 class InventoryScreen {
-	constructor(gameContainer, player, statNames, updateGameInfo, updatePlayerStats) {
-		this.gameContainer = gameContainer;
+	constructor(player, statNames, updateGameInfo, updatePlayerStats) {
 		this.player = player;
 		this.statNames = statNames;
 		this.updateGameInfo = updateGameInfo;
@@ -10,11 +9,8 @@ class InventoryScreen {
 	}
 
 	render() {
-		// Clear the game container
-		this.gameContainer.innerHTML = '';
-
-		const inventory = document.createElement('div');
-		inventory.id = 'item-list';
+		const inventory = document.getElementById("item-list");
+		inventory.innerHTML = "";
 
 		const equippedItems = {};
 		for (const statName of this.statNames) {
@@ -33,8 +29,6 @@ class InventoryScreen {
 			itemElement.addEventListener('click', () => this.equipItem(item));
 			inventory.appendChild(itemElement);
 		}
-
-		this.gameContainer.appendChild(inventory);
 	}
 
 	equipItem(item) {

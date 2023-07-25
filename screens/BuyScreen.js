@@ -1,19 +1,17 @@
 // BuyScreen.js
 
 class BuyScreen {
-	constructor(gameContainer, player, itemsList, updateGameInfo, updatePlayerStats) {
-		this.gameContainer = gameContainer;
+	constructor(player, getItemValue, itemsList, updateGameInfo, updatePlayerStats) {
 		this.player = player;
+		this.getItemValue = getItemValue;
 		this.itemsList = itemsList;
 		this.updateGameInfo = updateGameInfo;
 		this.updatePlayerStats = updatePlayerStats;
 	}
 
 	render() {
-		this.gameContainer.innerHTML = '';
-
-		const shopItems = document.createElement('div');
-		shopItems.id = 'shop-item-list';
+		const shopItems = document.getElementById("shop-item-list");
+		shopItems.innerHTML = "";
 
 		const filteredItems = this.itemsList.filter(
 			(shopItem) => shopItem.level >= this.player.level - 15 && shopItem.level <= this.player.level
@@ -29,8 +27,6 @@ class BuyScreen {
 
 			shopItems.appendChild(itemElement);
 		}
-
-		this.gameContainer.appendChild(shopItems);
 	}
 
 	buyItem(item) {
@@ -47,7 +43,7 @@ class BuyScreen {
 	}
 
 	calculateItemCost(item) {
-		return Math.ceil(getItemValue(item));
+		return Math.ceil(this.getItemValue(item));
 	}
 }
 

@@ -1,8 +1,7 @@
 // AreasScreen.js
 
 class AreasScreen {
-	constructor(gameContainer, areas, player, updateGameInfo, updatePlayerStats) {
-		this.gameContainer = gameContainer;
+	constructor(areas, player, updateGameInfo, updatePlayerStats) {
 		this.areas = areas;
 		this.player = player;
 		this.updateGameInfo = updateGameInfo;
@@ -10,15 +9,10 @@ class AreasScreen {
 	}
 
 	render() {
-		// Clear the game container
-		this.gameContainer.innerHTML = '';
+		this.updateGameInfo(`You are currently in ${this.player.currentArea.name}.`);
 
-		// Update game information with the current area
-		this.updateGameInfo(`You are currently in ${player.currentArea.name}.`);
-
-		// Create and append area list elements
-		const areaList = document.createElement('div');
-		areaList.id = 'area-list';
+		const areaList = document.getElementById("area-list");
+		areaList.innerHTML = "";
 
 		this.areas.forEach((area) => {
 			const areaButton = document.createElement('button');
@@ -31,8 +25,6 @@ class AreasScreen {
 			});
 			areaList.appendChild(areaButton);
 		});
-
-		this.gameContainer.appendChild(areaList);
 	}
 }
 

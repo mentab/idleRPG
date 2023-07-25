@@ -1,98 +1,126 @@
+// main.js
 
-import MainScreen from './MainScreen.js';
-import AreasScreen from './AreasScreen.js';
-import InventoryScreen from './InventoryScreen.js';
-import BuyScreen from './BuyScreen.js';
-import SellScreen from './SellScreen.js';
-import StatsScreen from './StatsScreen.js';
-import EquippedScreen from './EquippedScreen.js';
-import GatherScreen from './GatherScreen.js';
-import CraftingScreen from './CraftingScreen.js';
+import MainScreen from './screens/MainScreen.js';
+import AreasScreen from './screens/AreasScreen.js';
+import InventoryScreen from './screens/InventoryScreen.js';
+import BuyScreen from './screens/BuyScreen.js';
+import SellScreen from './screens/SellScreen.js';
+import StatsScreen from './screens/StatsScreen.js';
+import EquippedScreen from './screens/EquippedScreen.js';
+import GatherScreen from './screens/GatherScreen.js';
+import CraftingScreen from './screens/CraftingScreen.js';
+import gameConfig from './config/gameConfig.js';
+import BattleModule from './modules/BattleModule.js';
 
 class Game {
-	constructor() {
-		this.gameContainer = document.getElementById('game-container');
-		this.gameInfoContainer = document.getElementById('game-info');
-		this.currentArea = ''; // Store the current area
-		this.playerStats = {
-		  level: 1,
-		  currentHP: 100,
-		  maxHP: 100,
-		  regeneration: 5,
-		  experience: 0,
-		  money: 0,
-		  // Add other player stats as needed
+	constructor(gameConfig) {
+		this.gameConfig = gameConfig;
+		this.hpDelay = 200;
+		this.player = {
+			level: 1,
+			maxHP: 25,
+			currentHP: 25,
+			damage: 6,
+			defense: 6,
+			regeneration: 1,
+			precision: 25,
+			evasion: 25,
+			critical: 0,
+			resistance: 0,
+			bonusExp: 0,
+			bonusLoot: 0,
+			damageItem: null,
+			defenseItem: null,
+			regenerationItem: null,
+			precisionItem: null,
+			evasionItem: null,
+			criticalItem: null,
+			resistanceItem: null,
+			bonusExpItem: null,
+			bonusLootItem: null,
+			calculateEquippedDefense: () => this.calculateEquippedStat("defense"),
+			calculateEquippedDamage: () => this.calculateEquippedStat("damage"),
+			calculateEquippedRegeneration: () => this.calculateEquippedStat("regeneration"),
+			calculateEquippedPrecision: () => this.calculateEquippedStat("precision"),
+			calculateEquippedEvasion: () => this.calculateEquippedStat("evasion"),
+			calculateEquippedCritical: () => this.calculateEquippedStat("critical"),
+			calculateEquippedResistance: () => this.calculateEquippedStat("resistance"),
+			calculateEquippedBonusExp: () => this.calculateEquippedStat("bonusExp"),
+			calculateEquippedBonusLoot: () => this.calculateEquippedStat("bonusLoot"),
+			inventory: [],
+			money: 0,
+			experience: 0,
+			currentArea: gameConfig.areas[0],
+			gatheringXP: 0,
+			craftingXP: 0,
 		};
-
-		// Create instances of each screen
+		this.battleModule = new BattleModule(
+			this.player,
+			this.gameConfig.areas,
+			this.gameConfig.enemies,
+			this.gameConfig.bosses,
+			this.gameConfig.randomEnemies,
+			this.updateGameInfo.bind(this),
+			this.updatePlayerStats.bind(this),
+			this.checkLevelUp.bind(this)
+		);
 		this.mainScreen = new MainScreen(
-			this.gameContainer,
 			this.handleScreenButtonClick.bind(this)
 		);
 		this.areasScreen = new AreasScreen(
-			this.gameContainer,
-			areas,
-			player,
+			this.gameConfig.areas,
+			this.player,
 			this.updateGameInfo.bind(this),
 			this.updatePlayerStats.bind(this)
 		);
 		this.inventoryScreen = new InventoryScreen(
-			this.gameContainer,
-			player,
-			statNames,
+			this.player,
+			this.gameConfig.statNames,
 			this.updateGameInfo.bind(this),
 			this.updatePlayerStats.bind(this)
 		);
 		this.buyScreen = new BuyScreen(
-			this.gameContainer,
-			player,
-			itemsList,
+			this.player,
+			this.getItemValue,
+			this.gameConfig.itemsList,
 			this.updateGameInfo.bind(this),
 			this.updatePlayerStats.bind(this)
 		);
 		this.sellScreen = new SellScreen(
-			this.gameContainer,
-			player,
+			this.player,
+			this.getItemValue,
 			this.updateGameInfo.bind(this),
 			this.updatePlayerStats.bind(this)
 		);
 		this.statsScreen = new StatsScreen(
-			this.gameContainer,
-			player,
-			this.calculateEquippedStats.bind(this),
-			this.getNextLevelExperience.bind(this),
-			this.calculateEquippedBonus.bind(this)
+			this.player
 		);
 		this.equippedScreen = new EquippedScreen(
-			this.gameContainer,
-			player
+			this.player
 		);
-		this.gatherScreen = new GatherScreen(this.gameContainer);
-		this.craftingScreen = new CraftingScreen(
-			this.gameContainer,
-			player,
-			recipes,
+		this.gatherScreen = new GatherScreen(
+			this.player,
+			this.gameConfig.gatheringItems,
 			this.updateGameInfo.bind(this),
 			this.updatePlayerStats.bind(this)
 		);
-	
-		// Start the game with the main screen
+
 		this.showMainScreen();
 	}
 
 	handleScreenButtonClick(buttonId) {
 		switch (buttonId) {
 			case 'btnExploration':
-				this.startExploration();
+				this.battleModule.startExploration();
 				break;
 			case 'btnChallenge':
-				this.startChallenge();
+				this.battleModule.startChallenge();
 				break;
 			case 'btnMission':
-				this.startMission();
+				this.battleModule.startMission();
 				break;
 			case 'btnDuel':
-				this.startDuel();
+				this.battleModule.startDuel();
 				break;
 			case 'btnAreas':
 				this.showAreasScreen();
@@ -125,14 +153,14 @@ class Game {
 				this.healForMoney();
 				break;
 			case "btnExperience":
-				player.experience += 5000;
-				updateGameInfo("Adding 5000 experience...");
-				checkLevelUp();
+				this.player.experience += 5000;
+				this.updateGameInfo("Adding 5000 experience...");
+				this.checkLevelUp();
 				break;
 			case "btnMoney":
-				player.money += 5000;
-				updateGameInfo("Adding 5000 money...");
-				updatePlayerStats();
+				this.player.money += 5000;
+				this.updateGameInfo("Adding 5000 money...");
+				this.updatePlayerStats();
 				break;
 			case "btnSave":
 				this.savePlayerData();
@@ -146,117 +174,69 @@ class Game {
 		}
 	}
 
-	// Methods to show different screens
 	showMainScreen() {
-		this.hideAllScreens();
+		this.showScreen("main-screen");
 		this.mainScreen.render();
 	}
 
 	showAreasScreen() {
-		this.hideAllScreens();
+		this.showScreen("areas-screen");
 		this.areasScreen.render();
 	}
 
 	showInventoryScreen() {
-		this.hideAllScreens();
+		this.showScreen("inventory-screen");
 		this.inventoryScreen.render();
 	}
 
 	showBuyScreen() {
-		this.hideAllScreens();
+		this.showScreen("buy-screen");
 		this.buyScreen.render();
 	}
 
 	showSellScreen() {
-		this.hideAllScreens();
+		this.showScreen("sell-screen");
 		this.sellScreen.render();
 	}
 
 	showStatsScreen() {
-		this.hideAllScreens();
+		this.showScreen("stats-screen");
 		this.statsScreen.render();
 	}
 
 	showEquippedScreen() {
-		this.hideAllScreens();
+		this.showScreen("equipped-screen");
 		this.equippedScreen.render();
 	}
 
 	showGatherScreen() {
-		this.hideAllScreens();
+		this.showScreen("gather-screen");
 		this.gatherScreen.render();
 	}
 
 	showCraftingScreen() {
-		this.hideAllScreens();
+		this.showScreen("crafting-screen");
 		this.craftingScreen.render();
 	}
 
-	// Add other show methods for additional screens
-
-	hideAllScreens() {
-		const allScreens = document.querySelectorAll('.screen');
-		allScreens.forEach((screen) => {
-			screen.classList.add('hidden');
-		});
+	showScreen(screenId) {
+		const screens = document.querySelectorAll("#main-screens > div");
+		for (let i = 0; i < screens.length; i++) {
+			const screen = screens[i];
+			if (screen.id === screenId) {
+				screen.classList.remove("hidden");
+			} else {
+				screen.classList.add("hidden");
+			}
+		}
 	}
 
 	updateGameInfo(message) {
 		const gameInfoElement = document.getElementById("game-info");
 		const messageElement = document.createElement("div");
 		messageElement.innerHTML = message;
-		messageElement.classList.add("game-message"); // Apply a CSS class for styling
+		messageElement.classList.add("game-message");
 		gameInfoElement.insertBefore(messageElement, gameInfoElement.firstChild);
-	}
-
-	gambleMoney() {
-		const gamblingCost = 10;
-		if (gamblingCost <= player.money) {
-			const symbols = ["🗡️", "🛡️", "🔮", "👑"];
-			const spinResult = [];
-
-			for (let i = 0; i < 3; i++) {
-				const randomIndex = Math.floor(Math.random() * symbols.length);
-				spinResult.push(symbols[randomIndex]);
-			}
-
-			updateGameInfo("Spinning the slot machine...");
-			updateGameInfo("Result: " + spinResult.join(" "));
-
-			if (spinResult[0] === spinResult[1] && spinResult[1] === spinResult[2]) {
-				const winnings = gamblingCost * 3;
-				player.money += winnings;
-				updateGameInfo("Congratulations! You won " + winnings + " money!");
-			} else {
-				player.money -= gamblingCost;
-				updateGameInfo("Oh no! You lost " + gamblingCost + " money.");
-			}
-
-			updateGameInfo("Your current balance is: " + player.money + " money.");
-			updatePlayerStats();
-		} else {
-			updateGameInfo("Not enough money to gamble.");
-		}
-	}
-
-	healForMoney() {
-		if (player.currentHP === player.maxHP) {
-			updateGameInfo("Your HP is already full!");
-			return;
-		}
-
-		const healingCost = 10;
-		if (player.money >= healingCost) {
-			player.money -= healingCost;
-			player.currentHP += 10; // Assuming each healing costs 10 money and heals 10 HP
-			if (player.currentHP > player.maxHP) {
-				player.currentHP = player.maxHP;
-			}
-			updateGameInfo("You've been healed!");
-			updatePlayerStats();
-		} else {
-			updateGameInfo("You don't have enough money to heal!");
-		}
 	}
 
 	getItemValue(item) {
@@ -288,13 +268,11 @@ class Game {
 		}
 	}
 
-	// Function to save player data to localStorage
 	savePlayerData() {
 		localStorage.setItem("playerData", JSON.stringify(player));
 		alert("Player data saved!");
 	}
 
-	// Function to load player data from localStorage
 	loadPlayerData() {
 		const savedData = localStorage.getItem("playerData");
 		if (savedData) {
@@ -306,12 +284,111 @@ class Game {
 		}
 	}
 
-	// Function to reset player data
 	resetPlayerData() {
 		localStorage.removeItem("playerData");
 		location.reload();
 	}
+
+	updatePlayerStats() {
+		document.getElementById("playerCurrentArea").textContent = this.player.currentArea.name;
+		document.getElementById("playerLevel").textContent = this.player.level;
+		document.getElementById("playerCurrentHP").textContent = this.player.currentHP;
+		document.getElementById("playerMaxHP").textContent = this.player.maxHP;
+		document.getElementById("playerRegeneration").textContent = `${this.player.regeneration} (+${this.player.calculateEquippedRegeneration()})`;
+		document.getElementById("playerExperience").textContent = `${this.player.experience} / ${this.getNextLevelExperience()}`;
+		document.getElementById("playerMoney").textContent = this.player.money;
+		this.updatePlayerCurrentHP();
+	}
+
+	getNextLevelExperience() {
+		const nextLevelRequirement = this.gameConfig.levelUpRequirements.find((requirement) => requirement.level === this.player.level + 1);
+		return nextLevelRequirement ? nextLevelRequirement.experience : "MAX";
+	}
+
+	calculateEquippedStat(itemType) {
+		const item = this.player[itemType + "Item"];
+		if (item) {
+			switch (itemType) {
+				case "defense":
+				case "damage":
+					return item.level;
+				case "regeneration":
+					return item.level / 25;
+				case "precision":
+				case "evasion":
+					return item.level / 3;
+				case "critical":
+				case "resistance":
+					return item.level / 2;
+				case "bonusExp":
+				case "bonusLoot":
+					return item.level;
+				default:
+					return 0;
+			}
+		} else {
+		 	return 0;
+		}
+	}
+
+	levelUp() {
+		this.player.maxHP += 5;
+		this.player.currentHP = this.player.maxHP;
+		this.player.damage += 2;
+		this.player.defense += 2;
+		if (this.player.level % 5 == 0) this.player.precision += 1;
+		if (this.player.level % 5 == 0) this.player.evasion += 1;
+		if (this.player.level % 10 == 0) this.player.regeneration += 1;
+		if (this.player.level % 5 == 0) this.player.critical += 1;
+		if (this.player.level % 5 == 0) this.player.resistance += 1;
+		this.updateGameInfo(`Congratulations! You leveled up to level ${this.player.level}.`);
+		this.updatePlayerStats();
+	}
+	
+	checkLevelUp() {
+		const currentLevel = this.player.level;
+		const experiencePoints = this.player.experience;
+	
+		for (let i = 0; i < this.gameConfig.levelUpRequirements.length; i++) {
+			const requirement = this.gameConfig.levelUpRequirements[i];
+			if (currentLevel < requirement.level && experiencePoints >= requirement.experience) {
+				this.player.level = requirement.level;
+				this.player.experience = requirement.experience;
+				this.levelUp();
+				this.updatePlayerStats();
+				break;
+			}
+		}
+	}
+
+	regenerateHP() {
+		if (this.player.currentHP < this.player.maxHP) {
+			this.player.currentHP = Math.min(this.player.maxHP, this.player.currentHP + this.player.regeneration + this.player.calculateEquippedRegeneration());
+			this.updatePlayerCurrentHP();
+		}
+	}
+
+	updatePlayerCurrentHP() {
+		const currentHPElement = document.getElementById("playerCurrentHP");
+		currentHPElement.textContent = this.player.currentHP;
+	}
+	
+	hpLoop() {
+		this.regenerateHP();
+		setTimeout(this.hpLoop.bind(this), this.hpDelay);
+	}
+
+	init() {
+		const backToMainButtons = document.querySelectorAll(".btnBackToMain");
+
+		backToMainButtons.forEach((button) => {
+			button.addEventListener("click", this.showMainScreen.bind(this));
+		});
+
+		this.updatePlayerStats();
+		this.mainScreen.init();
+		this.hpLoop();
+	}
 }
 
-// Create an instance of the Game class to start the game
-const game = new Game();
+const game = new Game(gameConfig).init();

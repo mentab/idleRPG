@@ -1,8 +1,7 @@
 // GatherScreen.js
 
 class GatherScreen {
-	constructor(gameContainer, player, gatheringItems, updateGameInfo, updatePlayerStats) {
-		this.gameContainer = gameContainer;
+	constructor(player, gatheringItems, updateGameInfo, updatePlayerStats) {
 		this.player = player;
 		this.gatheringItems = gatheringItems;
 		this.updateGameInfo = updateGameInfo;
@@ -10,18 +9,12 @@ class GatherScreen {
 	}
 
 	render() {
-		// Clear the game container
-		this.gameContainer.innerHTML = '';
+		const gatherItems = document.getElementById("gather-item-list");
+		gatherItems.innerHTML = "";
 
-		// Update game information
 		this.updateGameInfo('You are now gathering resources.');
 
-		// Get the maximum gather level for the player
 		const maxGatherLevel = this.getMaxGatherLevel();
-
-		// Create and append gather item list elements
-		const gatherItems = document.createElement('div');
-		gatherItems.id = 'gather-item-list';
 
 		const itemList = document.createElement('ul');
 		this.gatheringItems.forEach((item) => {
@@ -33,7 +26,6 @@ class GatherScreen {
 		});
 
 		gatherItems.appendChild(itemList);
-		this.gameContainer.appendChild(gatherItems);
 	}
 
 	getMaxGatherLevel() {
