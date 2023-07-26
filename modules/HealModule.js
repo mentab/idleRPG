@@ -1,6 +1,6 @@
 // HealModule.js
 
-export function healForMoney() {
+export function healForMoney(player, updateGameInfo, updatePlayerStats) {
 	if (player.currentHP === player.maxHP) {
 		updateGameInfo("Your HP is already full!");
 		return;

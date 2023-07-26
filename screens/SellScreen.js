@@ -37,7 +37,7 @@ class SellScreen {
 	}
 
 	calculateItemSellPrice(item) {
-		Math.ceil(this.getItemValue(item) / 2)
+		return Math.ceil(this.getItemValue(item) / 2)
 	}
 }
 

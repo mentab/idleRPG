@@ -1,27 +1,70 @@
+
+
+
+/* #f1e0c3 */
+/* #202b30 */
+/* #f44336 */
+/* 689f38 */
+
+
+
+
+
+/* Customizing the scrollbar */
+/* Track */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+/* Thumb */
+::-webkit-scrollbar-thumb {
+  background-color: #202b30;
+  border-radius: 6px;
+}
+
+/* Track background */
+::-webkit-scrollbar-track {
+  background-color: #f1e0c3;
+}
+
+/* Corner between vertical and horizontal scrollbars */
+::-webkit-scrollbar-corner {
+  background-color: #f1e0c3;
+}
+
+
+
+
+
+
+
 html {
 	height: 100%;
 	box-sizing: border-box;
+	background: #202b30;
+	color: #f1e0c3;
 }
 body {
 	height: 100%;
-	font-family: "Courier New", Courier, monospace;
+	font-family: "Tahoma", Arial, Helvetica, sans-serif;
 	margin: 0;
 	padding: 0;
 }
 
 /* Define the squared button styles */
 button {
+	font-family: "Tahoma", Arial, Helvetica, sans-serif;
 	display: inline-block;
 	padding: 10px;
 	margin: 5px;
-	background-color: white;
-	border: 1px solid black;
+	box-shadow: 
+    0 0 0 2px #f1e0c3,   /* Outer border */
+    0 0 0 2px #202b30;   /* Inner border */
 	text-decoration: none;
-	color: black;
-	text-transform: uppercase;
 	font-weight:  bold;
 	transition: background-color 0.3s ease;
 	width: 100%;
+	background: #f1e0c3;
 }
 
 /* Add hover effect to the buttons */
@@ -46,7 +89,7 @@ button:hover {
 	width: 35%;
 	padding: 10px;
 	height: 100%;
-	overflow: scroll;
+	overflow-y: scroll;
 }
 
 #information-screen {
@@ -59,9 +102,9 @@ button:hover {
 
 #game-info {
 	flex-grow: 1;
-	overflow-y: scroll;
 	border: 1px solid #ccc;
 	padding: 10px;
+	margin: 10px;
 }
 
 #message-container {
@@ -92,6 +135,6 @@ button:hover {
 	font-weight: bold;
 }
 
-.item {
-	cursor: pointer;
-}
+/* .item {
+ 	cursor: pointer;
+ }*/

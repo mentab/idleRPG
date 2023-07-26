@@ -513,6 +513,18 @@ const config = {
 			{ name: "Elven Ranger", icon: "🏹🧝" },
 			{ name: "Dwarven Guardian", icon: "⛏️🛡️" },
 			{ name: "Human Knight", icon: "👨‍🌾⚔️" }
+		],
+		gatheringItems: [
+			{ name: "Iron Ore", type: "gathering", level: 1, icon: "⛏️" },
+			{ name: "Copper Ore", type: "gathering", level: 2, icon: "🔨" },
+			{ name: "Silver Ore", type: "gathering", level: 3, icon: "⚪" },
+			{ name: "Gold Ore", type: "gathering", level: 4, icon: "💰" },
+			{ name: "Platinum Ore", type: "gathering", level: 5, icon: "⚜️" },
+			{ name: "Mithril Ore", type: "gathering", level: 6, icon: "⚙️" },
+			{ name: "Adamantium Ore", type: "gathering", level: 7, icon: "⚛️" },
+			{ name: "Dragonstone Ore", type: "gathering", level: 8, icon: "🐉" },
+			{ name: "Voidium Ore", type: "gathering", level: 9, icon: "🌑" },
+			{ name: "Celestium Ore", type: "gathering", level: 10, icon: "✨" }
 		]
 	}
 };

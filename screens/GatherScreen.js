@@ -9,34 +9,34 @@ class GatherScreen {
 	}
 
 	render() {
+		this.updateGameInfo('You are now gathering resources.');
+
 		const gatherItems = document.getElementById("gather-item-list");
 		gatherItems.innerHTML = "";
 
-		this.updateGameInfo('You are now gathering resources.');
-
 		const maxGatherLevel = this.getMaxGatherLevel();
 
-		const itemList = document.createElement('ul');
-		this.gatheringItems.forEach((item) => {
-			const listItem = document.createElement('li');
-			listItem.innerHTML = `${item.name} ${item.icon} (Level ${item.level})<br><small>${
-			  item.level <= maxGatherLevel ? 'You can gather this item.' : "You can't gather this item yet."
-			}</small>`;
-			itemList.appendChild(listItem);
-		});
+		const filteredItems = this.gatheringItems.filter(
+			(gatheringItem) => gatheringItem.level <= maxGatherLevel
+		);
 
-		gatherItems.appendChild(itemList);
+		filteredItems.forEach((item) => {
+			const itemElement = document.createElement('button');
+			itemElement.textContent = `${item.name} ${item.icon} (Level ${item.level})`;
+
+			itemElement.addEventListener('click', () => this.gatherResource(item));
+
+			gatherItems.appendChild(itemElement);
+		});
 	}
 
 	getMaxGatherLevel() {
-		return Math.max(Math.floor(this.player.gatheringXP / 1000), 1);
+		return Math.max(Math.floor(this.player.gatheringXP / 100), 1);
 	}
 
-	gatherResource() {
+	gatherResource(gatheredItem) {
 		const maxGatherLevel = this.getMaxGatherLevel();
-		const availableItems = this.gatheringItems.filter((item) => item.level <= maxGatherLevel);
-		const randomIndex = Math.floor(Math.random() * availableItems.length);
-		const gatheredItem = availableItems[randomIndex];
+		const nextGatherLevel = maxGatherLevel + 1;
 
 		const levelDifference = maxGatherLevel - gatheredItem.level;
 		const extraGatherChance = Math.min(0.5, levelDifference * 0.05);
@@ -48,14 +48,19 @@ class GatherScreen {
 		this.updateGameInfo(`You gathered ${totalGathers} ${gatheredItem.name}.`);
 
 		this.player.gatheringXP += xpGained * totalGathers;
-		const gatheringXPDisplay = document.getElementById('gathering-xp');
-		gatheringXPDisplay.textContent = `Gathering XP: ${this.player.gatheringXP}`;
+
+		this.updateGameInfo(`Gathering XP: ${this.player.gatheringXP}.`);
 
 		for (let i = 0; i < totalGathers; i++) {
 			this.player.inventory.push(gatheredItem);
 		}
 
 		this.updatePlayerStats();
+
+		if (nextGatherLevel === this.getMaxGatherLevel()) {
+			this.updateGameInfo(`Congratulations, you can now gather a new resource!`);
+			this.render();
+		}
 	}
 }
 

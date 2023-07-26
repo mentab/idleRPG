@@ -8,9 +8,14 @@ import SellScreen from './screens/SellScreen.js';
 import StatsScreen from './screens/StatsScreen.js';
 import EquippedScreen from './screens/EquippedScreen.js';
 import GatherScreen from './screens/GatherScreen.js';
-import CraftingScreen from './screens/CraftingScreen.js';
+import MiniGameScreen from './screens/MiniGameScreen.js';
 import gameConfig from './config/gameConfig.js';
 import BattleModule from './modules/BattleModule.js';
+import { healForMoney } from './modules/HealModule.js';
+import { gambleMoney } from './modules/GambleModule.js';
+import timingGame from './games/TimingGame.js';
+import clickerGame from './games/ClickerGame.js';
+import memoryGame from './games/MemoryGame.js';
 
 class Game {
 	constructor(gameConfig) {
@@ -51,8 +56,7 @@ class Game {
 			money: 0,
 			experience: 0,
 			currentArea: gameConfig.areas[0],
-			gatheringXP: 0,
-			craftingXP: 0,
+			gatheringXP: 0
 		};
 		this.battleModule = new BattleModule(
 			this.player,
@@ -67,6 +71,13 @@ class Game {
 		this.mainScreen = new MainScreen(
 			this.handleScreenButtonClick.bind(this)
 		);
+		this.miniGameScreen = new MiniGameScreen(
+			this.updateGameInfo.bind(this)
+		);
+		this.miniGameScreen.registerMiniGame(timingGame);
+		this.miniGameScreen.registerMiniGame(clickerGame);
+		this.miniGameScreen.registerMiniGame(memoryGame);
+
 		this.areasScreen = new AreasScreen(
 			this.gameConfig.areas,
 			this.player,
@@ -111,16 +122,16 @@ class Game {
 	handleScreenButtonClick(buttonId) {
 		switch (buttonId) {
 			case 'btnExploration':
-				this.battleModule.startExploration();
+				this.showMiniGameScreen(this.battleModule.startExploration.bind(this.battleModule));
 				break;
 			case 'btnChallenge':
-				this.battleModule.startChallenge();
+				this.showMiniGameScreen(this.battleModule.startChallenge.bind(this.battleModule));
 				break;
 			case 'btnMission':
-				this.battleModule.startMission();
+				this.showMiniGameScreen(this.battleModule.startMission.bind(this.battleModule));
 				break;
 			case 'btnDuel':
-				this.battleModule.startDuel();
+				this.showMiniGameScreen(this.battleModule.startDuel.bind(this.battleModule));
 				break;
 			case 'btnAreas':
 				this.showAreasScreen();
@@ -143,14 +154,19 @@ class Game {
 			case 'btnGather':
 				this.showGatherScreen();
 				break;
-			case 'btnCraft':
-				this.showCraftingScreen();
-				break;
 			case "btnGamble":
-				this.gambleMoney();
+				gambleMoney(
+					this.player,
+					this.updateGameInfo.bind(this),
+					this.updatePlayerStats.bind(this)
+				);
 				break;
 			case "btnHeal":
-				this.healForMoney();
+				healForMoney(
+					this.player,
+					this.updateGameInfo.bind(this),
+					this.updatePlayerStats.bind(this)
+				);
 				break;
 			case "btnExperience":
 				this.player.experience += 5000;
@@ -177,6 +193,11 @@ class Game {
 	showMainScreen() {
 		this.showScreen("main-screen");
 		this.mainScreen.render();
+	}
+
+	showMiniGameScreen(action) {
+		this.showScreen("mini-game-screen");
+		this.miniGameScreen.render(action);
 	}
 
 	showAreasScreen() {
@@ -214,10 +235,6 @@ class Game {
 		this.gatherScreen.render();
 	}
 
-	showCraftingScreen() {
-		this.showScreen("crafting-screen");
-		this.craftingScreen.render();
-	}
 
 	showScreen(screenId) {
 		const screens = document.querySelectorAll("#main-screens > div");
@@ -327,7 +344,7 @@ class Game {
 					return 0;
 			}
 		} else {
-		 	return 0;
+			return 0;
 		}
 	}
 

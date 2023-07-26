@@ -1,6 +1,6 @@
 // GambleModule.js
 
-export function gambleMoney() {
+export function gambleMoney(player, updateGameInfo, updatePlayerStats) {
 	const gamblingCost = 10;
 	if (gamblingCost <= player.money) {
 		const symbols = ["🗡️", "🛡️", "🔮", "👑"];

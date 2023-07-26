@@ -12,7 +12,6 @@ class MainScreen {
 		document.getElementById("btnStats").addEventListener("click",() => this.handleScreenButtonClick("btnStats"));
 		document.getElementById("btnEquipped").addEventListener("click",() => this.handleScreenButtonClick("btnEquipped"));
 		document.getElementById("btnGather").addEventListener("click",() => this.handleScreenButtonClick("btnGather"));
-		document.getElementById("btnGatherr").addEventListener("click",() => this.handleScreenButtonClick("btnGatherr"));
 		document.getElementById("btnInventory").addEventListener("click",() => this.handleScreenButtonClick("btnInventory"));
 		document.getElementById("btnBuy").addEventListener("click",() => this.handleScreenButtonClick("btnBuy"));
 		document.getElementById("btnSell").addEventListener("click",() => this.handleScreenButtonClick("btnSell"));
