@@ -1,9 +1,10 @@
 // GatherScreen.js
 
+import gameConfig from './../config/gameConfig.js';
+
 class GatherScreen {
-	constructor(player, gatheringItems, updateGameInfo, updatePlayerStats) {
+	constructor(player, updateGameInfo, updatePlayerStats) {
 		this.player = player;
-		this.gatheringItems = gatheringItems;
 		this.updateGameInfo = updateGameInfo;
 		this.updatePlayerStats = updatePlayerStats;
 	}
@@ -16,7 +17,7 @@ class GatherScreen {
 
 		const maxGatherLevel = this.getMaxGatherLevel();
 
-		const filteredItems = this.gatheringItems.filter(
+		const filteredItems = gameConfig.gatheringItems.filter(
 			(gatheringItem) => gatheringItem.level <= maxGatherLevel
 		);
 

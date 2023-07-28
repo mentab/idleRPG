@@ -1,9 +1,10 @@
 // InventoryScreen.js
 
+import gameConfig from './../config/gameConfig.js';
+
 class InventoryScreen {
-	constructor(player, statNames, updateGameInfo, updatePlayerStats) {
+	constructor(player, updateGameInfo, updatePlayerStats) {
 		this.player = player;
-		this.statNames = statNames;
 		this.updateGameInfo = updateGameInfo;
 		this.updatePlayerStats = updatePlayerStats;
 	}
@@ -13,7 +14,7 @@ class InventoryScreen {
 		inventory.innerHTML = "";
 
 		const equippedItems = {};
-		for (const statName of this.statNames) {
+		for (const statName of gameConfig.statNames) {
 			equippedItems[statName] = this.player[`${statName}Item`];
 		}
 

@@ -18,8 +18,7 @@ import clickerGame from './games/ClickerGame.js';
 import memoryGame from './games/MemoryGame.js';
 
 class Game {
-	constructor(gameConfig) {
-		this.gameConfig = gameConfig;
+	constructor() {
 		this.hpDelay = 200;
 		this.player = {
 			level: 1,
@@ -55,15 +54,12 @@ class Game {
 			inventory: [],
 			money: 0,
 			experience: 0,
-			currentArea: gameConfig.areas[0],
-			gatheringXP: 0
+			areaIndex: 0,
+			gatheringXP: 0,
+			killedEnemies: new Map()
 		};
 		this.battleModule = new BattleModule(
 			this.player,
-			this.gameConfig.areas,
-			this.gameConfig.enemies,
-			this.gameConfig.bosses,
-			this.gameConfig.randomEnemies,
 			this.updateGameInfo.bind(this),
 			this.updatePlayerStats.bind(this),
 			this.checkLevelUp.bind(this)
@@ -79,21 +75,18 @@ class Game {
 		this.miniGameScreen.registerMiniGame(memoryGame);
 
 		this.areasScreen = new AreasScreen(
-			this.gameConfig.areas,
 			this.player,
 			this.updateGameInfo.bind(this),
 			this.updatePlayerStats.bind(this)
 		);
 		this.inventoryScreen = new InventoryScreen(
 			this.player,
-			this.gameConfig.statNames,
 			this.updateGameInfo.bind(this),
 			this.updatePlayerStats.bind(this)
 		);
 		this.buyScreen = new BuyScreen(
 			this.player,
 			this.getItemValue,
-			this.gameConfig.itemsList,
 			this.updateGameInfo.bind(this),
 			this.updatePlayerStats.bind(this)
 		);
@@ -111,7 +104,6 @@ class Game {
 		);
 		this.gatherScreen = new GatherScreen(
 			this.player,
-			this.gameConfig.gatheringItems,
 			this.updateGameInfo.bind(this),
 			this.updatePlayerStats.bind(this)
 		);
@@ -307,7 +299,7 @@ class Game {
 	}
 
 	updatePlayerStats() {
-		document.getElementById("playerCurrentArea").textContent = this.player.currentArea.name;
+		document.getElementById("playerCurrentArea").textContent = gameConfig.areas[this.player.areaIndex];
 		document.getElementById("playerLevel").textContent = this.player.level;
 		document.getElementById("playerCurrentHP").textContent = this.player.currentHP;
 		document.getElementById("playerMaxHP").textContent = this.player.maxHP;
@@ -318,7 +310,7 @@ class Game {
 	}
 
 	getNextLevelExperience() {
-		const nextLevelRequirement = this.gameConfig.levelUpRequirements.find((requirement) => requirement.level === this.player.level + 1);
+		const nextLevelRequirement = gameConfig.levelUpRequirements.find((requirement) => requirement.level === this.player.level + 1);
 		return nextLevelRequirement ? nextLevelRequirement.experience : "MAX";
 	}
 
@@ -366,8 +358,8 @@ class Game {
 		const currentLevel = this.player.level;
 		const experiencePoints = this.player.experience;
 	
-		for (let i = 0; i < this.gameConfig.levelUpRequirements.length; i++) {
-			const requirement = this.gameConfig.levelUpRequirements[i];
+		for (let i = 0; i < gameConfig.levelUpRequirements.length; i++) {
+			const requirement = gameConfig.levelUpRequirements[i];
 			if (currentLevel < requirement.level && experiencePoints >= requirement.experience) {
 				this.player.level = requirement.level;
 				this.player.experience = requirement.experience;
@@ -408,4 +400,4 @@ class Game {
 	}
 }
 
-const game = new Game(gameConfig).init();
+const game = new Game().init();

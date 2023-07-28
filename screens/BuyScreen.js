@@ -1,10 +1,11 @@
 // BuyScreen.js
 
+import gameConfig from './../config/gameConfig.js';
+
 class BuyScreen {
-	constructor(player, getItemValue, itemsList, updateGameInfo, updatePlayerStats) {
+	constructor(player, getItemValue, updateGameInfo, updatePlayerStats) {
 		this.player = player;
 		this.getItemValue = getItemValue;
-		this.itemsList = itemsList;
 		this.updateGameInfo = updateGameInfo;
 		this.updatePlayerStats = updatePlayerStats;
 	}
@@ -13,7 +14,7 @@ class BuyScreen {
 		const shopItems = document.getElementById("shop-item-list");
 		shopItems.innerHTML = "";
 
-		const filteredItems = this.itemsList.filter(
+		const filteredItems = gameConfig.itemsList.filter(
 			(shopItem) => shopItem.level >= this.player.level - 15 && shopItem.level <= this.player.level
 		);
 

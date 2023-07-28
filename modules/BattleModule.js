@@ -1,108 +1,28 @@
 // BattleModule.js
 
 import { getRandomNumber } from './../utils/utils.js';
-
-const ATTRIBUTES = {
-	maxHP: {
-	  base: 15,
-	  factors: [2, 3, 4, 2, 3, 4, 2, 3, 4, 5],
-	  groupFactors: [0, 5, 15, 20, 35, 55, 90, 100, 110, 120],
-	},
-	damage: {
-	  base: 4,
-	  factors: [2.5, 3.2, 2.6, 3.3, 2.7, 3.4, 2.8, 3.5, 3.6, 3.7],
-	  groupFactors: [0, 5, 0, 10, 0, 15, 0, 20, 25, 30],
-	},
-	defense: {
-	  base: 4,
-	  factors: [3.2, 2.5, 3.3, 2.6, 3.4, 2.7, 3.5, 2.8, 3.6, 3.7],
-	  groupFactors: [5, 0, 10, 0, 15, 0, 20, 0, 25, 30],
-	},
-	precision: {
-	  base: 25,
-	  factors: [0.1, 0.4, 0.2, 0.5, 0.3, 0.6, 0.4, 0.7, 0.8, 0.9],
-	  groupFactors: [0, 0, 0, 5, 0, 10, 0, 15, 20, 25],
-	},
-	evasion: {
-	  base: 25,
-	  factors: [0.4, 0.1, 0.5, 0.2, 0.6, 0.3, 0.7, 0.4, 0.8, 0.9],
-	  groupFactors: [0, 0, 5, 0, 10, 0, 15, 0, 20, 25],
-	},
-	critical: {
-	  base: 0,
-	  factors: [0.1, 0.4, 0.2, 0.5, 0.3, 0.6, 0.4, 0.7, 0.1, 0.9],
-	  groupFactors: [0, 0, 0, 0, 0, 5, 0, 10, 0, 20],
-	},
-	resistance: {
-	  base: 0,
-	  factors: [0.4, 0.1, 0.5, 0.2, 0.6, 0.3, 0.7, 0.4, 0.1, 0.9],
-	  groupFactors: [0, 0, 0, 0, 5, 0, 10, 0, 0, 20],
-	},
-	// block: {
-	//   base: 0,
-	//   factors: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	//   groupFactors: [0, 0, 0, 0, 1, 2, 5, 10, 15, 20],
-	// },
-	// penetration: {
-	//   base: 0,
-	//   factors: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	//   groupFactors: [0, 0, 0, 0, 0, 1, 2, 5, 10, 15],
-	// },
-	lootChance: {
-	  base: 0,
-	  factors: [0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 1],
-	  groupFactors: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	},
-}
+import gameConfig from './../config/gameConfig.js';
 
 class BattleModule {
-	constructor(player, areas, enemies, bosses, randomEnemies, updateGameInfo, updatePlayerStats, checkLevelUp) {
+	constructor(player, updateGameInfo, updatePlayerStats, checkLevelUp) {
 		this.player = player;
-		this.areas = areas;
-		this.enemies = enemies;
-		this.bosses = bosses;
-		this.randomEnemies = randomEnemies;
 		this.updateGameInfo = updateGameInfo;
 		this.updatePlayerStats = updatePlayerStats;
 		this.checkLevelUp = checkLevelUp;
 	}
 
-	getAttributeValue(enemy, attribute) {
-		const level = enemy.level;
-		const group = Math.ceil(level / 10);
-		const factorIndex = (level - 1) % 10;
-		const groupFactorIndex = group - 1;
-		const factor = ATTRIBUTES[attribute].factors[factorIndex];
-		const groupFactor = ATTRIBUTES[attribute].groupFactors[groupFactorIndex];
-		return Math.floor(ATTRIBUTES[attribute].base + (level - 1) * factor + groupFactor);
-	};
-
-	getEnemyMaxHP = (enemy) => this.getAttributeValue(enemy, 'maxHP');
-	getEnemyDamage = (enemy) => this.getAttributeValue(enemy, 'damage');
-	getEnemyDefense = (enemy) => this.getAttributeValue(enemy, 'defense');
-	getEnemyPrecision = (enemy) => this.getAttributeValue(enemy, 'precision');
-	getEnemyEvasion = (enemy) => this.getAttributeValue(enemy, 'evasion');
-	getEnemyCritical = (enemy) => this.getAttributeValue(enemy, 'critical');
-	getEnemyResistance = (enemy) => this.getAttributeValue(enemy, 'resistance');
-	getEnemyLootChance = (enemy) => this.getAttributeValue(enemy, 'lootChance');
-
 	generateEnemyInfo = (enemy) => `An enemy ${enemy.icon} ${enemy.name} has appeared!\n` +
-		   `It has ${this.getEnemyMaxHP(enemy)} HP, ${this.getEnemyDamage(enemy)} DAM, ${this.getEnemyDefense(enemy)} DEF, ${this.getEnemyPrecision(enemy)} PRE, ${this.getEnemyEvasion(enemy)} EVA, ${this.getEnemyCritical(enemy)} CRI, ${this.getEnemyResistance(enemy)} RES`;
+		   `It has ${enemy.maxHP} HP, ${enemy.damage} DAM, ${enemy.defense} DEF, ${enemy.precision} PRE, ${enemy.evasion} EVA, ${enemy.critical} CRI, ${enemy.resistance} RES`;
 
 	// Function to generate a random enemy based on player's level
 	findEntitiesInAreaAndLevelRange(entities, maxLevel, isBoss = false) {
-		const validatedMaxLevel = Math.max(1, maxLevel);
-		const playerCurrentAreaIndex = this.areas.findIndex((area) => area === this.player.currentArea);
-
 		const eligibleEntities = entities.filter((entity) => {
-			const entityAreaIndex = Math.floor((entity.level - 1) / 10);
-			return entityAreaIndex === playerCurrentAreaIndex && entity.level <= validatedMaxLevel && (isBoss ? entity.level % 10 === 0 : true);
+			return entity.areaIndex === this.player.areaIndex && (entity.level <= maxLevel || (isBoss ? entity.isBoss : false));
 		});
 
 		if (eligibleEntities.length === 0) {
 			const firstEnemyOfArea = entities.find((entity) => {
-				const entityAreaIndex = Math.floor((entity.level - 1) / 10);
-				return entityAreaIndex === playerCurrentAreaIndex;
+				return entity.areaIndex === this.player.areaIndex;
 			});
 			return firstEnemyOfArea ? [firstEnemyOfArea] : [];
 		}
@@ -115,18 +35,18 @@ class BattleModule {
 	}
 
 	generateEnemy(maxLevel) {
-		const eligibleEnemies = this.findEntitiesInAreaAndLevelRange(this.enemies, maxLevel);
+		const eligibleEnemies = this.findEntitiesInAreaAndLevelRange(gameConfig.enemies, maxLevel);
 		return this.generateEntity(eligibleEnemies);
 	}
 
 	generateRandomEnemy(playerLevel) {
-		const randomIndex = Math.floor(Math.random() * this.randomEnemies.length);
-		const enemy = this.randomEnemies[randomIndex];
+		const randomIndex = Math.floor(Math.random() * gameConfig.randomEnemies.length);
+		const enemy = gameConfig.randomEnemies[randomIndex];
 		return { name: enemy.name, level: playerLevel, icon: enemy.icon, currentHP: 0 };
 	}
 
 	generateBoss(maxLevel) {
-		const eligibleBosses = this.findEntitiesInAreaAndLevelRange(this.bosses, maxLevel, true);
+		const eligibleBosses = this.findEntitiesInAreaAndLevelRange(gameConfig.enemies, maxLevel, true);
 		return this.generateEntity(eligibleBosses);
 	}
 
@@ -141,12 +61,12 @@ class BattleModule {
 		const basePlayerCritical = this.player.critical + this.player.calculateEquippedCritical();
 		const basePlayerResistance = this.player.resistance + this.player.calculateEquippedResistance();
 
-		const baseEnemyDamage = this.getEnemyDamage(enemy);
-		const baseEnemyDefense = this.getEnemyDefense(enemy);
-		const baseEnemyPrecision = this.getEnemyPrecision(enemy);
-		const baseEnemyEvasion = this.getEnemyEvasion(enemy);
-		const baseEnemyCritical = this.getEnemyCritical(enemy);
-		const baseEnemyResistance = this.getEnemyResistance(enemy);
+		const baseEnemyDamage = enemy.damage;
+		const baseEnemyDefense = enemy.defense;
+		const baseEnemyPrecision = enemy.precision;
+		const baseEnemyEvasion = enemy.evasion;
+		const baseEnemyCritical = enemy.critical;
+		const baseEnemyResistance = enemy.resistance;
 
 		const playerDamageReduction = this.calculateDamageReduction(basePlayerDefense);
 		const enemyDamageReduction = this.calculateDamageReduction(baseEnemyDefense);
@@ -209,7 +129,7 @@ class BattleModule {
 			this.updateGameInfo("You were defeated!");
 		} else if (enemy.currentHP <= 0) {
 			this.updateGameInfo(`You defeated the ${enemy.icon} ${enemy.name}!`);
-			const lootChance = this.getEnemyLootChance(enemy) * (1 + this.player.bonusLoot / 100);
+			const lootChance = enemy.lootChance * (1 + this.player.bonusLoot / 100);
 
 			if (Math.random() < lootChance) {
 				const loot = generateLoot(enemy.level);
@@ -223,6 +143,14 @@ class BattleModule {
 				const moneyAmount = enemy.level * 4;
 				this.player.money += moneyAmount;
 				this.updateGameInfo(`You found money : ${moneyAmount}!`);
+			}
+
+			const killedEnemies = this.player.killedEnemies;
+
+			if (killedEnemies.has(enemy.id)) {
+				killedEnemies.set(enemy.id, killedEnemies.get(enemy.id) + 1);
+			} else {
+				killedEnemies.set(enemy.id, 1);
 			}
 		} else {
 			this.updateGameInfo("The battle ended in a draw.");
@@ -273,7 +201,7 @@ class BattleModule {
 
 	performBattle(enemy) {
 		this.updateGameInfo(this.generateEnemyInfo(enemy));
-		enemy.currentHP = this.getEnemyMaxHP(enemy);
+		enemy.currentHP = enemy.maxHP;
 		this.battle(enemy);
 		this.battleAndCheckResult(enemy);
 	}
