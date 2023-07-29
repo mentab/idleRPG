@@ -1,5 +1,7 @@
 function timingGame(resultCallback) {
 	const gameArea = document.getElementById('game-area');
+	gameArea.innerHTML = "";
+
 	const button = document.createElement('button');
 	button.innerText = 'Click Me at the Right Moment!';
 	gameArea.appendChild(button);

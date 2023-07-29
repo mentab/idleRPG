@@ -14,19 +14,29 @@ class BattleModule {
 	generateEnemyInfo = (enemy) => `An enemy ${enemy.icon} ${enemy.name} has appeared!\n` +
 		   `It has ${enemy.maxHP} HP, ${enemy.damage} DAM, ${enemy.defense} DEF, ${enemy.precision} PRE, ${enemy.evasion} EVA, ${enemy.critical} CRI, ${enemy.resistance} RES`;
 
-	// Function to generate a random enemy based on player's level
-	findEntitiesInAreaAndLevelRange(entities, maxLevel, isBoss = false) {
+	filterEntities(entities, mandatoryFilters, optionalFilters = {}) {
+		const defaultMandatoryFilters = { isBoss: false, isDuelist: false, ...mandatoryFilters };
+
 		const eligibleEntities = entities.filter((entity) => {
-			return entity.areaIndex === this.player.areaIndex && (entity.level <= maxLevel || (isBoss ? entity.isBoss : false));
+			const isMatchingMandatory = Object.entries(defaultMandatoryFilters).every(([key, value]) => entity[key] === value);
+			
+			const maxLevel = optionalFilters.maxLevel;
+			const isLowerLevel = !maxLevel || entity.level <= maxLevel;
+
+			return isMatchingMandatory && isLowerLevel;
 		});
-
+	
 		if (eligibleEntities.length === 0) {
-			const firstEnemyOfArea = entities.find((entity) => {
-				return entity.areaIndex === this.player.areaIndex;
+			const filteredEntitiesWithoutOptional = entities.filter((entity) => {
+				const isMatchingMandatory = Object.entries(defaultMandatoryFilters).every(([key, value]) => entity[key] === value);
+				return isMatchingMandatory;
 			});
-			return firstEnemyOfArea ? [firstEnemyOfArea] : [];
+	
+			const lowestLevelEntity = filteredEntitiesWithoutOptional.sort((a, b) => a.level - b.level)[0];
+	
+			return [lowestLevelEntity];
 		}
-
+	
 		return eligibleEntities;
 	}
 
@@ -34,23 +44,11 @@ class BattleModule {
 		return entities[Math.floor(Math.random() * entities.length)];
 	}
 
-	generateEnemy(maxLevel) {
-		const eligibleEnemies = this.findEntitiesInAreaAndLevelRange(gameConfig.enemies, maxLevel);
-		return this.generateEntity(eligibleEnemies);
+	generateEnemy(mandatoryFilters, optionalFilters = {}) {
+		const eligibleEntities = this.filterEntities(gameConfig.enemies, mandatoryFilters, optionalFilters);
+		return this.generateEntity(eligibleEntities);
 	}
 
-	generateRandomEnemy(playerLevel) {
-		const randomIndex = Math.floor(Math.random() * gameConfig.randomEnemies.length);
-		const enemy = gameConfig.randomEnemies[randomIndex];
-		return { name: enemy.name, level: playerLevel, icon: enemy.icon, currentHP: 0 };
-	}
-
-	generateBoss(maxLevel) {
-		const eligibleBosses = this.findEntitiesInAreaAndLevelRange(gameConfig.enemies, maxLevel, true);
-		return this.generateEntity(eligibleBosses);
-	}
-
-	// Function to handle the battle between the player and an enemy
 	battle(enemy) {
 		const maxTurns = 10000;
 		let turns = 0;
@@ -89,7 +87,6 @@ class BattleModule {
 					this.updateGameInfo(`You attack the ${enemy.icon} ${enemy.name} dealing ${playerDamageDealt} damage!`);
 				}
 
-				// Enemy's Damage Absorption
 				if (Math.random() < baseEnemyResistance / 100) {
 					const absorptionMultiplier = 1 - (baseEnemyResistance / 100);
 					const resistanceedDamage = Math.ceil(playerDamageDealt * (1 - absorptionMultiplier));
@@ -111,7 +108,6 @@ class BattleModule {
 					this.updateGameInfo(`The ${enemy.icon} ${enemy.name} attacks you dealing ${enemyDamageDealt} damage!`);
 				}
 
-				// Apply damage absorption
 				if (Math.random() < basePlayerResistance / 100) {
 					const absorptionMultiplier = 1 - (basePlayerResistance / 100);
 					const resistanceedDamage = Math.ceil(enemyDamageDealt * (1 - absorptionMultiplier));
@@ -162,32 +158,27 @@ class BattleModule {
 	}
 
 	calculateHitChance(attackerAttack, defenderDefense, attackerPrecision, defenderEvasion) {
-		const baseHitChance = 0.8; // Base hit chance value
-		const maxHitChance = 0.95; // Maximum hit chance value
-		const minHitChance = 0.05; // Minimum hit chance value
+		const baseHitChance = 0.8;
+		const maxHitChance = 0.95;
+		const minHitChance = 0.05;
 
-		// Calculate hit chance modifiers based on attacker's precision and defender's evasion
 		const precisionModifier = attackerPrecision - defenderEvasion;
-		const hitChanceModifier = precisionModifier * 0.01; // Modify hit chance by 1% per point of precision difference
+		const hitChanceModifier = precisionModifier * 0.01;
 
-		// Calculate hit chance based on attacker's attack, defender's defense, and hit chance modifiers
 		let hitChance = baseHitChance + hitChanceModifier;
 
-		// Adjust hit chance based on attack and defense difference
 		const attackDefenseDifference = attackerAttack - defenderDefense;
 		if (attackDefenseDifference > 0) {
-		  hitChance += attackDefenseDifference * 0.005; // Increase hit chance by 0.5% per point of attack-defense difference
+		  hitChance += attackDefenseDifference * 0.005;
 		} else {
-		  hitChance -= Math.abs(attackDefenseDifference) * 0.005; // Decrease hit chance by 0.5% per point of defense-attack difference
+		  hitChance -= Math.abs(attackDefenseDifference) * 0.005;
 		}
 
-		// Limit hit chance within the minimum and maximum values
 		hitChance = Math.max(minHitChance, Math.min(hitChance, maxHitChance));
 
 		return hitChance;
 	}
 
-	// Function to generate loot
 	generateLoot(level) {
 		const filteredItems = itemsList.filter((item) => item.level <= level);
 		
@@ -233,25 +224,22 @@ class BattleModule {
 	}
 
 	generateRandomIntro(enemyType, numEnemies) {
-		//const personInNeed = peopleInNeed[Math.floor(Math.random() * peopleInNeed.length)];
-		//const aidRequest = aidRequests[Math.floor(Math.random() * aidRequests.length)];
-		//const enemyDescriptor = enemyDescriptors[Math.floor(Math.random() * enemyDescriptors.length)];
-		//const groupPhrase = groupPhrases[Math.floor(Math.random() * groupPhrases.length)];
-		//const actionVerb = actionVerbs[Math.floor(Math.random() * actionVerbs.length)];
-		//const location = locations[Math.floor(Math.random() * locations.length)];
-//
-		//return `${personInNeed} ${aidRequest}! ${groupPhrase} ${numEnemies} ${enemyDescriptor} ${enemyType} is ${actionVerb} ${location}!`;
-	
-		return 'generateRandomIntro !';
+		const personInNeed = gameConfig.peopleInNeed[Math.floor(Math.random() * gameConfig.peopleInNeed.length)];
+		const aidRequest = gameConfig.aidRequests[Math.floor(Math.random() * gameConfig.aidRequests.length)];
+		const enemyDescriptor = gameConfig.enemyDescriptors[Math.floor(Math.random() * gameConfig.enemyDescriptors.length)];
+		const groupPhrase = gameConfig.groupPhrases[Math.floor(Math.random() * gameConfig.groupPhrases.length)];
+		const actionVerb = gameConfig.actionVerbs[Math.floor(Math.random() * gameConfig.actionVerbs.length)];
+		const location = gameConfig.locations[Math.floor(Math.random() * gameConfig.locations.length)];
+		
+		return `${personInNeed} ${aidRequest}! ${groupPhrase} ${numEnemies} ${enemyDescriptor} ${enemyType} is ${actionVerb} ${location}!`;
 	}
 
 	calculateMissionReward(enemy, numEnemies) {
 		const enemyLevel = enemy.level;
 		const playerLevel = this.player.level;
 		
-		const baseReward = numEnemies * 10; // Base reward based on the number of enemies
-		
-		// Calculate the level difference modifier
+		const baseReward = numEnemies * 10;
+
 		const levelDifference = playerLevel - enemyLevel;
 		let levelModifier = 1;
 		
@@ -276,19 +264,19 @@ class BattleModule {
 	}
 
 	startExploration() {
-		const enemy = this.generateEnemy(this.player.level);
+		const enemy = this.generateEnemy({ areaIndex: this.player.areaIndex }, { maxLevel: this.player.level });
 		this.updateGameInfo(`Starting exploration...`);
 		this.performBattle(enemy);
 	}
 
 	startChallenge() {
-		const boss = this.generateBoss(this.player.level);
+		const boss = this.generateEnemy({ areaIndex: this.player.areaIndex, isBoss: true }, {});
 		this.updateGameInfo("Starting the challenge...");
 		this.performBattle(boss);
 	}
 
 	startMission() {
-		const enemy = this.generateEnemy(this.player.level - 2);
+		const enemy = this.generateEnemy({ areaIndex: this.player.areaIndex }, { maxLevel: this.player.level - 2 });
 		this.updateGameInfo("Starting the mission...");
 		const numEnemies = getRandomNumber(2, 3);
 		this.updateGameInfo(this.generateRandomIntro(enemy.name, numEnemies));
@@ -316,7 +304,7 @@ class BattleModule {
 	}
 
 	startDuel() {
-		const enemy = this.generateRandomEnemy(this.player.level);
+		const enemy = this.generateEnemy({ areaIndex: this.player.areaIndex, isDuelist: true }, { maxLevel: this.player.level });
 		this.updateGameInfo(this.generateDuelChallengeSentence(enemy));
 		
 		this.performBattle(enemy);

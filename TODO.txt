@@ -87,3 +87,88 @@ Bonuses / No direct linked stat :
 Add pets ?
 
 Add mini games that give bonus on each fighting screen
+
+
+Spells :
+
+For spells
+
+Generate generic spells
+
+for each stat
+for buff/debuff
+for one turn/mutiple turn
+
+each for multiplies the number of possible spells
+
+
+do not limit the upper level of spell but do diminishing returns
+
+on an area, enemies have 2/3 spells ?
+
+the first enemies of the area have 1 spell, then they have 2, then 3
+
+on game config you can choose to activate some spells, these will be the player spells as well
+
+on game config you can give each spell an icon and a name
+
+
+Certainly! Based on the information you provided about the game and the specific areas, let's rework the spells for each area:
+
+Shimmering Meadows:
+
+Swift Strikes: Enemies in the meadows have increased attack speed, allowing them to strike more frequently. (Debuffs player's evasion and grants enemy bonus precision)
+Whispering Forest:
+
+Poisonous Attacks: Enemies in the forest may inflict poison on their attacks, dealing damage over time to adventurers. (Damage over time spell that inflicts poison on the player)
+
+Whispering Veil: Enemies in the forest can hide in the shadows, making them harder to hit. (Buff enemy evasion)
+
+Crystal Caverns:
+
+Crystal Armor: Enemies in the caverns have a chance to gain a temporary boost to their defense when hit. (Buff enemy defense)
+
+Crystalline Barrier: Enemies in the caverns can create a barrier that reduces incoming damage. (Buff enemy damage reduction)
+
+Crimson Citadel:
+
+Bloodthirst: Enemies in the citadel can gain health steal, recovering HP with each successful attack. (Debuff player's HP and grants enemy lifesteal)
+
+Crimson Rage: Enemies in the citadel become more aggressive, dealing increased damage. (Buff enemy offense)
+
+Stormy Peaks:
+
+Stormcaller: Enemies in the peaks can summon lightning strikes to hit adventurers from afar. (Damages player with lightning strikes from time to time)
+
+Storm's Shield: Enemies in the peaks can summon a shield that reduces incoming damage. (Buff enemy damage reduction)
+
+Lost Catacombs:
+
+Necrotic Touch: Enemies in the catacombs have a chance to weaken adventurers' attacks with a curse. (Debuff player's offense)
+
+Cursed Ground: Enemies in the catacombs create an area of cursed ground that slows down player movement. (Damages player and debuffs player's speed)
+
+Celestial Observatory:
+
+Starfall: Enemies in the observatory can call upon celestial power to unleash devastating area-of-effect attacks. (Damages player and other allies in the area)
+
+Astral Blessing: Enemies in the observatory can receive healing from celestial energy. (Buff enemy healing received)
+
+Frozen Tundra:
+
+Frostbite: Enemies in the tundra can slow down adventurers' movement speed with icy attacks. (Damages player and debuffs player's speed)
+
+Frozen Veins: Enemies in the tundra can freeze adventurers' veins, reducing their precision. (Debuff player's precision)
+
+Volcanic Depths:
+
+Molten Strikes: Enemies in the depths can deal additional fire damage with their attacks. (Damages player with fire attacks)
+
+Volcanic Surge: Enemies in the depths unleash a surge of volcanic energy, increasing their offense. (Buff enemy offense)
+
+Cursed Catacombs:
+
+Soul Drain: Enemies in the catacombs can drain the life force of adventurers, reducing their HP. (Damages player and debuffs player's HP)
+
+Dark Enigma: Enemies in the catacombs become shrouded in darkness, making them harder to hit. (Buff enemy evasion)
+

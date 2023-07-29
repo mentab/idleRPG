@@ -9,6 +9,7 @@ import StatsScreen from './screens/StatsScreen.js';
 import EquippedScreen from './screens/EquippedScreen.js';
 import GatherScreen from './screens/GatherScreen.js';
 import MiniGameScreen from './screens/MiniGameScreen.js';
+import AchievementsScreen from './screens/AchievementsScreen.js';
 import gameConfig from './config/gameConfig.js';
 import BattleModule from './modules/BattleModule.js';
 import { healForMoney } from './modules/HealModule.js';
@@ -56,7 +57,8 @@ class Game {
 			experience: 0,
 			areaIndex: 0,
 			gatheringXP: 0,
-			killedEnemies: new Map()
+			killedEnemies: new Map(),
+			claimedRewards: new Map()
 		};
 		this.battleModule = new BattleModule(
 			this.player,
@@ -68,7 +70,8 @@ class Game {
 			this.handleScreenButtonClick.bind(this)
 		);
 		this.miniGameScreen = new MiniGameScreen(
-			this.updateGameInfo.bind(this)
+			this.updateGameInfo.bind(this),
+			this.showMainScreen.bind(this)
 		);
 		this.miniGameScreen.registerMiniGame(timingGame);
 		this.miniGameScreen.registerMiniGame(clickerGame);
@@ -103,6 +106,11 @@ class Game {
 			this.player
 		);
 		this.gatherScreen = new GatherScreen(
+			this.player,
+			this.updateGameInfo.bind(this),
+			this.updatePlayerStats.bind(this)
+		);
+		this.achievementsScreen = new AchievementsScreen(
 			this.player,
 			this.updateGameInfo.bind(this),
 			this.updatePlayerStats.bind(this)
@@ -145,6 +153,8 @@ class Game {
 				break;
 			case 'btnGather':
 				this.showGatherScreen();
+			case 'btnAchievements':
+				this.showAchievementsScreen();
 				break;
 			case "btnGamble":
 				gambleMoney(
@@ -227,6 +237,10 @@ class Game {
 		this.gatherScreen.render();
 	}
 
+	showAchievementsScreen() {
+		this.showScreen("achievements-screen");
+		this.achievementsScreen.render();
+	}
 
 	showScreen(screenId) {
 		const screens = document.querySelectorAll("#main-screens > div");
@@ -299,7 +313,7 @@ class Game {
 	}
 
 	updatePlayerStats() {
-		document.getElementById("playerCurrentArea").textContent = gameConfig.areas[this.player.areaIndex];
+		document.getElementById("playerCurrentArea").textContent = `${gameConfig.areas[this.player.areaIndex].name} ${gameConfig.areas[this.player.areaIndex].icon}`;
 		document.getElementById("playerLevel").textContent = this.player.level;
 		document.getElementById("playerCurrentHP").textContent = this.player.currentHP;
 		document.getElementById("playerMaxHP").textContent = this.player.maxHP;

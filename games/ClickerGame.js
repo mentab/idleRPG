@@ -1,11 +1,13 @@
 function clickerGame(resultCallback) {
 	const gameArea = document.getElementById('game-area');
+	gameArea.innerHTML = "";
+	
 	const button = document.createElement('button');
 	button.innerText = 'Click Me as Many Times as You Can!';
 	gameArea.appendChild(button);
 
 	let clickCount = 0;
-	const gameTime = 10;
+	const gameTime = 3;
 
 	button.addEventListener('click', () => {
 		clickCount++;

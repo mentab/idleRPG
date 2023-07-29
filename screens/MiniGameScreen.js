@@ -1,9 +1,10 @@
 // MiniGameScreen.js
 
 class MiniGameScreen {
-	constructor(updateGameInfo) {
+	constructor(updateGameInfo, showMainScreen) {
 		this.miniGames = [];
 		this.updateGameInfo = updateGameInfo;
+		this.showMainScreen = showMainScreen;
 	}
 
 	registerMiniGame(miniGameFunction) {
@@ -34,7 +35,7 @@ class MiniGameScreen {
 		// Combo ?
 		// Revival
 
-
+		this.showMainScreen();
 	}
 }
 

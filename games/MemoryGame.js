@@ -1,5 +1,7 @@
 function memoryGame(resultCallback) {
 	const gameArea = document.getElementById('game-area');
+	gameArea.innerHTML = "";
+	
 	const symbols = ["🗡️", "🔮", "👑"];
 	const totalPairs = 3;
 	const cards = generateCards(symbols, totalPairs);

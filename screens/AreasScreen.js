@@ -10,18 +10,21 @@ class AreasScreen {
 	}
 
 	render() {
-		this.updateGameInfo(`You are currently in ${gameConfig.areas[this.player.areaIndex].name}.`);
+		const { icon, name } = gameConfig.areas[this.player.areaIndex];
+
+		this.updateGameInfo(`You are currently in ${name} ${icon}.`);
 
 		const areaList = document.getElementById("area-list");
 		areaList.innerHTML = "";
 
 		gameConfig.areas.forEach((area, index) => {
+			const { icon, name, description } = area;
 			const areaButton = document.createElement('button');
-			areaButton.textContent = area.name;
+			areaButton.textContent = `${name} ${icon}`;
 			areaButton.addEventListener('click', () => {
 				this.player.areaIndex = index;
-				this.updateGameInfo(`You have entered the ${area.name}.`);
-				this.updateGameInfo(`${area.description}.`);
+				this.updateGameInfo(`You have entered the ${name} ${icon}.`);
+				this.updateGameInfo(`${description}.`);
 				this.updatePlayerStats();
 			});
 			areaList.appendChild(areaButton);
