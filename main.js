@@ -153,6 +153,7 @@ class Game {
 				break;
 			case 'btnGather':
 				this.showGatherScreen();
+				break;
 			case 'btnAchievements':
 				this.showAchievementsScreen();
 				break;

@@ -128,7 +128,7 @@ class BattleModule {
 			const lootChance = enemy.lootChance * (1 + this.player.bonusLoot / 100);
 
 			if (Math.random() < lootChance) {
-				const loot = generateLoot(enemy.level);
+				const loot = this.generateLoot(enemy.level);
 				if (loot) {
 					this.player.inventory.push(loot);
 					this.updateGameInfo(`You found a loot: ${loot.name}!`);
