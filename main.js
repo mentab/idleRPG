@@ -257,9 +257,8 @@ class Game {
 
 	updateGameInfo(message) {
 		const gameInfoElement = document.getElementById("game-info");
-		const messageElement = document.createElement("div");
+		const messageElement = document.createElement("article");
 		messageElement.innerHTML = message;
-		messageElement.classList.add("game-message");
 		gameInfoElement.insertBefore(messageElement, gameInfoElement.firstChild);
 	}
 

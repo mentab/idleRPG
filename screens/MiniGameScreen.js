@@ -14,10 +14,12 @@ class MiniGameScreen {
 	render(action) {
 		this.updateGameInfo("Starting Mini-game...");
 
-		const randomIndex = Math.floor(Math.random() * this.miniGames.length);
-		const selectedMiniGame = this.miniGames[randomIndex];
+		// const randomIndex = Math.floor(Math.random() * this.miniGames.length);
+		// const selectedMiniGame = this.miniGames[randomIndex];
+// 
+		// selectedMiniGame(result => this.finishMiniGame(result, action));
 
-		selectedMiniGame(result => this.finishMiniGame(result, action));
+		this.finishMiniGame(555, action)
 	}
 
 	finishMiniGame(result, action) {
