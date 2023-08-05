@@ -180,7 +180,7 @@ class BattleModule {
 	}
 
 	generateLoot(level) {
-		const filteredItems = itemsList.filter((item) => item.level <= level);
+		const filteredItems = gameConfig.itemsList.filter((item) => item.level <= level);
 		
 		if (filteredItems.length === 0) {
 			return null;

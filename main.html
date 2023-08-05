@@ -7,136 +7,120 @@
 	<meta charset="UTF-8">
 </head>
 <body>	
-	<main id="game-container">
-		<aside id="main-screens">
-			<div id="main-screen">
-				<div class="flex-container">
-					<button id="btnExploration">🗺️ Exploration</button>
-				</div>
-				<div class="flex-container">
-					<button id="btnChallenge">⚔️ Challenge</button>
-					<button id="btnMission">🔍 Mission</button>
-					<button id="btnDuel">🤼 Duel</button>
-				</div>
-				<div class="flex-container">
-					<button id="btnAreas">🗺️ Areas</button>
-					<button id="btnStats">📊 Stats</button>
-					<button id="btnEquipped">🛡️ Equipped</button>
-				</div>
-				<div class="flex-container">
-					<button id="btnInventory">🎒 Inventory</button>
-					<button id="btnBuy">💰 Buy</button>
-					<button id="btnSell">💎 Sell</button>
-				</div>
-				<div class="flex-container">
-					<!-- <button id="btnGather">🌿 Gather</button> -->
-					<button id="btnAchievements">🏆 Achievements</button>
-					<!-- <button id="btnCraft">🔨 Craft</button> -->
-					<button id="btnImprove">🔨 Improvements</button>
-				</div>
-				<div class="flex-container">
-					<button id="btnGamble">🎲 Gamble</button>
-					<button id="btnHeal">💊 Heal</button>
-				</div>
-				<div class="flex-container">
-					<button id="btnExperience">🐞 Experience</button>
-					<button id="btnMoney">🐞 Money</button>
-				</div>
-				<div class="flex-container">
-					<button id="btnSave">💾 Save</button>
-					<button id="btnLoad">📂 Load</button>
-					<button id="btnReset">🔄 Reset</button>
-				</div>
-			</div>
+	<aside id="main-screens">
+		<div id="main-screen">
+			<button id="btnExploration">🗺️ Explore</button>
+			<button id="btnChallenge">⚔️ Challenge</button>
+			<button id="btnMission">🔍 Mission</button>
+			<button id="btnDuel">🤼 Duel</button>
+			<button id="btnAreas">🗺️ Navigate</button>
+			<button id="btnStats">📊 Analyze</button>
+			<button id="btnEquipped">🛡️ Equip</button>
+			<button id="btnInventory">🎒 Manage</button>
+			<button id="btnBuy">💰 Purchase</button>
+			<button id="btnSell">💎 Trade</button>
+			<!-- <button id="btnGather">🌿 Gather</button> -->
+			<button id="btnAchievements">🏆 Achieve</button>
+			<!-- <button id="btnCraft">🔨 Craft</button> -->
+			<button id="btnImprove">🔨 Improve</button>
+			<button id="btnGamble">🎲 Play</button>
+			<button id="btnHeal">💊 Heal</button>
+			<hr/>
+			<button id="btnExperience">🐞 Experience</button>
+			<button id="btnMoney">🐞 Money</button>
+			<hr/>
+			<button id="btnSave">💾 Save</button>
+			<button id="btnLoad">📂 Load</button>
+			<button id="btnReset">🔄 Reset</button>
+		</div>
 
-			<div id="mini-game-screen" class="hidden">
-				<h2>Mini Game</h2>
-				<div id="game-area"></div>
-			</div>
+		<div id="mini-game-screen" class="hidden">
+			<h2>Mini Game</h2>
+			<div id="game-area"></div>
+		</div>
 
-			<div id="areas-screen" class="hidden">
-				<button class="btnBackToMain">🔙 Back to Main</button>
-				<h4>Areas</h4>
-				<div id="area-list"></div>
-			</div>
+		<div id="areas-screen" class="hidden">
+			<button class="btnBackToMain">🔙 Back to Main</button>
+			<h2>Areas</h2>
+			<div id="area-list"></div>
+		</div>
 
-			<div id="inventory-screen" class="hidden">
-				<button class="btnBackToMain">🔙 Back to Main</button>
-				<h4>Inventory</h4>
-				<div id="item-list"></div>
-			</div>
+		<div id="inventory-screen" class="hidden">
+			<button class="btnBackToMain">🔙 Back to Main</button>
+			<h2>Inventory</h2>
+			<div id="item-list"></div>
+		</div>
 
-			<div id="buy-screen" class="hidden">
-				<button class="btnBackToMain">🔙 Back to Main</button>
-				<h4>Buy Items</h4>
-				<div id="shop-item-list"></div>
-			</div>
+		<div id="buy-screen" class="hidden">
+			<button class="btnBackToMain">🔙 Back to Main</button>
+			<h2>Buy Items</h2>
+			<div id="shop-item-list"></div>
+		</div>
 
-			<div id="sell-screen" class="hidden">
-				<button class="btnBackToMain">🔙 Back to Main</button>
-				<h4>Sell Items</h4>
-				<div id="sell-item-list"></div>
-			</div>
+		<div id="sell-screen" class="hidden">
+			<button class="btnBackToMain">🔙 Back to Main</button>
+			<h2>Sell Items</h2>
+			<div id="sell-item-list"></div>
+		</div>
 
-			<div id="stats-screen" class="hidden">
-				<button class="btnBackToMain">🔙 Back to Main</button>
-				<h2>Player Stats</h2>
-				<div class="stat-list">
-					<ul id="playerStatsList"></ul>
-				</div>
+		<div id="stats-screen" class="hidden">
+			<button class="btnBackToMain">🔙 Back to Main</button>
+			<h2>Player Stats</h2>
+			<div class="stat-list">
+				<ul id="playerStatsList"></ul>
 			</div>
+		</div>
 
-			<div id="equipped-screen" class="hidden">
-				<button class="btnBackToMain">🔙 Back to Main</button>
-				<h2>Equipped Items</h2>
-				<div class="equipped-list">
-					<ul id="equippedItemsList"></ul>
-				</div>
+		<div id="equipped-screen" class="hidden">
+			<button class="btnBackToMain">🔙 Back to Main</button>
+			<h2>Equipped Items</h2>
+			<div class="equipped-list">
+				<ul id="equippedItemsList"></ul>
 			</div>
+		</div>
 
-			<div id="gather-screen" class="hidden">
-				<button class="btnBackToMain">🔙 Back to Main</button>
-				<h2>Gather Resources</h2>
-				<div id="gather-item-list">
-					<ul id="gatherItemsList"></ul>
-				</div>
+		<div id="gather-screen" class="hidden">
+			<button class="btnBackToMain">🔙 Back to Main</button>
+			<h2>Gather Resources</h2>
+			<div id="gather-item-list">
+				<ul id="gatherItemsList"></ul>
 			</div>
+		</div>
 
-			<div id="crafting-screen" class="hidden">
-				<button class="btnBackToMain">🔙 Back to Main</button>
-				<h2>Crafting</h2>
-				<p id="crafting-xp">Crafting XP: 0</p>
-				<div id="crafting-recipes-list"></div>
-			</div>
+		<div id="crafting-screen" class="hidden">
+			<button class="btnBackToMain">🔙 Back to Main</button>
+			<h2>Crafting</h2>
+			<p id="crafting-xp">Crafting XP: 0</p>
+			<div id="crafting-recipes-list"></div>
+		</div>
 
-			<div id="achievements-screen" class="hidden">
-				<button class="btnBackToMain">🔙 Back to Main</button>
-				<h2>Achievements</h2>
-				<div id="achievements-list"></div>
-			</div>
+		<div id="achievements-screen" class="hidden">
+			<button class="btnBackToMain">🔙 Back to Main</button>
+			<h2>Achievements</h2>
+			<div id="achievements-list"></div>
+		</div>
 
-			<div id="improvements-screen" class="hidden">
-				<button class="btnBackToMain">🔙 Back to Main</button>
-				<h2>Improvements</h2>
-				<div id="improvements-list"></div>
-			</div>
+		<div id="improvements-screen" class="hidden">
+			<button class="btnBackToMain">🔙 Back to Main</button>
+			<h2>Improvements</h2>
+			<div id="improvements-list"></div>
+		</div>
 
-		</aside>
+	</aside>
 
-		<div id="information-screen">
-			<h4>🗺️: <span id="playerCurrentArea"></span></h4>
-			<div>
-				<p id="playerStats">
-					🎚️: <span id="playerLevel"></span> |
-					💖: <span id="playerCurrentHP"></span>/<span id="playerMaxHP"></span> |
-					💚: <span id="playerRegeneration"></span> |
-					🌟: <span id="playerExperience"></span> |
-					💰: <span id="playerMoney"></span>
-				</p>
-			</div>
-			<div id="game-info">
-				<div id="message-container"></div>
-			</div>
+	<main id="information-screen">
+		<h1>🗺️: <span id="playerCurrentArea"></span></h1>
+		<div>
+			<p id="playerStats">
+				🎚️: <span id="playerLevel"></span> |
+				💖: <span id="playerCurrentHP"></span>/<span id="playerMaxHP"></span> |
+				💚: <span id="playerRegeneration"></span> |
+				🌟: <span id="playerExperience"></span> |
+				💰: <span id="playerMoney"></span>
+			</p>
+		</div>
+		<div id="game-info">
+			<div id="message-container"></div>
 		</div>
 	</main>
 
