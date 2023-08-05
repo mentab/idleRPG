@@ -1,246 +1,246 @@
 :root,
 ::backdrop {
-  --sans-font: -apple-system, BlinkMacSystemFont, "Avenir Next", Avenir,
+	--sans-font: -apple-system, BlinkMacSystemFont, "Avenir Next", Avenir,
 	"Nimbus Sans L", Roboto, "Noto Sans", "Segoe UI", Arial, Helvetica,
 	"Helvetica Neue", sans-serif;
-  --mono-font: Consolas, Menlo, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
-  --standard-border-radius: 5px;
+	--mono-font: Consolas, Menlo, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
+	--standard-border-radius: 5px;
 
-  --bg: #fff;
-  --accent-bg: #f5f7ff;
-  --text: #212121;
-  --text-light: #585858;
-  --border: #898EA4;
-  --accent: #0d47a1;
-  --code: #d81b60;
-  --preformatted: #444;
-  --marked: #ffdd33;
-  --disabled: #efefef;
+	--bg: #fff;
+	--accent-bg: #f5f7ff;
+	--text: #212121;
+	--text-light: #585858;
+	--border: #898EA4;
+	--accent: #0d47a1;
+	--code: #d81b60;
+	--preformatted: #444;
+	--marked: #ffdd33;
+	--disabled: #efefef;
 }
 
 *, *::before, *::after {
-  box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 textarea,
 select,
 input,
 progress {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
+	appearance: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
 }
 
 html {
-  font-family: var(--sans-font);
-  scroll-behavior: smooth;
+	font-family: var(--sans-font);
+	scroll-behavior: smooth;
 }
 
 
 body {
-  color: var(--text);
-  background-color: var(--bg);
-  font-size: 1.15rem;
-  line-height: 1.5;
-  display: grid;
-  grid-template-columns: 1fr 90% 1fr;
-  margin: 0;
+	color: var(--text);
+	background-color: var(--bg);
+	font-size: 1.15rem;
+	line-height: 1.5;
+	display: grid;
+	grid-template-columns: 1fr 90% 1fr;
+	margin: 0;
 }
 
 body > * {
-  grid-column: 2;
+	grid-column: 2;
 }
 
 main {
-  padding-top: 1.5rem;
+	padding-top: 1.5rem;
 }
 
 h1 {
-  font-size: 3rem;
+	font-size: 3rem;
 }
 
 h2 {
-  font-size: 2.6rem;
-  margin-top: 3rem;
+	font-size: 2.6rem;
+	margin-top: 3rem;
 }
 
 h3 {
-  font-size: 2rem;
-  margin-top: 3rem;
+	font-size: 2rem;
+	margin-top: 3rem;
 }
 
 h4 {
-  font-size: 1.44rem;
+	font-size: 1.44rem;
 }
 
 h5 {
-  font-size: 1.15rem;
+	font-size: 1.15rem;
 }
 
 h6 {
-  font-size: 0.96rem;
+	font-size: 0.96rem;
 }
 
 p, h1, h2, h3, h4, h5, h6 {
-  overflow-wrap: break-word;
+	overflow-wrap: break-word;
 }
 
 h1,
 h2,
 h3 {
-  line-height: 1.1;
+	line-height: 1.1;
 }
 
 a,
 a:visited {
-  color: var(--accent);
+	color: var(--accent);
 }
 
 a:hover {
-  text-decoration: none;
+	text-decoration: none;
 }
 
 button {
-  border: none;
-  border-radius: var(--standard-border-radius);
-  background-color: var(--accent);
-  font-size: 1rem;
-  color: var(--bg);
-  padding: 0.7rem 0.9rem;
-  margin: 0.5rem 0;
-  text-decoration: none;
-  font-family: inherit;
-  line-height: normal;
+	border: none;
+	border-radius: var(--standard-border-radius);
+	background-color: var(--accent);
+	font-size: 1rem;
+	color: var(--bg);
+	padding: 0.7rem 0.9rem;
+	margin: 0.5rem 0;
+	text-decoration: none;
+	font-family: inherit;
+	line-height: normal;
 }
 
 button[disabled] {
-  cursor: not-allowed;
-  background-color: var(--disabled);
-  color: var(--text-light)
+	cursor: not-allowed;
+	background-color: var(--disabled);
+	color: var(--text-light)
 }
 
 /* Set the cursor to '?' on an abbreviation and style the abbreviation to show that there is more information underneath */
 abbr[title] {
-  cursor: help;
-  text-decoration-line: underline;
-  text-decoration-style: dotted;
+	cursor: help;
+	text-decoration-line: underline;
+	text-decoration-style: dotted;
 }
 
 button:enabled:hover {
-  filter: brightness(1.4);
-  cursor: pointer;
+	filter: brightness(1.4);
+	cursor: pointer;
 }
 
 .button:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 1px;
+	outline: 2px solid var(--accent);
+	outline-offset: 1px;
 }
 
 aside, details, pre, progress {
-  background-color: var(--accent-bg);
-  border: 1px solid var(--border);
-  border-radius: var(--standard-border-radius);
-  margin-bottom: 1rem;
+	background-color: var(--accent-bg);
+	border: 1px solid var(--border);
+	border-radius: var(--standard-border-radius);
+	margin-bottom: 1rem;
 }
 
 aside {
-  font-size: 1rem;
-  width: 30%;
-  padding: 0 15px;
-  margin-inline-start: 15px;
-  float: right;
+	font-size: 1rem;
+	width: 30%;
+	padding: 0 15px;
+	margin-inline-start: 15px;
+	float: right;
 }
 
 *[dir="rtl"] aside {
-  float: left;
+	float: left;
 }
 
 article, fieldset, dialog {
-  border: 1px solid var(--border);
-  padding: 1rem;
-  border-radius: var(--standard-border-radius);
-  margin-bottom: 1rem;
+	border: 1px solid var(--border);
+	padding: 1rem;
+	border-radius: var(--standard-border-radius);
+	margin-bottom: 1rem;
 }
 
 article h2:first-child,
 section h2:first-child {
-  margin-top: 1rem;
+	margin-top: 1rem;
 }
 
 section {
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  padding: 2rem 1rem;
-  margin: 3rem 0;
+	border-top: 1px solid var(--border);
+	border-bottom: 1px solid var(--border);
+	padding: 2rem 1rem;
+	margin: 3rem 0;
 }
 
 section + section,
 section:first-child {
-  border-top: 0;
-  padding-top: 0;
+	border-top: 0;
+	padding-top: 0;
 }
 
 section:last-child {
-  border-bottom: 0;
-  padding-bottom: 0;
+	border-bottom: 0;
+	padding-bottom: 0;
 }
 
 details {
-  padding: 0.7rem 1rem;
+	padding: 0.7rem 1rem;
 }
 
 summary {
-  cursor: pointer;
-  font-weight: bold;
-  padding: 0.7rem 1rem;
-  margin: -0.7rem -1rem;
-  word-break: break-all;
+	cursor: pointer;
+	font-weight: bold;
+	padding: 0.7rem 1rem;
+	margin: -0.7rem -1rem;
+	word-break: break-all;
 }
 
 details[open] > summary + * {
-  margin-top: 0;
+	margin-top: 0;
 }
 
 details[open] > summary {
-  margin-bottom: 0.5rem;
+	margin-bottom: 0.5rem;
 }
 
 details[open] > :last-child {
-  margin-bottom: 0;
+	margin-bottom: 0;
 }
 
 hr {
-  border: none;
-  height: 1px;
-  background: var(--border);
-  margin: 1rem auto;
+	border: none;
+	height: 1px;
+	background: var(--border);
+	margin: 1rem auto;
 }
 
 mark {
-  padding: 2px 5px;
-  border-radius: var(--standard-border-radius);
-  background-color: var(--marked);
-  color: black;
+	padding: 2px 5px;
+	border-radius: var(--standard-border-radius);
+	background-color: var(--marked);
+	color: black;
 }
 
 mark a {
-  color: #0d47a1;
+	color: #0d47a1;
 }
 
 blockquote {
-  margin-inline-start: 2rem;
-  margin-inline-end: 0;
-  margin-block: 2rem;
-  padding: 0.4rem 0.8rem;
-  border-inline-start: 0.35rem solid var(--accent);
-  color: var(--text-light);
-  font-style: italic;
+	margin-inline-start: 2rem;
+	margin-inline-end: 0;
+	margin-block: 2rem;
+	padding: 0.4rem 0.8rem;
+	border-inline-start: 0.35rem solid var(--accent);
+	color: var(--text-light);
+	font-style: italic;
 }
 
 cite {
-  font-size: 0.9rem;
-  color: var(--text-light);
-  font-style: normal;
+	font-size: 0.9rem;
+	color: var(--text-light);
+	font-style: normal;
 }
 
 dt {
@@ -248,28 +248,28 @@ dt {
 }
 
 sup, sub {
-  vertical-align: baseline;
-  position: relative;
+	vertical-align: baseline;
+	position: relative;
 }
 
 sup {
-  top: -0.4em;
+	top: -0.4em;
 }
 
 sub { 
-  top: 0.3em; 
+	top: 0.3em; 
 }
 
 .notice {
-  background: var(--accent-bg);
-  border: 2px solid var(--border);
-  border-radius: 5px;
-  padding: 0.5rem;
-  margin: 1rem 0;
+	background: var(--accent-bg);
+	border: 2px solid var(--border);
+	border-radius: 5px;
+	padding: 1.5rem;
+	margin: 1rem 0;
 }
 
 .hidden {
-  display: none;
+	display: none;
 }
 
 
@@ -288,20 +288,20 @@ html {
 
 
 ::-webkit-scrollbar {
-  width: 12px;
+	width: 12px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: var(--main-bg-color);;
-  border-radius: 6px;
+	background-color: var(--main-bg-color);;
+	border-radius: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background-color: var(--main-text-color);
+	background-color: var(--main-text-color);
 }
 
 ::-webkit-scrollbar-corner {
-  background-color: var(--main-text-color);
+	background-color: var(--main-text-color);
 }
 
 
@@ -324,8 +324,8 @@ button {
 	padding: 10px;
 	margin: 5px;
 	box-shadow: 
-    0 0 0 2px var(--main-text-color),
-    0 0 0 2px var(--main-bg-color); 
+		0 0 0 2px var(--main-text-color),
+		0 0 0 2px var(--main-bg-color); 
 	text-decoration: none;
 	font-weight:  bold;
 	transition: background-color 0.3s ease;
@@ -401,5 +401,5 @@ button:hover {
 /*}*/
 
 /* .item {
- 	cursor: pointer;
+	cursor: pointer;
  }*/

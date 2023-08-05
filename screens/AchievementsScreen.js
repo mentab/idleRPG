@@ -25,23 +25,26 @@ class AchievementsScreen {
 
 		const nextMilestoneCount = rewardMilestones.find(milestoneCount => milestoneCount > lastClaimedRewardCount);
 
-		const remainingCount = nextMilestoneCount - achievedCount;
+		const remainingCount = Math.max(0, nextMilestoneCount - achievedCount);
+
 		const nextRewardAmount = this.calculateReward(nextMilestoneCount ,enemy.level);
 
-		return { remainingCount, nextRewardAmount };
+		return { nextMilestoneCount, remainingCount, nextRewardAmount };
 	}
 
 	render() {
 		const achievementsList = document.getElementById("achievements-list");
 		achievementsList.innerHTML = "";
 
-		const enemies = gameConfig.enemies;
+		const filteredEnemies = gameConfig.enemies.filter(
+			(enemy) => enemy.areaIndex == this.player.areaIndex
+		);
 
-		enemies.forEach((enemy) => {
+		filteredEnemies.forEach((enemy) => {
 			const nextReward = this.getNextReward(enemy);
 
 			if (nextReward) {
-				const { remainingCount, nextRewardAmount } = nextReward;
+				const { nextMilestoneCount, remainingCount, nextRewardAmount } = nextReward;
 
 				const rewardButton = document.createElement("button");
 				rewardButton.textContent = remainingCount === 0 ? "Claim Reward" : `${remainingCount} enemies to next reward!`;
@@ -52,7 +55,7 @@ class AchievementsScreen {
 
 				rewardButton.addEventListener("click", () => {
 					if (remainingCount === 0) {
-						this.player.claimedRewards.set(enemy.id, this.player.killedEnemies.get(enemy.id));
+						this.player.claimedRewards.set(enemy.id, nextMilestoneCount);
 						this.updateGameInfo(`You have received ${nextRewardAmount} coins as a reward!`);
 						this.updatePlayerStats();
 						this.render();

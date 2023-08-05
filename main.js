@@ -7,9 +7,9 @@ import BuyScreen from './screens/BuyScreen.js';
 import SellScreen from './screens/SellScreen.js';
 import StatsScreen from './screens/StatsScreen.js';
 import EquippedScreen from './screens/EquippedScreen.js';
-import GatherScreen from './screens/GatherScreen.js';
 import MiniGameScreen from './screens/MiniGameScreen.js';
 import AchievementsScreen from './screens/AchievementsScreen.js';
+import ImprovementsScreen from './screens/ImprovementsScreen.js';
 import gameConfig from './config/gameConfig.js';
 import BattleModule from './modules/BattleModule.js';
 import { healForMoney } from './modules/HealModule.js';
@@ -56,7 +56,6 @@ class Game {
 			money: 0,
 			experience: 0,
 			areaIndex: 0,
-			gatheringXP: 0,
 			killedEnemies: new Map(),
 			claimedRewards: new Map()
 		};
@@ -105,12 +104,12 @@ class Game {
 		this.equippedScreen = new EquippedScreen(
 			this.player
 		);
-		this.gatherScreen = new GatherScreen(
+		this.achievementsScreen = new AchievementsScreen(
 			this.player,
 			this.updateGameInfo.bind(this),
 			this.updatePlayerStats.bind(this)
 		);
-		this.achievementsScreen = new AchievementsScreen(
+		this.improvementsScreen = new ImprovementsScreen(
 			this.player,
 			this.updateGameInfo.bind(this),
 			this.updatePlayerStats.bind(this)
@@ -151,11 +150,11 @@ class Game {
 			case 'btnEquipped':
 				this.showEquippedScreen();
 				break;
-			case 'btnGather':
-				this.showGatherScreen();
-				break;
 			case 'btnAchievements':
 				this.showAchievementsScreen();
+				break;
+			case 'btnImprove':
+				this.showImprovementsScreen();
 				break;
 			case "btnGamble":
 				gambleMoney(
@@ -233,14 +232,14 @@ class Game {
 		this.equippedScreen.render();
 	}
 
-	showGatherScreen() {
-		this.showScreen("gather-screen");
-		this.gatherScreen.render();
-	}
-
 	showAchievementsScreen() {
 		this.showScreen("achievements-screen");
 		this.achievementsScreen.render();
+	}
+
+	showImprovementsScreen() {
+		this.showScreen("improvements-screen");
+		this.improvementsScreen.render();
 	}
 
 	showScreen(screenId) {
@@ -263,29 +262,27 @@ class Game {
 	}
 
 	getItemValue(item) {
-		const { type, stat, level } = item;
+		const { type, stat, level, improvementLevel  } = item;
 
 		if (type === "stat") {
 			switch (stat) {
 				case "defense":
 				case "damage":
-					return level * 20;
+					return (level + improvementLevel) * 20;
 				case "precision":
 				case "evasion":
-					return level * 10;
+					return (level + improvementLevel) * 10;
 				case "critical":
 				case "resistance":
-					return level * 5;
+					return (level + improvementLevel) * 5;
 				case "bonusExp":
 				case "bonusLoot":
-					return level * 50;
+					return (level + improvementLevel) * 50;
 				case "regeneration":
-					return level * 100;
+					return (level + improvementLevel) * 100;
 				default:
 					return 0;
 			}
-		} else if (type === "gathering") {
-			return level * 2;
 		} else {
 			return 0;
 		}
@@ -331,21 +328,24 @@ class Game {
 	calculateEquippedStat(itemType) {
 		const item = this.player[itemType + "Item"];
 		if (item) {
+			const { level, improvementLevel } = item;
+			const finalLevel = level + improvementLevel;
+
 			switch (itemType) {
 				case "defense":
 				case "damage":
-					return item.level;
+					return finalLevel;
 				case "regeneration":
-					return item.level / 25;
+					return finalLevel / 25;
 				case "precision":
 				case "evasion":
-					return item.level / 3;
+					return finalLevel / 3;
 				case "critical":
 				case "resistance":
-					return item.level / 2;
+					return finalLevel / 2;
 				case "bonusExp":
 				case "bonusLoot":
-					return item.level;
+					return finalLevel;
 				default:
 					return 0;
 			}

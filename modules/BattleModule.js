@@ -41,7 +41,7 @@ class BattleModule {
 	}
 
 	generateEntity(entities) {
-		return entities[Math.floor(Math.random() * entities.length)];
+		return { ...entities[Math.floor(Math.random() * entities.length)]};
 	}
 
 	generateEnemy(mandatoryFilters, optionalFilters = {}) {

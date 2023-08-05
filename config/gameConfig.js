@@ -516,18 +516,6 @@ const config = {
 			"dares",
 			"provokes",
 			"taunts"
-		],
-		gatheringItems: [
-			{ name: "Herb", type: "gathering", level: 1, icon: "🌿" },
-			{ name: "Mushroom", type: "gathering", level: 2, icon: "🍄" },
-			{ name: "Crystal", type: "gathering", level: 3, icon: "💎" },
-			{ name: "Ore", type: "gathering", level: 4, icon: "🔥" },
-			{ name: "Stone", type: "gathering", level: 5, icon: "🗻" },
-			{ name: "Bone", type: "gathering", level: 6, icon: "☠️" },
-			{ name: "Star Shard", type: "gathering", level: 7, icon: "✨" },
-			{ name: "Ice", type: "gathering", level: 8, icon: "❄️" },
-			{ name: "Ember", type: "gathering", level: 9, icon: "🔥" },
-			{ name: "Dark Essence", type: "gathering", level: 10, icon: "🌑" }
 		]
 	}
 };
@@ -537,7 +525,6 @@ const configData = config[game];
 const areas = configData.areas;
 const enemies = configData.enemies;
 const itemsList = configData.itemsList;
-const gatheringItems = configData.gatheringItems;
 const peopleInNeed = configData.peopleInNeed;
 const aidRequests = configData.aidRequests;
 const enemyDescriptors = configData.enemyDescriptors;
@@ -607,8 +594,7 @@ const ATTRIBUTES = {
 	},
 }
 
-const getAttributeValue = (entity, attribute) => {
-	const level = entity.level;
+const getAttributeValue = (level, attribute) => {
 	const group = Math.ceil(level / 10);
 	const factorIndex = (level - 1) % 10;
 	const groupFactorIndex = group - 1;
@@ -618,18 +604,27 @@ const getAttributeValue = (entity, attribute) => {
 };
 
 enemies.forEach(enemy => {
-	enemy.id = generateId(enemy.name, enemy.level);
-	enemy.areaIndex = Math.floor((enemy.level - 1) / 10);
-	enemy.maxHP = getAttributeValue(enemy, 'maxHP');
-	enemy.damage = getAttributeValue(enemy, 'damage');
-	enemy.defense = getAttributeValue(enemy, 'defense');
-	enemy.precision = getAttributeValue(enemy, 'precision');
-	enemy.evasion = getAttributeValue(enemy, 'evasion');
-	enemy.critical = getAttributeValue(enemy, 'critical');
-	enemy.resistance = getAttributeValue(enemy, 'resistance');
-	enemy.lootChance = getAttributeValue(enemy, 'lootChance');
-	enemy.isBoss = enemy.isBoss === true;
-	enemy.isDuelist = enemy.isDuelist === true;
+	const { name, level, isBoss, isDuelist } = enemy;
+	enemy.id = generateId(name, level);
+	enemy.areaIndex = Math.floor((level - 1) / 10);
+	enemy.maxHP = getAttributeValue(level, 'maxHP');
+	enemy.damage = getAttributeValue(level, 'damage');
+	enemy.defense = getAttributeValue(level, 'defense');
+	enemy.precision = getAttributeValue(level, 'precision');
+	enemy.evasion = getAttributeValue(level, 'evasion');
+	enemy.critical = getAttributeValue(level, 'critical');
+	enemy.resistance = getAttributeValue(level, 'resistance');
+	enemy.lootChance = getAttributeValue(level, 'lootChance');
+	enemy.isBoss = isBoss === true;
+	enemy.isDuelist = isDuelist === true;
+	enemy.currentHP = 0;
+});
+
+itemsList.forEach(item => {
+	const { name, level } = item;
+	item.id = generateId(name, level);
+	item.areaIndex = Math.floor((level - 1) / 10);
+	item.improvementLevel = 0;
 });
 
 // @todo freeze ?
@@ -637,7 +632,6 @@ const gameConfig = {
 	areas: areas,
 	enemies: enemies,
 	itemsList: itemsList,
-	gatheringItems: gatheringItems,
 	peopleInNeed: peopleInNeed,
 	aidRequests: aidRequests,
 	enemyDescriptors: enemyDescriptors,
@@ -649,5 +643,21 @@ const gameConfig = {
 	statNames: statNames,
 	levelUpRequirements: levelUpRequirements
 }
+
+function deepFreeze(obj) {
+	if (obj === null || typeof obj !== 'object' || Object.isFrozen(obj)) {
+		return;
+	}
+
+	Object.freeze(obj);
+
+	for (const key in obj) {
+		if (obj.hasOwnProperty(key)) {
+			deepFreeze(obj[key]);
+		}
+	}
+}
+
+deepFreeze(gameConfig);
 
 export default gameConfig;
