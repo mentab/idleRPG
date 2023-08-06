@@ -586,12 +586,7 @@ const ATTRIBUTES = {
 	//   base: 0,
 	//   factors: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 	//   groupFactors: [0, 0, 0, 0, 0, 1, 2, 5, 10, 15],
-	// },
-	lootChance: {
-	  base: 0,
-	  factors: [0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 1],
-	  groupFactors: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	},
+	// }
 }
 
 const getAttributeValue = (level, attribute) => {
@@ -614,11 +609,20 @@ enemies.forEach(enemy => {
 	enemy.evasion = getAttributeValue(level, 'evasion');
 	enemy.critical = getAttributeValue(level, 'critical');
 	enemy.resistance = getAttributeValue(level, 'resistance');
-	enemy.lootChance = getAttributeValue(level, 'lootChance');
 	enemy.isBoss = isBoss === true;
 	enemy.isDuelist = isDuelist === true;
 	enemy.currentHP = 0;
+
+	if (isBoss) {
+	  enemy.lootChance = 1;
+	} else if (isDuelist) {
+	  enemy.lootChance = 0;
+	} else {
+	  enemy.lootChance = 0.03;
+	}
 });
+
+console.log(enemies);
 
 itemsList.forEach(item => {
 	const { name, level } = item;
@@ -627,7 +631,6 @@ itemsList.forEach(item => {
 	item.improvementLevel = 0;
 });
 
-// @todo freeze ?
 const gameConfig = {
 	areas: areas,
 	enemies: enemies,

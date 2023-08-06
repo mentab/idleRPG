@@ -127,6 +127,8 @@ class BattleModule {
 			this.updateGameInfo(`You defeated the ${enemy.icon} ${enemy.name}!`);
 			const lootChance = enemy.lootChance * (1 + this.player.bonusLoot / 100);
 
+			console.log(lootChance);
+
 			if (Math.random() < lootChance) {
 				const loot = this.generateLoot(enemy.level);
 				if (loot) {
