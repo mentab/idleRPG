@@ -130,7 +130,7 @@ class BattleModule {
 			if (Math.random() < lootChance) {
 				const loot = this.generateLoot(enemy.level);
 				if (loot) {
-					this.player.inventory.push(loot);
+					this.player.inventory.push({...loot});
 					this.updateGameInfo(`You found a loot: ${loot.name}!`);
 				}
 			}
@@ -138,7 +138,7 @@ class BattleModule {
 			if (Math.random() < lootChance * 4) {
 				const moneyAmount = enemy.level * 4;
 				this.player.money += moneyAmount;
-				this.updateGameInfo(`You found money : ${moneyAmount}!`);
+				this.updateGameInfo(`You found coins : ${moneyAmount}!`);
 			}
 
 			const killedEnemies = this.player.killedEnemies;

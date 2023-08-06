@@ -34,11 +34,12 @@ class BuyScreen {
 		const itemCost = this.calculateItemCost(item);
 		if (this.player.money >= itemCost) {
 			this.player.money -= itemCost;
-			this.player.inventory.push(item);
+			const itemCopy = { ...item };
+			this.player.inventory.push({...itemCopy});
 			this.updateGameInfo(`You bought ${item.name}.`);
 			this.updatePlayerStats();
 		} else {
-			this.updateGameInfo('Not enough money to buy this item.');
+			this.updateGameInfo('Not enough coins to buy this item.');
 		}
 		this.render();
 	}

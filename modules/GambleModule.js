@@ -17,15 +17,15 @@ export function gambleMoney(player, updateGameInfo, updatePlayerStats) {
 		if (spinResult[0] === spinResult[1] && spinResult[1] === spinResult[2]) {
 			const winnings = gamblingCost * 3;
 			player.money += winnings;
-			updateGameInfo("Congratulations! You won " + winnings + " money!");
+			updateGameInfo("Congratulations! You won " + winnings + " coins!");
 		} else {
 			player.money -= gamblingCost;
-			updateGameInfo("Oh no! You lost " + gamblingCost + " money.");
+			updateGameInfo("Oh no! You lost " + gamblingCost + " coins.");
 		}
 
-		updateGameInfo("Your current balance is: " + player.money + " money.");
+		updateGameInfo("Your current balance is: " + player.money + " coins.");
 		updatePlayerStats();
 	} else {
-		updateGameInfo("Not enough money to gamble.");
+		updateGameInfo("Not enough coins to gamble.");
 	}
 }

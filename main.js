@@ -111,6 +111,7 @@ class Game {
 		);
 		this.improvementsScreen = new ImprovementsScreen(
 			this.player,
+			this.getItemValue,
 			this.updateGameInfo.bind(this),
 			this.updatePlayerStats.bind(this)
 		);

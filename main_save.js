@@ -1205,7 +1205,7 @@ function startMission() {
 	}
 
 	if (!isMissionFailed) {
-		updateGameInfo(`Mission completed! Total reward: ${totalReward} coins.`);
+		updateGameInfo(`Mission completed! Total reward: ${totalReward} money.`);
 		player.money += totalReward;
 		updatePlayerStats();
 	} else {

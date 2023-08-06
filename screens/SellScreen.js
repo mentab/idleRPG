@@ -30,7 +30,7 @@ class SellScreen {
 			const itemValue = this.calculateItemSellPrice(item);
 			this.player.money += itemValue;
 			this.player.inventory.splice(itemIndex, 1);
-			this.updateGameInfo(`You sold ${item.name} for ${itemValue} money.`);
+			this.updateGameInfo(`You sold ${item.name} for ${itemValue} coins.`);
 			this.updatePlayerStats();
 		}
 		this.render();

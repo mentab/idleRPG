@@ -3,36 +3,37 @@
 import gameConfig from './../config/gameConfig.js';
 
 class ImprovementsScreen {
-	constructor(player, updateGameInfo, updatePlayerStats) {
+	constructor(player, getItemValue, updateGameInfo, updatePlayerStats) {
 		this.player = player;
+		this.getItemValue = getItemValue;
 		this.updateGameInfo = updateGameInfo;
 		this.updatePlayerStats = updatePlayerStats;
 	}
 
 	improveItem(item) {
-		const chance = Math.random();
+		const improvementCost = this.calculateImprovementCost(item);
 
-		const improvementLevel = item.improvementLevel || 0;
-		const baseChance = 0.5 * (0.5 ** improvementLevel); // 50% chance, then 25%, 12.5%, and so on
-		const increaseStat = chance < baseChance;
-		const statMultiplier = increaseStat ? 1 : -1;
-
-		const costMultiplier = item.improvementLevel < 0 ? Math.abs(item.improvementLevel) + 1 : 1;
-
-		const improvementCost = this.getItemValue(item) * costMultiplier;
-
-		if (this.player.coins < improvementCost) {
+		if (this.player.money < improvementCost) {
 		  this.updateGameInfo("Not enough coins to improve this item.");
 		  return;
 		}
 
-		this.player.coins -= improvementCost;
+		this.player.money -= improvementCost;
 		this.updatePlayerStats();
 
-		item.improvementLevel = improvementLevel + (increaseStat ? 1 : -1);
+		const chance = Math.random();
+		const baseChance = 0.5 * (0.5 ** item.improvementLevel);
+		const increaseStat = chance < baseChance;
+		const statMultiplier = increaseStat ? 1 : -1;
+
+		item.improvementLevel += statMultiplier;
 		this.updateGameInfo(`Item ${item.name} has been ${increaseStat ? "upgraded" : "downgraded"}!`);
 
 		this.render();
+	}
+
+	calculateImprovementCost(item) {
+		return this.getItemValue(item);
 	}
 
 	render() {
@@ -45,7 +46,7 @@ class ImprovementsScreen {
 
 		filteredItems.forEach((item) => {
 		  const improvementButton = document.createElement("button");
-		  improvementButton.textContent = `Upgrade ${item.name} (${item.improvementLevel} Level)`;
+		  improvementButton.textContent = `Upgrade ${item.name} (${item.improvementLevel} Level) - Cost : ${this.calculateImprovementCost(item)}`;
 
 		  improvementButton.addEventListener("click", () => {
 		    this.improveItem(item);

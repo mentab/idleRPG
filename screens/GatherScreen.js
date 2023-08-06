@@ -69,7 +69,7 @@ class GatherScreen {
 		this.updateGameInfo(`Gathering XP: ${this.player.gatheringXP}.`);
 
 		for (let i = 0; i < totalGathers; i++) {
-			this.player.inventory.push(gatheredItem);
+			this.player.inventory.push({...gatheredItem});
 		}
 
 		this.updatePlayerStats();

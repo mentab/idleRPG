@@ -45,7 +45,7 @@ Modules (@reword)
 ----------------
 Exploration: fight an enemy or a random encounter (mandatory)
 Challenge: fight a boss
-Mission: fight a group of the same enemy and get coins
+Mission: fight a group of the same enemy and get money
 Dungeon : fight a group of different enemies and get loots
 Items: inventory / sell / buy (mandatory)
 Save / Load / Reset

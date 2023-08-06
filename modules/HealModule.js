@@ -16,6 +16,6 @@ export function healForMoney(player, updateGameInfo, updatePlayerStats) {
 		updateGameInfo("You've been healed!");
 		updatePlayerStats();
 	} else {
-		updateGameInfo("You don't have enough money to heal!");
+		updateGameInfo("You don't have enough coins to heal!");
 	}
 }
