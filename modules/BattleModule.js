@@ -72,8 +72,8 @@ class BattleModule {
 		const playerDamage = Math.ceil(Math.max(basePlayerDamage * (1 - enemyDamageReduction), 1));
 		const enemyDamage = Math.ceil(Math.max(baseEnemyDamage * (1 - playerDamageReduction), 1));
 
-		const playerHitChance = this.calculateHitChance(playerDamage, baseEnemyDefense, basePlayerPrecision, baseEnemyEvasion);
-		const enemyHitChance = this.calculateHitChance(enemyDamage, basePlayerDefense, baseEnemyPrecision, basePlayerEvasion);
+		const playerHitChance = this.calculateHitChance(basePlayerPrecision, baseEnemyEvasion);
+		const enemyHitChance = this.calculateHitChance(baseEnemyPrecision, basePlayerEvasion);
 
 		while (this.player.currentHP > 0 && enemy.currentHP > 0 && turns < maxTurns) {
 			// Player's Turn
@@ -127,8 +127,6 @@ class BattleModule {
 			this.updateGameInfo(`You defeated the ${enemy.icon} ${enemy.name}!`);
 			const lootChance = enemy.lootChance * (1 + this.player.bonusLoot / 100);
 
-			console.log(lootChance);
-
 			if (Math.random() < lootChance) {
 				const loot = this.generateLoot(enemy.level);
 				if (loot) {
@@ -159,25 +157,18 @@ class BattleModule {
 		return defense / (defense + 50);
 	}
 
-	calculateHitChance(attackerAttack, defenderDefense, attackerPrecision, defenderEvasion) {
-		const baseHitChance = 0.8;
+	calculateHitChance(attackerPrecision, defenderEvasion) {
+		const baseHitChance = 0.5;
 		const maxHitChance = 0.95;
 		const minHitChance = 0.05;
-
+		
 		const precisionModifier = attackerPrecision - defenderEvasion;
-		const hitChanceModifier = precisionModifier * 0.01;
-
+		const hitChanceModifier = precisionModifier * 0.002;
+		
 		let hitChance = baseHitChance + hitChanceModifier;
-
-		const attackDefenseDifference = attackerAttack - defenderDefense;
-		if (attackDefenseDifference > 0) {
-		  hitChance += attackDefenseDifference * 0.005;
-		} else {
-		  hitChance -= Math.abs(attackDefenseDifference) * 0.005;
-		}
-
+		
 		hitChance = Math.max(minHitChance, Math.min(hitChance, maxHitChance));
-
+		
 		return hitChance;
 	}
 

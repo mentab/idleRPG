@@ -23,13 +23,13 @@ class Game {
 		this.hpDelay = 200;
 		this.player = {
 			level: 1,
-			maxHP: 25,
-			currentHP: 25,
-			damage: 6,
-			defense: 6,
+			maxHP: 20,
+			currentHP: 20,
+			damage: 5,
+			defense: 5,
+			precision: 5,
+			evasion: 5,
 			regeneration: 1,
-			precision: 25,
-			evasion: 25,
 			critical: 0,
 			resistance: 0,
 			bonusExp: 0,
@@ -269,13 +269,12 @@ class Game {
 			switch (stat) {
 				case "defense":
 				case "damage":
-					return (level + improvementLevel) * 20;
 				case "precision":
 				case "evasion":
-					return (level + improvementLevel) * 10;
+					return (level + improvementLevel) * 20;
 				case "critical":
 				case "resistance":
-					return (level + improvementLevel) * 5;
+					return (level + improvementLevel) * 10;
 				case "bonusExp":
 				case "bonusLoot":
 					return (level + improvementLevel) * 50;
@@ -356,12 +355,12 @@ class Game {
 	}
 
 	levelUp() {
-		this.player.maxHP += 5;
+		this.player.maxHP += 2;
 		this.player.currentHP = this.player.maxHP;
-		this.player.damage += 2;
-		this.player.defense += 2;
-		if (this.player.level % 5 == 0) this.player.precision += 1;
-		if (this.player.level % 5 == 0) this.player.evasion += 1;
+		this.player.damage += 1;
+		this.player.defense += 1;
+		this.player.precision += 1;
+		this.player.evasion += 1;
 		if (this.player.level % 10 == 0) this.player.regeneration += 1;
 		if (this.player.level % 5 == 0) this.player.critical += 1;
 		if (this.player.level % 5 == 0) this.player.resistance += 1;
