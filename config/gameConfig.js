@@ -622,8 +622,6 @@ enemies.forEach(enemy => {
 	}
 });
 
-console.log(enemies);
-
 itemsList.forEach(item => {
 	const { name, level } = item;
 	item.id = generateId(name, level);

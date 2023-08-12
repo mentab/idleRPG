@@ -3,7 +3,12 @@
 export function gambleMoney(player, updateGameInfo, updatePlayerStats) {
 	const gamblingCost = 10;
 	if (gamblingCost <= player.money) {
-		const symbols = ["🗡️", "🛡️", "🔮", "👑"];
+		const symbols = [
+			{ symbol: "🌟", label: "Experience" },
+			{ symbol: "🎁", label: "Loot" },
+			{ symbol: "💰", label: "Coins" }
+		];
+
 		const spinResult = [];
 
 		for (let i = 0; i < 3; i++) {
@@ -12,12 +17,28 @@ export function gambleMoney(player, updateGameInfo, updatePlayerStats) {
 		}
 
 		updateGameInfo("Spinning the slot machine...");
-		updateGameInfo("Result: " + spinResult.join(" "));
+		updateGameInfo("Result: " + spinResult.map(symbol => symbol.symbol).join(" "));
 
-		if (spinResult[0] === spinResult[1] && spinResult[1] === spinResult[2]) {
-			const winnings = gamblingCost * 3;
-			player.money += winnings;
-			updateGameInfo("Congratulations! You won " + winnings + " coins!");
+		const uniqueSymbols = new Set(spinResult.map(symbol => symbol.symbol));
+
+		if (uniqueSymbols.size === 1) {
+			const symbol = uniqueSymbols.values().next().value;
+			const outcome = symbols.find(s => s.symbol === symbol);
+
+			switch (outcome.label) {
+				case "Experience":
+					player.bonusExp += 1;
+					updateGameInfo("Congratulations! You won 1 bonusExp!");
+					break;
+				case "Loot":
+					player.bonusLoot += 1;
+					updateGameInfo("Congratulations! You won 1 bonusLoot!");
+					break;
+				case "Coins":
+					player.money += 60;
+					updateGameInfo("Congratulations! You won 60 coins!");
+					break;
+			}
 		} else {
 			player.money -= gamblingCost;
 			updateGameInfo("Oh no! You lost " + gamblingCost + " coins.");

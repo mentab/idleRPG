@@ -12,7 +12,7 @@ class MiniGameScreen {
 	}
 
 	render(action) {
-		this.updateGameInfo("Starting Mini-game...");
+		// this.updateGameInfo("Starting Mini-game...");
 
 		// const randomIndex = Math.floor(Math.random() * this.miniGames.length);
 		// const selectedMiniGame = this.miniGames[randomIndex];
@@ -23,7 +23,7 @@ class MiniGameScreen {
 	}
 
 	finishMiniGame(result, action) {
-		this.updateGameInfo("Mini-game finished. Result:" + result);
+		// this.updateGameInfo("Mini-game finished. Result:" + result);
 		action(result);
 
 		// Bonuses go from 1 to 3 :

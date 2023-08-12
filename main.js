@@ -334,18 +334,17 @@ class Game {
 			switch (itemType) {
 				case "defense":
 				case "damage":
-					return finalLevel;
-				case "regeneration":
-					return finalLevel / 25;
 				case "precision":
 				case "evasion":
-					return finalLevel / 3;
+					return finalLevel;
 				case "critical":
 				case "resistance":
 					return finalLevel / 2;
+				case "regeneration":
+					return finalLevel / 25;
 				case "bonusExp":
 				case "bonusLoot":
-					return finalLevel;
+					return finalLevel / 3;
 				default:
 					return 0;
 			}

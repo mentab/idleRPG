@@ -27,7 +27,7 @@ class AchievementsScreen {
 
 		const remainingCount = Math.max(0, nextMilestoneCount - achievedCount);
 
-		const nextRewardAmount = this.calculateReward(nextMilestoneCount ,enemy.level);
+		const nextRewardAmount = this.calculateReward(nextMilestoneCount, enemy.level);
 
 		return { nextMilestoneCount, remainingCount, nextRewardAmount };
 	}
@@ -46,23 +46,35 @@ class AchievementsScreen {
 			if (nextReward) {
 				const { nextMilestoneCount, remainingCount, nextRewardAmount } = nextReward;
 
-				const rewardButton = document.createElement("button");
-				rewardButton.textContent = remainingCount === 0 ? "Claim Reward" : `${remainingCount} enemies to next reward!`;
+				const rewardCard = document.createElement("div");
 
-				const enemyInfo = document.createElement("span");
-				enemyInfo.textContent = `${enemy.name} ${enemy.icon}`;
-				rewardButton.appendChild(enemyInfo);
+				const enemyInfo = document.createElement("div");
+				enemyInfo.innerHTML = `<strong>${enemy.name}</strong> ${enemy.icon}`;
+				rewardCard.appendChild(enemyInfo);
 
-				rewardButton.addEventListener("click", () => {
-					if (remainingCount === 0) {
+				const progressInfo = document.createElement("div");
+				progressInfo.innerHTML = `<small><em>Killed:</em> <strong>${this.player.killedEnemies.get(enemy.id) || 0}</strong> - <em>Remaining:</em> <strong>${remainingCount}</strong></small>`;
+				rewardCard.appendChild(progressInfo);
+
+				if (remainingCount === 0) {
+					const rewardButton = document.createElement("button");
+					rewardButton.textContent = `Claim Reward ${nextMilestoneCount}: ${nextRewardAmount} coins`;
+					rewardButton.addEventListener("click", () => {
 						this.player.claimedRewards.set(enemy.id, nextMilestoneCount);
 						this.updateGameInfo(`You have received ${nextRewardAmount} coins as a reward!`);
+						this.player.money += nextRewardAmount;
 						this.updatePlayerStats();
 						this.render();
-					}
-				});
+					});
+					rewardCard.appendChild(rewardButton);
+				} else {
+					const remainingText = document.createElement("em");
+					remainingText.textContent = `${remainingCount} enemies to next reward!`;
+					rewardCard.appendChild(remainingText);
+				}
 
-				achievementsList.appendChild(rewardButton);
+				achievementsList.appendChild(rewardCard);
+				achievementsList.appendChild(document.createElement("hr"));
 			}
 		});
 	}
