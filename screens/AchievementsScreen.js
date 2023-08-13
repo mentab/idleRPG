@@ -41,6 +41,7 @@ class AchievementsScreen {
 		);
 
 		filteredEnemies.forEach((enemy) => {
+			const { id, icon, name } = enemy;
 			const nextReward = this.getNextReward(enemy);
 
 			if (nextReward) {
@@ -49,18 +50,22 @@ class AchievementsScreen {
 				const rewardCard = document.createElement("div");
 
 				const enemyInfo = document.createElement("div");
-				enemyInfo.innerHTML = `<strong>${enemy.name}</strong> ${enemy.icon}`;
+				enemyInfo.innerHTML = `<strong>${name}</strong> ${icon}`;
 				rewardCard.appendChild(enemyInfo);
 
 				const progressInfo = document.createElement("div");
-				progressInfo.innerHTML = `<small><em>Killed:</em> <strong>${this.player.killedEnemies.get(enemy.id) || 0}</strong> - <em>Remaining:</em> <strong>${remainingCount}</strong></small>`;
+				progressInfo.innerHTML = `<small><em>Killed:</em> <strong>${this.player.killedEnemies.get(id) || 0}</strong> - <em>Remaining:</em> <strong>${remainingCount}</strong></small>`;
 				rewardCard.appendChild(progressInfo);
+
+				const rewardInfo = document.createElement('div');
+				rewardInfo.innerHTML = `Reward: <strong>${nextRewardAmount}</strong>`;
+				rewardCard.appendChild(rewardInfo);
 
 				if (remainingCount === 0) {
 					const rewardButton = document.createElement("button");
-					rewardButton.textContent = `Claim Reward ${nextMilestoneCount}: ${nextRewardAmount} coins`;
+					rewardButton.textContent = `Claim`;
 					rewardButton.addEventListener("click", () => {
-						this.player.claimedRewards.set(enemy.id, nextMilestoneCount);
+						this.player.claimedRewards.set(id, nextMilestoneCount);
 						this.updateGameInfo(`You have received ${nextRewardAmount} coins as a reward!`);
 						this.player.money += nextRewardAmount;
 						this.updatePlayerStats();

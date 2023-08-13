@@ -10,28 +10,6 @@ class ImprovementsScreen {
 		this.updatePlayerStats = updatePlayerStats;
 	}
 
-	improveItem(item) {
-		const improvementCost = this.calculateImprovementCost(item);
-
-		if (this.player.money < improvementCost) {
-		  this.updateGameInfo("Not enough coins to improve this item.");
-		  return;
-		}
-
-		this.player.money -= improvementCost;
-		this.updatePlayerStats();
-
-		const chance = Math.random();
-		const baseChance = 0.5 * (0.5 ** item.improvementLevel);
-		const increaseStat = chance < baseChance;
-		const statMultiplier = increaseStat ? 1 : -1;
-
-		item.improvementLevel += statMultiplier;
-		this.updateGameInfo(`Item ${item.name} has been ${increaseStat ? "upgraded" : "downgraded"}!`);
-
-		this.render();
-	}
-
 	calculateImprovementCost(item) {
 		return this.getItemValue(item);
 	}
@@ -45,16 +23,56 @@ class ImprovementsScreen {
 		);
 
 		filteredItems.forEach((item) => {
-		  const improvementButton = document.createElement("button");
-		  improvementButton.textContent = `Upgrade ${item.name} (${item.improvementLevel} Level) - Cost : ${this.calculateImprovementCost(item)}`;
+			const { name, icon, level, stat, improvementLevel } = item;
+			const cost = this.calculateImprovementCost(item);
 
-		  improvementButton.addEventListener("click", () => {
-		    this.improveItem(item);
-		  });
+			const itemElement = document.createElement('div');
 
-		  improvementsList.appendChild(improvementButton);
+			const itemName = document.createElement('div');
+			itemName.innerHTML = `<strong>${name}</strong> ${icon}`;
+			itemElement.appendChild(itemName);
+
+			const itemInfo = document.createElement('div');
+			itemInfo.innerHTML = `<small><em>Level: </em><strong>${level}</strong> - <em>Stat: </em><strong>${stat}</strong></small>`;
+			itemElement.appendChild(itemInfo);
+
+			const improvementInfo = document.createElement('div');
+			improvementInfo.innerHTML = `<em>ImprovementLevel: </em><strong>${improvementLevel}</strong>`;
+			itemElement.appendChild(improvementInfo);
+
+			const costInfo = document.createElement('div');
+			costInfo.innerHTML = `Cost: <strong>${cost}</strong>`;
+			itemElement.appendChild(costInfo);
+			
+			if (this.player.money >= cost) {
+				const improvementButton = document.createElement("button");
+				improvementButton.textContent = `Improve`;
+				improvementButton.addEventListener("click", () => this.improveItem(item));
+				itemElement.appendChild(improvementButton);
+			}
+
+			improvementsList.appendChild(itemElement);
+			improvementsList.appendChild(document.createElement("hr"));
 		});
-  }
+	}
+
+	improveItem(item) {
+		const { icon, name, improvementLevel } = item;
+		const cost = this.calculateImprovementCost(item);
+
+		this.player.money -= cost;
+		this.updatePlayerStats();
+
+		const chance = Math.random();
+		const baseChance = 0.5 * (0.5 ** improvementLevel);
+		const increaseStat = chance < baseChance;
+		const statMultiplier = increaseStat ? 1 : -1;
+
+		item.improvementLevel += statMultiplier;
+		this.updateGameInfo(`Item ${icon} ${name} has been ${increaseStat ? "upgraded" : "downgraded"}!`);
+
+		this.render();
+	}
 }
 
 export default ImprovementsScreen;

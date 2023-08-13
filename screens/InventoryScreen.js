@@ -19,12 +19,29 @@ class InventoryScreen {
 		}
 	
 		for (const item of this.player.inventory) {
-			const { icon, name, stat } = item;
-			const itemButton = document.createElement('button');
-			itemButton.innerHTML = `Equip <strong>${icon}</strong> ${name}`;
-			itemButton.addEventListener('click', () => this.equipItem(item));
-	
-			inventory.appendChild(itemButton);
+			const { icon, name, stat, level, improvementLevel } = item;
+
+			const itemElement = document.createElement('div');
+
+			const itemName = document.createElement('div');
+			itemName.innerHTML = `<strong>${name}</strong> ${icon}`;
+			itemElement.appendChild(itemName);
+
+			const itemInfo = document.createElement('div');
+			itemInfo.innerHTML = `<small><em>Level: </em> <strong>${level}</strong> - <em>Stat: </em> <strong>${stat}</strong></small>`;
+			itemElement.appendChild(itemInfo);
+
+			const improvementInfo = document.createElement('div');
+			improvementInfo.innerHTML = `<em>ImprovementLevel: </em><strong>${improvementLevel}</strong>`;
+			itemElement.appendChild(improvementInfo);
+
+			const equipButton = document.createElement('button');
+			equipButton.textContent = `Equip`;
+			equipButton.addEventListener('click', () => this.equipItem(item));
+			itemElement.appendChild(equipButton);
+
+			inventory.appendChild(itemElement);
+			inventory.appendChild(document.createElement("hr"));
 		}
 	}
 

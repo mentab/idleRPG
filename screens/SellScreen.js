@@ -12,15 +12,35 @@ class SellScreen {
 		const sellItems = document.getElementById("sell-item-list");
 		sellItems.innerHTML = "";
 
-		for (let i = 0; i < this.player.inventory.length; i++) {
-			const item = this.player.inventory[i];
-			const itemElement = document.createElement('button');
-			itemElement.textContent = `${item.icon} ${item.name} - Value: ${this.calculateItemSellPrice(item)}`;
-			itemElement.classList.add('item');
+		for (const item of this.player.inventory) {
+			const { icon, name, stat, level, improvementLevel } = item;
+			const value = this.calculateItemSellPrice(item);
 
-			itemElement.addEventListener('click', () => this.sellItem(item));
+			const itemElement = document.createElement('div');
+
+			const itemName = document.createElement('div');
+			itemName.innerHTML = `<strong>${name}</strong> ${icon}`;
+			itemElement.appendChild(itemName);
+
+			const itemInfo = document.createElement('div');
+			itemInfo.innerHTML = `<small><em>Level: </em> <strong>${level}</strong> - <em>Stat: </em> <strong>${stat}</strong></small>`;
+			itemElement.appendChild(itemInfo);
+
+			const improvementInfo = document.createElement('div');
+			improvementInfo.innerHTML = `<em>ImprovementLevel: </em><strong>${improvementLevel}</strong>`;
+			itemElement.appendChild(improvementInfo);
+
+			const valueInfo = document.createElement('div');
+			valueInfo.innerHTML = `Value: <strong>${value}</strong>`;
+			itemElement.appendChild(valueInfo);
+
+			const sellButton = document.createElement('button');
+			sellButton.textContent = `Sell`;
+			sellButton.addEventListener('click', () => this.sellItem(item));
+			itemElement.appendChild(sellButton);
 
 			sellItems.appendChild(itemElement);
+			sellItems.appendChild(document.createElement("hr"));
 		}
 	}
 
