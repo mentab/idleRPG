@@ -14,6 +14,7 @@ import gameConfig from './config/gameConfig.js';
 import BattleModule from './modules/BattleModule.js';
 import { healForMoney } from './modules/HealModule.js';
 import { gambleMoney } from './modules/GambleModule.js';
+import { savePlayerData, loadPlayerData, resetPlayerData } from './modules/SaveModule.js';
 import timingGame from './games/TimingGame.js';
 import clickerGame from './games/ClickerGame.js';
 import memoryGame from './games/MemoryGame.js';
@@ -175,21 +176,26 @@ class Game {
 				);
 				break;
 			case "btnExperience":
-				this.player.experience += 5000;
 				this.updateGameInfo("Adding 5000 experience...");
+				this.player.experience += 5000;
 				this.checkLevelUp();
 				break;
 			case "btnMoney":
-				this.player.money += 5000;
 				this.updateGameInfo("Adding 5000 money...");
+				this.player.money += 5000;
 				this.updatePlayerStats();
 				break;
 			case "btnSave":
-				this.savePlayerData();
+				savePlayerData(this.player);
+				this.updateGameInfo("Saving data...");
+				break;
 			case "btnLoad":
-				this.loadPlayerData();
+				this.updateGameInfo("Loading data...");
+				loadPlayerData(this.player);
+				this.updatePlayerStats();
+				break;
 			case "btnReset":
-				this.resetPlayerData();
+				resetPlayerData();
 				break;
 			default:
 				break;
@@ -289,27 +295,6 @@ class Game {
 		} else {
 			return 0;
 		}
-	}
-
-	savePlayerData() {
-		localStorage.setItem("playerData", JSON.stringify(player));
-		alert("Player data saved!");
-	}
-
-	loadPlayerData() {
-		const savedData = localStorage.getItem("playerData");
-		if (savedData) {
-			Object.assign(player, JSON.parse(savedData));
-			this.updatePlayerStats();
-			alert("Player data loaded!");
-		} else {
-			alert("No saved data found!");
-		}
-	}
-
-	resetPlayerData() {
-		localStorage.removeItem("playerData");
-		location.reload();
 	}
 
 	updatePlayerStats() {
