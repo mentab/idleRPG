@@ -10,12 +10,6 @@ Missing items
 Testing
 Rework statistics
 Testing
-Mega game 1 : trophies or cards
-Testing
-Add 2-3 minigames
-Testing
-Finish mini game screen
-Testing
 Styles
 Testing
 Mobile version
@@ -23,6 +17,8 @@ Testing
 V 0.1
 ----------
 V 0.2
+Meta game 1 : trophies or cards
+Testing
 Potions
 Testing
 Crafting
@@ -38,6 +34,12 @@ V 0.3
 ----------
 
 
+????
+Add 2-3 minigames
+Testing
+Finish mini game screen
+Testing
+????
 
 
 

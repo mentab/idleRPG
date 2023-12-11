@@ -1,5 +1,6 @@
 class MainScreen {
-	constructor(handleScreenButtonClick) {
+	constructor(updateGameInfo, handleScreenButtonClick) {
+		this.updateGameInfo = updateGameInfo;
 		this.handleScreenButtonClick = handleScreenButtonClick;
 	}
 
@@ -26,7 +27,7 @@ class MainScreen {
 	}
 
 	render() {
-		
+		this.updateGameInfo(`Waiting for next action...`);
 	}
 }
 

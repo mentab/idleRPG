@@ -1,8 +1,10 @@
 // EquippedScreen.js
 
 class EquippedScreen {
-	constructor(player) {
+	constructor(player, updateGameInfo, updatePlayerStats) {
 		this.player = player;
+		this.updateGameInfo = updateGameInfo;
+		this.updatePlayerStats = updatePlayerStats;
 	}
 
 	render() {
@@ -22,13 +24,48 @@ class EquippedScreen {
 		];
 
 		equippedItems.forEach(({ slot, item }) => {
-			const itemIconContent = item ? item.icon : '❌'; // Display a cross if the slot is empty
-			const itemNameContent = item ? item.name : 'Empty';
-			const listItem = document.createElement('li');
-			listItem.classList.add('equipped-item');
-			listItem.innerHTML = `${itemIconContent} ${itemNameContent} [${slot}]`;
-			equippedItemsList.appendChild(listItem);
+			const iconContent = item ? item.icon : '❌';
+			const nameContent = item ? item.name : 'Empty';
+
+			const itemElement = document.createElement('div');
+
+			const itemName = document.createElement('div');
+			itemName.innerHTML = `<strong>${slot}: ${nameContent}</strong> ${iconContent}`;
+			itemElement.appendChild(itemName);
+
+			if (item) {
+				const { stat, level, improvementLevel } = item;
+
+				const itemInfo = document.createElement('div');
+				itemInfo.innerHTML = `<small><em>Level: </em> <strong>${level}</strong> - <em>Stat: </em> <strong>${stat}</strong></small>`;
+				itemElement.appendChild(itemInfo);
+	
+				const improvementInfo = document.createElement('div');
+				improvementInfo.innerHTML = `<em>ImprovementLevel: </em><strong>${improvementLevel}</strong>`;
+				itemElement.appendChild(improvementInfo);
+	
+				const unEquipButton = document.createElement('button');
+				unEquipButton.textContent = `Unequip`;
+				unEquipButton.addEventListener('click', () => this.unequipItem(item));
+				itemElement.appendChild(unEquipButton);
+			}
+
+			equippedItemsList.appendChild(itemElement);
+			equippedItemsList.appendChild(document.createElement("hr"));
 		});
+  }
+
+  unequipItem(item) {
+	const { icon, name, stat } = item;
+	const playerProperty = `${stat}Item`;
+
+	this.player[playerProperty] = null;
+	this.player.inventory.push(item);
+
+	this.updateGameInfo(`Unequipped ${playerProperty}: ${icon} ${name}`);
+
+	this.updatePlayerStats();
+	this.render();
   }
 }
 

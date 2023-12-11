@@ -66,6 +66,7 @@ class Game {
 			this.checkLevelUp.bind(this)
 		);
 		this.mainScreen = new MainScreen(
+			this.updateGameInfo.bind(this),
 			this.handleScreenButtonClick.bind(this)
 		);
 		this.miniGameScreen = new MiniGameScreen(
@@ -102,7 +103,9 @@ class Game {
 			this.player
 		);
 		this.equippedScreen = new EquippedScreen(
-			this.player
+			this.player,
+			this.updateGameInfo.bind(this),
+			this.updatePlayerStats.bind(this)
 		);
 		this.achievementsScreen = new AchievementsScreen(
 			this.player,
