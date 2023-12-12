@@ -24,13 +24,13 @@ class BuyScreen {
 			const { stat, level, icon, name } = item;
 			const cost = this.calculateItemCost(item);
 
-			if (item.stat !== this.previousItemStat) {
-				this.previousItemStat = stat;
-				const itemTypeTitle = document.createElement('h4');
-				itemTypeTitle.textContent = stat;
-				shopItems.appendChild(itemTypeTitle);
-				shopItems.appendChild(document.createElement("hr"));
-			}
+			// if (item.stat !== this.previousItemStat) {
+			// 	this.previousItemStat = stat;
+			// 	const itemTypeTitle = document.createElement('h4');
+			// 	itemTypeTitle.textContent = stat;
+			// 	shopItems.appendChild(itemTypeTitle);
+			// 	shopItems.appendChild(document.createElement("hr"));
+			// }
 
 			const itemElement = document.createElement('div');
 

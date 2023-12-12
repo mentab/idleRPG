@@ -34,10 +34,10 @@ class EquippedScreen {
 			itemElement.appendChild(itemName);
 
 			if (item) {
-				const { stat, level, improvementLevel } = item;
+				const { level, improvementLevel } = item;
 
 				const itemInfo = document.createElement('div');
-				itemInfo.innerHTML = `<small><em>Level: </em> <strong>${level}</strong> - <em>Stat: </em> <strong>${stat}</strong></small>`;
+				itemInfo.innerHTML = `<small><em>Level: </em> <strong>${level}</strong></small>`;
 				itemElement.appendChild(itemInfo);
 	
 				const improvementInfo = document.createElement('div');

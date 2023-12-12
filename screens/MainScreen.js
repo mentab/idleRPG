@@ -4,26 +4,30 @@ class MainScreen {
 		this.handleScreenButtonClick = handleScreenButtonClick;
 	}
 
+	addClickListener(id) {
+        document.getElementById(id).addEventListener("click", () => this.handleScreenButtonClick((id)));
+    }
+
 	init() {
-		document.getElementById("btnExploration").addEventListener("click", () => this.handleScreenButtonClick("btnExploration"));
-		document.getElementById("btnChallenge").addEventListener("click", () => this.handleScreenButtonClick("btnChallenge"));
-		document.getElementById("btnMission").addEventListener("click", () => this.handleScreenButtonClick("btnMission"));
-		document.getElementById("btnDuel").addEventListener("click", () => this.handleScreenButtonClick("btnDuel"));
-		document.getElementById("btnAreas").addEventListener("click",() => this.handleScreenButtonClick("btnAreas"));
-		document.getElementById("btnStats").addEventListener("click",() => this.handleScreenButtonClick("btnStats"));
-		document.getElementById("btnEquipped").addEventListener("click",() => this.handleScreenButtonClick("btnEquipped"));
-		document.getElementById("btnAchievements").addEventListener("click",() => this.handleScreenButtonClick("btnAchievements"));
-		document.getElementById("btnImprove").addEventListener("click",() => this.handleScreenButtonClick("btnImprove"));
-		document.getElementById("btnInventory").addEventListener("click",() => this.handleScreenButtonClick("btnInventory"));
-		document.getElementById("btnBuy").addEventListener("click",() => this.handleScreenButtonClick("btnBuy"));
-		document.getElementById("btnSell").addEventListener("click",() => this.handleScreenButtonClick("btnSell"));
-		document.getElementById("btnGamble").addEventListener("click",() => this.handleScreenButtonClick("btnGamble"));
-		document.getElementById("btnHeal").addEventListener("click",() => this.handleScreenButtonClick("btnHeal"));
-		document.getElementById("btnExperience").addEventListener("click",() => this.handleScreenButtonClick("btnExperience"));
-		document.getElementById("btnMoney").addEventListener("click",() => this.handleScreenButtonClick("btnMoney"));
-		document.getElementById("btnSave").addEventListener("click",() => this.handleScreenButtonClick("btnSave"));
-		document.getElementById("btnLoad").addEventListener("click",() => this.handleScreenButtonClick("btnLoad"));
-		document.getElementById("btnReset").addEventListener("click",() => this.handleScreenButtonClick("btnReset"));
+		this.addClickListener("btnExploration");
+		this.addClickListener("btnChallenge");
+		this.addClickListener("btnMission");
+		this.addClickListener("btnDuel");
+		this.addClickListener("btnAreas")
+		this.addClickListener("btnStats")
+		this.addClickListener("btnEquipped")
+		this.addClickListener("btnAchievements")
+		this.addClickListener("btnImprove")
+		this.addClickListener("btnInventory")
+		this.addClickListener("btnBuy")
+		this.addClickListener("btnSell")
+		this.addClickListener("btnGamble")
+		this.addClickListener("btnHeal")
+		this.addClickListener("btnExperience")
+		this.addClickListener("btnMoney")
+		this.addClickListener("btnSave")
+		this.addClickListener("btnLoad")
+		this.addClickListener("btnReset")
 	}
 
 	render() {

@@ -2,44 +2,23 @@ Roadmap
 
 ----------
 V 0.1
-Achievements
-Testing
-Upgrade items
-Testing
-Missing items
-Testing
-Rework statistics
-Testing
+x Achievements
+x Upgrade items
 Styles
-Testing
 Mobile version
-Testing
-V 0.1
 ----------
-V 0.2
+V X.X
+Missing items
+Rework statistics
 Meta game 1 : trophies or cards
-Testing
 Potions
-Testing
 Crafting
-Testing
 Ads
-Testing
-V 0.2
-----------
-V 0.3
 Meta game 2 : build your city
-Testing
-V 0.3
 ----------
-
-
-????
+V ?.?
 Add 2-3 minigames
-Testing
 Finish mini game screen
-Testing
-????
 
 
 
