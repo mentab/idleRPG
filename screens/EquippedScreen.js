@@ -1,14 +1,15 @@
 // EquippedScreen.js
 
+import { updateGameInfo } from '../modules/MessageModule.js';
+
 class EquippedScreen {
-	constructor(player, updateGameInfo, updatePlayerStats) {
+	constructor(player, updatePlayerStats) {
 		this.player = player;
-		this.updateGameInfo = updateGameInfo;
 		this.updatePlayerStats = updatePlayerStats;
 	}
 
 	render() {
-		const equippedItemsList = document.getElementById("equippedItemsList");
+		const equippedItemsList = document.getElementById("equipped-items-list");
 		equippedItemsList.innerHTML = "";
 
 		const equippedItems = [
@@ -30,14 +31,14 @@ class EquippedScreen {
 			const itemElement = document.createElement('div');
 
 			const itemName = document.createElement('div');
-			itemName.innerHTML = `<strong>${slot}: ${nameContent}</strong> ${iconContent}`;
+			itemName.innerHTML = `<strong>${slot}:</strong><br/>${nameContent} ${iconContent}`;
 			itemElement.appendChild(itemName);
 
 			if (item) {
 				const { level, improvementLevel } = item;
 
 				const itemInfo = document.createElement('div');
-				itemInfo.innerHTML = `<small><em>Level: </em> <strong>${level}</strong></small>`;
+				itemInfo.innerHTML = `<small><em>Level: </em><strong>${level}</strong></small>`;
 				itemElement.appendChild(itemInfo);
 	
 				const improvementInfo = document.createElement('div');
@@ -62,7 +63,7 @@ class EquippedScreen {
 	this.player[playerProperty] = null;
 	this.player.inventory.push(item);
 
-	this.updateGameInfo(`Unequipped ${playerProperty}: ${icon} ${name}`);
+	updateGameInfo(`Unequipped ${playerProperty}: ${icon} ${name}`);
 
 	this.updatePlayerStats();
 	this.render();

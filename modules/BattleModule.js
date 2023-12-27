@@ -2,11 +2,11 @@
 
 import { getRandomNumber } from './../utils/utils.js';
 import gameConfig from './../config/gameConfig.js';
+import { updateGameInfo } from './MessageModule.js';
 
 class BattleModule {
-	constructor(player, updateGameInfo, updatePlayerStats, checkLevelUp) {
+	constructor(player, updatePlayerStats, checkLevelUp) {
 		this.player = player;
-		this.updateGameInfo = updateGameInfo;
 		this.updatePlayerStats = updatePlayerStats;
 		this.checkLevelUp = checkLevelUp;
 	}
@@ -15,7 +15,7 @@ class BattleModule {
 		   `It has ${enemy.maxHP} HP, ${enemy.damage} DAM, ${enemy.defense} DEF, ${enemy.precision} PRE, ${enemy.evasion} EVA, ${enemy.critical} CRI, ${enemy.resistance} RES`;
 
 	filterEntities(entities, mandatoryFilters, optionalFilters = {}) {
-		const defaultMandatoryFilters = { isBoss: false, isDuelist: false, ...mandatoryFilters };
+		const defaultMandatoryFilters = { ...mandatoryFilters };
 
 		const eligibleEntities = entities.filter((entity) => {
 			const isMatchingMandatory = Object.entries(defaultMandatoryFilters).every(([key, value]) => entity[key] === value);
@@ -82,16 +82,16 @@ class BattleModule {
 				if (Math.random() < this.player.critical / 100) {
 					const criticalMultiplier = 1 + (this.player.critical / 100);
 					playerDamageDealt = Math.ceil(playerDamageDealt * criticalMultiplier);
-					this.updateGameInfo(`Critical Hit! You attack the ${enemy.icon} ${enemy.name} dealing ${playerDamageDealt} damage!`);
+					updateGameInfo(`Critical Hit! You attack the ${enemy.icon} ${enemy.name} dealing ${playerDamageDealt} damage!`);
 				} else {
-					this.updateGameInfo(`You attack the ${enemy.icon} ${enemy.name} dealing ${playerDamageDealt} damage!`);
+					updateGameInfo(`You attack the ${enemy.icon} ${enemy.name} dealing ${playerDamageDealt} damage!`);
 				}
 
 				if (Math.random() < baseEnemyResistance / 100) {
 					const absorptionMultiplier = 1 - (baseEnemyResistance / 100);
 					const resistanceedDamage = Math.ceil(playerDamageDealt * (1 - absorptionMultiplier));
 					playerDamageDealt -= resistanceedDamage;
-					this.updateGameInfo(`The ${enemy.icon} ${enemy.name} resistanceed ${resistanceedDamage} of your damage!`);
+					updateGameInfo(`The ${enemy.icon} ${enemy.name} resistanceed ${resistanceedDamage} of your damage!`);
 				}
 
 				enemy.currentHP -= playerDamageDealt;
@@ -103,42 +103,45 @@ class BattleModule {
 				if (Math.random() < enemy.critical / 100) {
 					const criticalMultiplier = 1 + (enemy.critical / 100);
 					enemyDamageDealt = Math.ceil(enemyDamageDealt * criticalMultiplier);
-					this.updateGameInfo(`Critical Hit! The ${enemy.icon} ${enemy.name} attacks you dealing ${enemyDamageDealt} damage!`);
+					updateGameInfo(`Critical Hit! The ${enemy.icon} ${enemy.name} attacks you dealing ${enemyDamageDealt} damage!`);
 				} else {
-					this.updateGameInfo(`The ${enemy.icon} ${enemy.name} attacks you dealing ${enemyDamageDealt} damage!`);
+					updateGameInfo(`The ${enemy.icon} ${enemy.name} attacks you dealing ${enemyDamageDealt} damage!`);
 				}
 
 				if (Math.random() < basePlayerResistance / 100) {
 					const absorptionMultiplier = 1 - (basePlayerResistance / 100);
 					const resistanceedDamage = Math.ceil(enemyDamageDealt * (1 - absorptionMultiplier));
 					enemyDamageDealt -= resistanceedDamage;
-					this.updateGameInfo(`You resistanceed ${resistanceedDamage} of enemy damage!`);
+					updateGameInfo(`You resist ${resistanceedDamage} of enemy damage!`);
 				}
-				
-				this.player.currentHP -= enemyDamageDealt;
+
+				this.player.currentHP = Math.max(this.player.currentHP -= enemyDamageDealt, 0)
 			}
 
 			turns++;
 		}
 
 		if (this.player.currentHP <= 0) {
-			this.updateGameInfo("You were defeated!");
+			updateGameInfo("You were defeated!");
 		} else if (enemy.currentHP <= 0) {
-			this.updateGameInfo(`You defeated the ${enemy.icon} ${enemy.name}!`);
+			updateGameInfo(`You defeated the ${enemy.icon} ${enemy.name}!`);
 			const lootChance = enemy.lootChance * (1 + this.player.bonusLoot / 100);
 
+			console.log(lootChance)
+
 			if (Math.random() < lootChance) {
+				console.log('LOOT')
 				const loot = this.generateLoot(enemy.level);
 				if (loot) {
 					this.player.inventory.push({...loot});
-					this.updateGameInfo(`You found a loot: ${loot.name}!`);
+					updateGameInfo(`You found a loot: ${loot.name}!`);
 				}
 			}
 
 			if (Math.random() < lootChance * 4) {
 				const moneyAmount = enemy.level * 4;
 				this.player.money += moneyAmount;
-				this.updateGameInfo(`You found coins : ${moneyAmount}!`);
+				updateGameInfo(`You found coins : ${moneyAmount}!`);
 			}
 
 			const killedEnemies = this.player.killedEnemies;
@@ -149,7 +152,7 @@ class BattleModule {
 				killedEnemies.set(enemy.id, 1);
 			}
 		} else {
-			this.updateGameInfo("The battle ended in a draw.");
+			updateGameInfo("The battle ended in a draw.");
 		}
 	}
 
@@ -184,7 +187,7 @@ class BattleModule {
 	}
 
 	performBattle(enemy) {
-		this.updateGameInfo(this.generateEnemyInfo(enemy));
+		updateGameInfo(this.generateEnemyInfo(enemy));
 		enemy.currentHP = enemy.maxHP;
 		this.battle(enemy);
 		this.battleAndCheckResult(enemy);
@@ -196,13 +199,13 @@ class BattleModule {
 				const experiencePoints = this.calculateExperiencePoints(enemy);
 				this.player.experience += experiencePoints;
 				this.updatePlayerStats();
-				this.updateGameInfo(`You defeated the ${enemy.icon} ${enemy.name} and gained ${experiencePoints} experience points!`);
+				updateGameInfo(`You defeated the ${enemy.icon} ${enemy.name} and gained ${experiencePoints} experience points!`);
 				this.checkLevelUp();
 			} else {
-				this.updateGameInfo(`The battle with the ${enemy.icon} ${enemy.name} ended prematurely. The enemy escaped!`);
+				updateGameInfo(`The battle with the ${enemy.icon} ${enemy.name} ended prematurely. The enemy escaped!`);
 			}
 		} else {
-		  this.updateGameInfo("You were defeated!");
+		  updateGameInfo("You were defeated!");
 		}
 	}
 
@@ -210,7 +213,7 @@ class BattleModule {
 		const baseExperience = 25;
 		const enemyLevel = enemy.level;
 		const levelDifference = this.player.level - enemy.level;
-		const adjustmentFactor = levelDifference >= 0 ? 1 / (1 + levelDifference) : 1 - levelDifference / playerLevel;
+		const adjustmentFactor = levelDifference >= 0 ? 1 / (1 + levelDifference) : 1 - levelDifference / this.player.level;
 		const experiencePoints = Math.floor(baseExperience * enemyLevel * adjustmentFactor * (1 + this.player.bonusExp / 100));
 
 		return experiencePoints;
@@ -257,22 +260,22 @@ class BattleModule {
 	}
 
 	startExploration() {
-		const enemy = this.generateEnemy({ areaIndex: this.player.areaIndex }, { maxLevel: this.player.level });
-		this.updateGameInfo(`Starting exploration...`);
+		const enemy = this.generateEnemy({ areaIndex: this.player.areaIndex, type: 'BASE' }, { maxLevel: this.player.level });
+		updateGameInfo(`Starting exploration...`);
 		this.performBattle(enemy);
 	}
 
 	startChallenge() {
-		const boss = this.generateEnemy({ areaIndex: this.player.areaIndex, isBoss: true }, {});
-		this.updateGameInfo("Starting the challenge...");
+		const boss = this.generateEnemy({ areaIndex: this.player.areaIndex, type: 'BOSS' }, {});
+		updateGameInfo("Starting the challenge...");
 		this.performBattle(boss);
 	}
 
 	startMission() {
-		const enemy = this.generateEnemy({ areaIndex: this.player.areaIndex }, { maxLevel: this.player.level - 2 });
-		this.updateGameInfo("Starting the mission...");
+		const enemy = this.generateEnemy({ areaIndex: this.player.areaIndex, type: 'BASE' }, { maxLevel: this.player.level - 2 });
+		updateGameInfo("Starting the mission...");
 		const numEnemies = getRandomNumber(2, 3);
-		this.updateGameInfo(this.generateRandomIntro(enemy.name, numEnemies));
+		updateGameInfo(this.generateRandomIntro(enemy.name, numEnemies));
 		let totalReward = 0;
 		let isMissionFailed = false;
 
@@ -288,26 +291,26 @@ class BattleModule {
 		}
 
 		if (!isMissionFailed) {
-			this.updateGameInfo(`Mission completed! Total reward: ${totalReward} coins.`);
+			updateGameInfo(`Mission completed! Total reward: ${totalReward} coins.`);
 			this.player.money += totalReward;
 			this.updatePlayerStats();
 		} else {
-			this.updateGameInfo("Mission failed! You were defeated.");
+			updateGameInfo("Mission failed! You were defeated.");
 		}
 	}
 
 	startDuel() {
-		const enemy = this.generateEnemy({ areaIndex: this.player.areaIndex, isDuelist: true }, { maxLevel: this.player.level });
-		this.updateGameInfo(this.generateDuelChallengeSentence(enemy));
+		const enemy = this.generateEnemy({ areaIndex: this.player.areaIndex, type: 'DUELIST' }, { maxLevel: this.player.level });
+		updateGameInfo(this.generateDuelChallengeSentence(enemy));
 		
 		this.performBattle(enemy);
 		
 		if (this.player.currentHP > 0) {
 		  const rewardXP = this.calculateDuelRewardXP(enemy);
 		  this.player.experience += rewardXP;
-		  this.updateGameInfo(`Duel won! You gained ${rewardXP} bonus XP.`);
+		  updateGameInfo(`Duel won! You gained ${rewardXP} bonus XP.`);
 		} else {
-		  this.updateGameInfo("Duel lost! You were defeated.");
+		  updateGameInfo("Duel lost! You were defeated.");
 		}
 	}
 }

@@ -1,7 +1,9 @@
 // GambleModule.js
 
-export function gambleMoney(player, updateGameInfo, updatePlayerStats) {
-	const gamblingCost = 10;
+import { updateGameInfo } from './MessageModule.js';
+
+export function gambleMoney(player, updatePlayerStats) {
+	const gamblingCost = player.gambleCount
 	if (gamblingCost <= player.money) {
 		const symbols = [
 			{ symbol: "🌟", label: "Experience" },
@@ -43,6 +45,8 @@ export function gambleMoney(player, updateGameInfo, updatePlayerStats) {
 			player.money -= gamblingCost;
 			updateGameInfo("Oh no! You lost " + gamblingCost + " coins.");
 		}
+
+		player.gambleCount++
 
 		updateGameInfo("Your current balance is: " + player.money + " coins.");
 		updatePlayerStats();

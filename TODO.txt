@@ -4,19 +4,56 @@ Roadmap
 V 0.1
 x Achievements
 x Upgrade items
+x Refactor
+x Clean
 Styles
 Mobile version
+Test
 ----------
-V X.X
-Missing items
-Rework statistics
+V 0.2
+Missing items (block/penetration)
+Rework statistics (we can upgrade stats)
+Refactor
+Clean
+Test
+----------
+V 0.3
+Missing items (elementalDamage/block)
 Meta game 1 : trophies or cards
+Refactor
+Clean
+Test
+----------
+V 0.3
+Add content (To determine)
 Potions
+Refactor
+Clean
+Test
+----------
+V 0.4
+Add content (To determine)
 Crafting
+Refactor
+Clean
+Test
+----------
+V 0.5
+Add content (To determine)
 Ads
-Meta game 2 : build your city
+Refactor
+Clean
+Test
+----------
+V 0.6
+Add content (To determine)
+Configure new game
+Refactor
+Clean
+Test
 ----------
 V ?.?
+Meta game 2 : build your city
 Add 2-3 minigames
 Finish mini game screen
 
@@ -31,7 +68,7 @@ Dungeon : fight a group of different enemies and get loots
 Items: inventory / sell / buy (mandatory)
 Save / Load / Reset
 Debug - Level / Money
-Rest: pay to be full life (remove potions ?)
+Rest: pay to be full life - no potions
 
 @todo
 Area: manage your current area (mandatory)

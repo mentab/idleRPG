@@ -1,12 +1,12 @@
 // BuyScreen.js
 
 import gameConfig from './../config/gameConfig.js';
+import { updateGameInfo } from '../modules/MessageModule.js';
+import { getItemValue } from '../modules/ItemModule.js';
 
 class BuyScreen {
-	constructor(player, getItemValue, updateGameInfo, updatePlayerStats) {
+	constructor(player, updatePlayerStats) {
 		this.player = player;
-		this.getItemValue = getItemValue;
-		this.updateGameInfo = updateGameInfo;
 		this.updatePlayerStats = updatePlayerStats;
 		this.previousItemStat = null;
 	}
@@ -64,13 +64,13 @@ class BuyScreen {
 		this.player.money -= cost;
 		const itemCopy = { ...item };
 		this.player.inventory.push({...itemCopy});
-		this.updateGameInfo(`You bought ${name} ${icon}.`);
+		updateGameInfo(`You bought ${name} ${icon}.`);
 		this.updatePlayerStats();
 		this.render();
 	}
 
 	calculateItemCost(item) {
-		return Math.ceil(this.getItemValue(item));
+		return Math.ceil(getItemValue(item));
 	}
 }
 

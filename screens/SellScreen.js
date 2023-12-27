@@ -1,10 +1,11 @@
 // SellScreen.js
 
+import { updateGameInfo } from '../modules/MessageModule.js';
+import { getItemValue } from '../modules/ItemModule.js';
+
 class SellScreen {
-	constructor(player, getItemValue, updateGameInfo, updatePlayerStats) {
+	constructor(player, updatePlayerStats) {
 		this.player = player;
-		this.getItemValue = getItemValue;
-		this.updateGameInfo = updateGameInfo;
 		this.updatePlayerStats = updatePlayerStats;
 	}
 
@@ -50,14 +51,14 @@ class SellScreen {
 			const itemValue = this.calculateItemSellPrice(item);
 			this.player.money += itemValue;
 			this.player.inventory.splice(itemIndex, 1);
-			this.updateGameInfo(`You sold ${item.name} for ${itemValue} coins.`);
+			updateGameInfo(`You sold ${item.name} for ${itemValue} coins.`);
 			this.updatePlayerStats();
 		}
 		this.render();
 	}
 
 	calculateItemSellPrice(item) {
-		return Math.ceil(this.getItemValue(item) / 2)
+		return Math.ceil(getItemValue(item) / 2)
 	}
 }
 

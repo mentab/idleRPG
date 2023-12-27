@@ -1,11 +1,12 @@
 // InventoryScreen.js
 
+import { updateGameInfo } from '../modules/MessageModule.js';
+
 import gameConfig from './../config/gameConfig.js';
 
 class InventoryScreen {
-	constructor(player, updateGameInfo, updatePlayerStats) {
+	constructor(player, updatePlayerStats) {
 		this.player = player;
-		this.updateGameInfo = updateGameInfo;
 		this.updatePlayerStats = updatePlayerStats;
 	}
 
@@ -59,7 +60,7 @@ class InventoryScreen {
 			if (previouslyEquipped) {
 				this.player.inventory.push(previouslyEquipped);
 			}
-			this.updateGameInfo(`Equipped ${playerProperty}: ${icon} ${name}`);
+			updateGameInfo(`Equipped ${playerProperty}: ${icon} ${name}`);
 		} else {
 			console.log(`Unsupported item type: "stat", stat: ${stat}`);
 		}

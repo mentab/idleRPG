@@ -1,3 +1,5 @@
+import { updateGameInfo } from '../modules/MessageModule.js';
+
 /*
 // Utilities for creating recipes
 const xorshift128plus = (seed) => {
@@ -113,10 +115,9 @@ const recipes = generateRecipes();
 */
 
 class CraftingScreen {
-	constructor(player, recipes, updateGameInfo, updatePlayerStats) {
+	constructor(player, recipes, updatePlayerStats) {
 		this.player = player;
 		this.recipes = recipes;
-		this.updateGameInfo = updateGameInfo;
 		this.updatePlayerStats = updatePlayerStats;
 	}
 
@@ -172,7 +173,7 @@ class CraftingScreen {
 			this.updatePlayerCraftingXP();
 		} else {
 			// Show a message to the player indicating they don't have enough ingredients
-			this.updateGameInfo("You don't have enough ingredients to craft this item.");
+			updateGameInfo("You don't have enough ingredients to craft this item.");
 		}
 	}
 

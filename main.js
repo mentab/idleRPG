@@ -14,64 +14,25 @@ import gameConfig from './config/gameConfig.js';
 import BattleModule from './modules/BattleModule.js';
 import { healForMoney } from './modules/HealModule.js';
 import { gambleMoney } from './modules/GambleModule.js';
-import { savePlayerData, loadPlayerData, resetPlayerData } from './modules/SaveModule.js';
+import { Player } from './models/PlayerModel.js';
 import timingGame from './games/TimingGame.js';
 import clickerGame from './games/ClickerGame.js';
 import memoryGame from './games/MemoryGame.js';
+import { updateGameInfo } from './modules/MessageModule.js';
 
 class Game {
 	constructor() {
 		this.hpDelay = 200;
-		this.player = {
-			level: 1,
-			maxHP: 20,
-			currentHP: 20,
-			damage: 5,
-			defense: 5,
-			precision: 5,
-			evasion: 5,
-			regeneration: 1,
-			critical: 0,
-			resistance: 0,
-			bonusExp: 0,
-			bonusLoot: 0,
-			damageItem: null,
-			defenseItem: null,
-			regenerationItem: null,
-			precisionItem: null,
-			evasionItem: null,
-			criticalItem: null,
-			resistanceItem: null,
-			bonusExpItem: null,
-			bonusLootItem: null,
-			calculateEquippedDefense: () => this.calculateEquippedStat("defense"),
-			calculateEquippedDamage: () => this.calculateEquippedStat("damage"),
-			calculateEquippedRegeneration: () => this.calculateEquippedStat("regeneration"),
-			calculateEquippedPrecision: () => this.calculateEquippedStat("precision"),
-			calculateEquippedEvasion: () => this.calculateEquippedStat("evasion"),
-			calculateEquippedCritical: () => this.calculateEquippedStat("critical"),
-			calculateEquippedResistance: () => this.calculateEquippedStat("resistance"),
-			calculateEquippedBonusExp: () => this.calculateEquippedStat("bonusExp"),
-			calculateEquippedBonusLoot: () => this.calculateEquippedStat("bonusLoot"),
-			inventory: [],
-			money: 0,
-			experience: 0,
-			areaIndex: 0,
-			killedEnemies: new Map(),
-			claimedRewards: new Map()
-		};
+		this.player = new Player();
 		this.battleModule = new BattleModule(
 			this.player,
-			this.updateGameInfo.bind(this),
 			this.updatePlayerStats.bind(this),
 			this.checkLevelUp.bind(this)
 		);
 		this.mainScreen = new MainScreen(
-			this.updateGameInfo.bind(this),
 			this.handleScreenButtonClick.bind(this)
 		);
 		this.miniGameScreen = new MiniGameScreen(
-			this.updateGameInfo.bind(this),
 			this.showMainScreen.bind(this)
 		);
 		this.miniGameScreen.registerMiniGame(timingGame);
@@ -80,24 +41,18 @@ class Game {
 
 		this.areasScreen = new AreasScreen(
 			this.player,
-			this.updateGameInfo.bind(this),
 			this.updatePlayerStats.bind(this)
 		);
 		this.inventoryScreen = new InventoryScreen(
 			this.player,
-			this.updateGameInfo.bind(this),
 			this.updatePlayerStats.bind(this)
 		);
 		this.buyScreen = new BuyScreen(
 			this.player,
-			this.getItemValue,
-			this.updateGameInfo.bind(this),
 			this.updatePlayerStats.bind(this)
 		);
 		this.sellScreen = new SellScreen(
 			this.player,
-			this.getItemValue,
-			this.updateGameInfo.bind(this),
 			this.updatePlayerStats.bind(this)
 		);
 		this.statsScreen = new StatsScreen(
@@ -105,18 +60,14 @@ class Game {
 		);
 		this.equippedScreen = new EquippedScreen(
 			this.player,
-			this.updateGameInfo.bind(this),
 			this.updatePlayerStats.bind(this)
 		);
 		this.achievementsScreen = new AchievementsScreen(
 			this.player,
-			this.updateGameInfo.bind(this),
 			this.updatePlayerStats.bind(this)
 		);
 		this.improvementsScreen = new ImprovementsScreen(
 			this.player,
-			this.getItemValue,
-			this.updateGameInfo.bind(this),
 			this.updatePlayerStats.bind(this)
 		);
 
@@ -164,38 +115,36 @@ class Game {
 			case "btnGamble":
 				gambleMoney(
 					this.player,
-					this.updateGameInfo.bind(this),
 					this.updatePlayerStats.bind(this)
 				);
 				break;
 			case "btnHeal":
 				healForMoney(
 					this.player,
-					this.updateGameInfo.bind(this),
 					this.updatePlayerStats.bind(this)
 				);
 				break;
 			case "btnExperience":
-				this.updateGameInfo("Adding 5000 experience...");
+				updateGameInfo("Adding 5000 experience...");
 				this.player.experience += 5000;
 				this.checkLevelUp();
 				break;
 			case "btnMoney":
-				this.updateGameInfo("Adding 5000 money...");
+				updateGameInfo("Adding 5000 money...");
 				this.player.money += 5000;
 				this.updatePlayerStats();
 				break;
 			case "btnSave":
-				savePlayerData(this.player);
-				this.updateGameInfo("Saving data...");
+				updateGameInfo("Saving data...");
+				this.player.savePlayerData();
 				break;
 			case "btnLoad":
-				this.updateGameInfo("Loading data...");
-				loadPlayerData(this.player);
+				updateGameInfo("Loading data...");
+				this.player.loadPlayerData();
 				this.updatePlayerStats();
 				break;
 			case "btnReset":
-				resetPlayerData();
+				this.player.resetPlayerData();
 				break;
 			default:
 				break;
@@ -264,81 +213,20 @@ class Game {
 		}
 	}
 
-	updateGameInfo(message) {
-		const gameInfoElement = document.getElementById("game-info");
-		const messageElement = document.createElement("section");
-		messageElement.innerHTML = message;
-		gameInfoElement.insertBefore(messageElement, gameInfoElement.firstChild);
-	}
-
-	getItemValue(item) {
-		const { type, stat, level, improvementLevel  } = item;
-
-		if (type === "stat") {
-			switch (stat) {
-				case "defense":
-				case "damage":
-				case "precision":
-				case "evasion":
-					return (level + improvementLevel) * 20;
-				case "critical":
-				case "resistance":
-					return (level + improvementLevel) * 10;
-				case "bonusExp":
-				case "bonusLoot":
-					return (level + improvementLevel) * 50;
-				case "regeneration":
-					return (level + improvementLevel) * 100;
-				default:
-					return 0;
-			}
-		} else {
-			return 0;
-		}
-	}
-
 	updatePlayerStats() {
 		document.getElementById("playerCurrentArea").textContent = `${gameConfig.areas[this.player.areaIndex].name} ${gameConfig.areas[this.player.areaIndex].icon}`;
 		document.getElementById("playerLevel").textContent = this.player.level;
 		document.getElementById("playerCurrentHP").textContent = this.player.currentHP;
 		document.getElementById("playerMaxHP").textContent = this.player.maxHP;
-		document.getElementById("playerRegeneration").textContent = `${this.player.regeneration} (+${this.player.calculateEquippedRegeneration()})`;
 		document.getElementById("playerExperience").textContent = `${this.player.experience} / ${this.getNextLevelExperience()}`;
 		document.getElementById("playerMoney").textContent = this.player.money;
+		document.getElementById("gambleCount").textContent = this.player.gambleCount;
 		this.updatePlayerCurrentHP();
 	}
 
 	getNextLevelExperience() {
 		const nextLevelRequirement = gameConfig.levelUpRequirements.find((requirement) => requirement.level === this.player.level + 1);
 		return nextLevelRequirement ? nextLevelRequirement.experience : "MAX";
-	}
-
-	calculateEquippedStat(itemType) {
-		const item = this.player[itemType + "Item"];
-		if (item) {
-			const { level, improvementLevel } = item;
-			const finalLevel = level + improvementLevel;
-
-			switch (itemType) {
-				case "defense":
-				case "damage":
-				case "precision":
-				case "evasion":
-					return finalLevel;
-				case "critical":
-				case "resistance":
-					return finalLevel / 2;
-				case "regeneration":
-					return finalLevel / 25;
-				case "bonusExp":
-				case "bonusLoot":
-					return finalLevel / 3;
-				default:
-					return 0;
-			}
-		} else {
-			return 0;
-		}
 	}
 
 	levelUp() {
@@ -351,7 +239,7 @@ class Game {
 		if (this.player.level % 10 == 0) this.player.regeneration += 1;
 		if (this.player.level % 5 == 0) this.player.critical += 1;
 		if (this.player.level % 5 == 0) this.player.resistance += 1;
-		this.updateGameInfo(`Congratulations! You leveled up to level ${this.player.level}.`);
+		updateGameInfo(`Congratulations! You leveled up to level ${this.player.level}.`);
 		this.updatePlayerStats();
 	}
 	

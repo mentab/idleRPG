@@ -114,8 +114,8 @@ const statNames = [
 	"evasion",
 	"critical",
 	"resistance",
-	"block",
-	"penetration"
+	//"block",
+	//"penetration"
 ];
 
 const config = {
@@ -177,142 +177,142 @@ const config = {
 			{ name: "Luminous Firefly", level: 1, icon: "✨" },
 			{ name: "Moonshadow Wolf", level: 2, icon: "🌘🐺" },
 			{ name: "Ancient Oakwood", level: 3, icon: "🌳🍂" },
-			{ name: "Meadow Wanderer", icon: "🌼🚶", level: 3, isDuelist: true },
+			{ name: "Meadow Wanderer", icon: "🌼🚶", level: 3, type: 'DUELIST' },
 			{ name: "Twilight Lynx", level: 4, icon: "🌑🐆" },
 			{ name: "Silent Silver Fox", level: 5, icon: "🌌🦊" },
 			{ name: "Duskbloom Treant", level: 6, icon: "🌸🌳" },
-			{ name: "Sunlit Archer", icon: "☀️🏹", level: 6, isDuelist: true },
+			{ name: "Sunlit Archer", icon: "☀️🏹", level: 6, type: 'DUELIST' },
 			{ name: "Starlight Panther", level: 7, icon: "🌠🐾" },
 			{ name: "Lunar Howler", level: 8, icon: "🌙🌳" },
 			{ name: "Mystic Deer", level: 9, icon: "🌟🦌" },
-			{ name: "Meadow Druid", icon: "🌼🌿", level: 9, isDuelist: true },
-			{ name: "Celestial Guardian", level: 10, icon: "🌟🗝️", isBoss: true },
+			{ name: "Meadow Druid", icon: "🌼🌿", level: 9, type: 'DUELIST' },
+			{ name: "Celestial Guardian", level: 10, icon: "🌟🗝️", type: 'BOSS' },
 			// Whispering Forest
 			{ name: "Dark Druid", level: 11, icon: "🌑🔮" },
 			{ name: "Wicked Witch", level: 12, icon: "🧙‍♀️" },
 			{ name: "Treant", level: 13, icon: "🌳" },
-			{ name: "Forest Scout", icon: "🌳👀", level: 13, isDuelist: true },
+			{ name: "Forest Scout", icon: "🌳👀", level: 13, type: 'DUELIST' },
 			{ name: "Forest Nymph", level: 14, icon: "🍃👻" },
 			{ name: "Enraged Bear", level: 15, icon: "🐻" },
 			{ name: "Shadow Stalker", level: 16, icon: "🕵️‍♂️🗡️" },
-			{ name: "Whispering Ranger", icon: "🌲🏹", level: 16, isDuelist: true },
+			{ name: "Whispering Ranger", icon: "🌲🏹", level: 16, type: 'DUELIST' },
 			{ name: "Druid Shaman", level: 17, icon: "🌿🔮" },
 			{ name: "Sylvan Spirit", level: 18, icon: "🌿🌺" },
 			{ name: "Forest Guardian", level: 19, icon: "🌳🦉" },
-			{ name: "Elven Enchanter", icon: "🧝‍♂️🔮", level: 19, isDuelist: true },
-			{ name: "Elder Ent", level: 20, icon: "🍂🌳", isBoss: true },
+			{ name: "Elven Enchanter", icon: "🧝‍♂️🔮", level: 19, type: 'DUELIST' },
+			{ name: "Elder Ent", level: 20, icon: "🍂🌳", type: 'BOSS' },
 			// Crystal Caverns
 			{ name: "Cave Spider", level: 21, icon: "🕷️" },
 			{ name: "Frost Elemental", level: 22, icon: "❄️🌀" },
 			{ name: "Crystal Golem", level: 23, icon: "💎🗿" },
-			{ name: "Cavern Explorer", icon: "💎🔍", level: 23, isDuelist: true },
+			{ name: "Cavern Explorer", icon: "💎🔍", level: 23, type: 'DUELIST' },
 			{ name: "Crystal Mage", level: 24, icon: "💎🧙‍♂️" },
 			{ name: "Ancient Crystal Guardian", level: 25, icon: "🗝️🌌" },
 			{ name: "Spectral Knight", level: 26, icon: "👻⚔️" },
-			{ name: "Frost Mage", icon: "❄️🧙‍♂️", level: 26, isDuelist: true },
+			{ name: "Frost Mage", icon: "❄️🧙‍♂️", level: 26, type: 'DUELIST' },
 			{ name: "Frozen Colossus", level: 27, icon: "❄️🗿" },
 			{ name: "Crystal Behemoth", level: 28, icon: "💎🐲" },
 			{ name: "Frozen Fury", level: 29, icon: "❄️🌪️" },
-			{ name: "Crystal Guardian", icon: "💎🛡️", level: 29, isDuelist: true },
-			{ name: "Crystal Overlord", level: 30, icon: "💎👑", isBoss: true },
+			{ name: "Crystal Guardian", icon: "💎🛡️", level: 29, type: 'DUELIST' },
+			{ name: "Crystal Overlord", level: 30, icon: "💎👑", type: 'BOSS' },
 			// Crimson Citadel
 			{ name: "Hellfire Imp", level: 31, icon: "🔥👿" },
 			{ name: "Infernal Knight", level: 32, icon: "🔥⚔️" },
 			{ name: "Lava Elemental", level: 33, icon: "🌋🔥" },
-			{ name: "Citadel Knight", icon: "🏰⚔️", level: 33, isDuelist: true },
+			{ name: "Citadel Knight", icon: "🏰⚔️", level: 33, type: 'DUELIST' },
 			{ name: "Death's Shadow", level: 34, icon: "☠️🌑" },
 			{ name: "Crimson Succubus", level: 35, icon: "🔥👿🧚‍♀️" },
 			{ name: "Molten Golem", level: 36, icon: "🔥💥🗿" },
-			{ name: "Fiery Sorceress", icon: "🔥🧙‍♀️", level: 36, isDuelist: true },
+			{ name: "Fiery Sorceress", icon: "🔥🧙‍♀️", level: 36, type: 'DUELIST' },
 			{ name: "Cursed Necromancer", level: 37, icon: "🔥🧟‍♂️" },
 			{ name: "Ashen Witch", level: 38, icon: "🔥🧙‍♀️" },
 			{ name: "Raging Inferno", level: 39, icon: "🔥🌋" },
-			{ name: "Crimson Duelist", icon: "🩸🤺", level: 39, isDuelist: true },
-			{ name: "Lord of Flames", level: 40, icon: "🔥👹", isBoss: true },
+			{ name: "Crimson Duelist", icon: "🩸🤺", level: 39, type: 'DUELIST' },
+			{ name: "Lord of Flames", level: 40, icon: "🔥👹", type: 'BOSS' },
 			// Stormy Peaks
 			{ name: "Rock Golem", level: 41, icon: "🗿⛰️" },
 			{ name: "Thunderbird", level: 42, icon: "⚡️🐦" },
 			{ name: "Storm Shaman", level: 43, icon: "⚡️🧙‍♂️" },
-			{ name: "Mountain Climber", icon: "🏔️🧗", level: 43, isDuelist: true },
+			{ name: "Mountain Climber", icon: "🏔️🧗", level: 43, type: 'DUELIST' },
 			{ name: "Mistral Drake", level: 44, icon: "🌬️🐉" },
 			{ name: "Yeti", level: 45, icon: "🏔️🦧" },
 			{ name: "Whirling Dervish", level: 46, icon: "🌪️🧔" },
-			{ name: "Stormcaller", icon: "⛈️🧙‍♂️", level: 46, isDuelist: true },
+			{ name: "Stormcaller", icon: "⛈️🧙‍♂️", level: 46, type: 'DUELIST' },
 			{ name: "Frost Giant", level: 47, icon: "🌬️🗿" },
 			{ name: "Tornado Elemental", level: 48, icon: "🌪️🌬️" },
 			{ name: "Storm Lord", level: 49, icon: "⚡️👑" },
-			{ name: "Thunderous Warrior", icon: "⚡⚔️", level: 49, isDuelist: true },
-			{ name: "Raging Thunderbird", level: 50, icon: "⚡️🐦", isBoss: true },
+			{ name: "Thunderous Warrior", icon: "⚡⚔️", level: 49, type: 'DUELIST' },
+			{ name: "Raging Thunderbird", level: 50, icon: "⚡️🐦", type: 'BOSS' },
 			// Lost Catacombs
 			{ name: "Skeletal Warrior", level: 51, icon: "💀⚔️" },
 			{ name: "Cursed Mummy", level: 52, icon: "🔮🧟‍♂️" },
 			{ name: "Ghostly Apparition", level: 53, icon: "👻💀" },
-			{ name: "Crypt Explorer", icon: "⚰️🔍", level: 53, isDuelist: true },
+			{ name: "Crypt Explorer", icon: "⚰️🔍", level: 53, type: 'DUELIST' },
 			{ name: "Serpentine Cultist", level: 54, icon: "🔮🐍" },
 			{ name: "Crypt Lich", level: 55, icon: "💀🔮" },
 			{ name: "Shade Assassin", level: 56, icon: "👤🔪" },
-			{ name: "Shadowed Rogue", icon: "🕵️‍♂️🌑", level: 56, isDuelist: true },
+			{ name: "Shadowed Rogue", icon: "🕵️‍♂️🌑", level: 56, type: 'DUELIST' },
 			{ name: "Ghoul Hound", level: 57, icon: "🐕💀" },
 			{ name: "Spectral Sorcerer", level: 58, icon: "🔮🌑" },
 			{ name: "Ancient Skeleton", level: 59, icon: "☠️💀" },
-			{ name: "Lost Adventurer", icon: "👤🌑", level: 59, isDuelist: true },
-			{ name: "Necrotic Lich", level: 60, icon: "💀🔮", isBoss: true },
+			{ name: "Lost Adventurer", icon: "👤🌑", level: 59, type: 'DUELIST' },
+			{ name: "Necrotic Lich", level: 60, icon: "💀🔮", type: 'BOSS' },
 			// Celestial Observatory
 			{ name: "Starlight Sprite", level: 61, icon: "✨🧚" },
 			{ name: "Astral Guardian", level: 62, icon: "⭐🦉" },
 			{ name: "Lunar Priestess", level: 63, icon: "🌙👸" },
-			{ name: "Star Seeker", icon: "🌠🔭", level: 63, isDuelist: true },
+			{ name: "Star Seeker", icon: "🌠🔭", level: 63, type: 'DUELIST' },
 			{ name: "Solar Elemental", level: 64, icon: "☀️🔥" },
 			{ name: "Nebula Sorcerer", level: 65, icon: "🌌🧙‍♂️" },
 			{ name: "Stardust Dragon", level: 66, icon: "✨🐉" },
-			{ name: "Cosmic Mage", icon: "🌌🧙‍♂️", level: 66, isDuelist: true },
+			{ name: "Cosmic Mage", icon: "🌌🧙‍♂️", level: 66, type: 'DUELIST' },
 			{ name: "Cosmic Specter", level: 67, icon: "👤✨" },
 			{ name: "Celestial Oracle", level: 68, icon: "⭐🔮" },
 			{ name: "Aurora Valkyrie", level: 69, icon: "🌌⚔️" },
-			{ name: "Heavenly Guardian", icon: "🌠🛡️", level: 69, isDuelist: true },
-			{ name: "Stellar Archangel", level: 70, icon: "⭐👼", isBoss: true },
+			{ name: "Heavenly Guardian", icon: "🌠🛡️", level: 69, type: 'DUELIST' },
+			{ name: "Stellar Archangel", level: 70, icon: "⭐👼", type: 'BOSS' },
 			// Frozen Tundra
 			{ name: "Ice Elemental", level: 71, icon: "🌬️❄️" },
 			{ name: "Frost Shaman", level: 72, icon: "❄️🧙‍♂️" },
 			{ name: "Glacial Golem", level: 73, icon: "❄️💎🗿" },
-			{ name: "Tundra Tracker", icon: "🏔️👣", level: 73, isDuelist: true },
+			{ name: "Tundra Tracker", icon: "🏔️👣", level: 73, type: 'DUELIST' },
 			{ name: "Snow Siren", level: 74, icon: "❄️🧜‍♀️" },
 			{ name: "Winter Wolf", level: 75, icon: "❄️🐺" },
 			{ name: "Avalanche Yeti", level: 76, icon: "❄️🏔️🦧" },
-			{ name: "Frozen Archer", icon: "🌨️🏹", level: 76, isDuelist: true },
+			{ name: "Frozen Archer", icon: "🌨️🏹", level: 76, type: 'DUELIST' },
 			{ name: "Frozen Banshee", level: 77, icon: "❄️👻" },
 			{ name: "Blizzard Mage", level: 78, icon: "❄️🧙‍♂️❄️" },
 			{ name: "Arctic Drake", level: 79, icon: "❄️🐉" },
-			{ name: "Icebound Warrior", icon: "❄️⚔️", level: 79, isDuelist: true },
-			{ name: "Glacier Guardian", level: 80, icon: "❄️🏔️🦉", isBoss: true },
+			{ name: "Icebound Warrior", icon: "❄️⚔️", level: 79, type: 'DUELIST' },
+			{ name: "Glacier Guardian", level: 80, icon: "❄️🏔️🦉", type: 'BOSS' },
 			// Volcanic Depths
 			{ name: "Magma Elemental", level: 81, icon: "🌋🔥" },
 			{ name: "Lava Shaman", level: 82, icon: "🌋🧙‍♂️" },
 			{ name: "Infernal Golem", level: 83,  icon: "🌋💎🗿" },
-			{ name: "Volcanic Explorer", icon: "🌋🚶", level: 83, isDuelist: true },
+			{ name: "Volcanic Explorer", icon: "🌋🚶", level: 83, type: 'DUELIST' },
 			{ name: "Fire Sprite", level: 84, icon: "🔥🧚" },
 			{ name: "Volcanic Drake", level: 85, icon: "🌋🐉" },
 			{ name: "Obsidian Knight", level: 86, icon: "🌋⚔️" },
-			{ name: "Magma Mage", icon: "🔥🧙‍♂️", level: 86, isDuelist: true },
+			{ name: "Magma Mage", icon: "🔥🧙‍♂️", level: 86, type: 'DUELIST' },
 			{ name: "Hellhound", level: 87, icon: "🌋🐕" },
 			{ name: "Searing Sorcerer", level: 88, icon: "🌋🧙‍♂️" },
 			{ name: "Inferno Demon", level: 89, icon: "🌋👹" },
-			{ name: "Volcanic Guardian", icon: "🌋🛡️", level: 89, isDuelist: true },
-			{ name: "Eruption Guardian", level: 90, icon: "🌋🏔️🦉", isBoss: true },
+			{ name: "Volcanic Guardian", icon: "🌋🛡️", level: 89, type: 'DUELIST' },
+			{ name: "Eruption Guardian", level: 90, icon: "🌋🏔️🦉", type: 'BOSS' },
 			// Cursed Catacombs
 			{ name: "Ghoul", level: 91, icon: "☠️🧟‍♂️" },
 			{ name: "Shadowcaster", level: 92, icon: "🌑🧙‍♂️" },
 			{ name: "Spectral Assassin", level: 93, icon: "🌑🗡️" },
-			{ name: "Cursed Seeker", icon: "👁️🔍", level: 93, isDuelist: true },
+			{ name: "Cursed Seeker", icon: "👁️🔍", level: 93, type: 'DUELIST' },
 			{ name: "Cursed Wraith", level: 94, icon: "🌑👻" },
 			{ name: "Necrotic Warlock", level: 95, icon: "🌑🔮🧙‍♂️" },
 			{ name: "Bone Dragon", level: 96, icon: "☠️🐉" },
-			{ name: "Haunted Sorcerer", icon: "👻🧙‍♂️", level: 96, isDuelist: true },
+			{ name: "Haunted Sorcerer", icon: "👻🧙‍♂️", level: 96, type: 'DUELIST' },
 			{ name: "Dark Priest", level: 97, icon: "🌑⚔️🙏" },
 			{ name: "Phantom Knight", level: 98, icon: "🌑⚔️👻" },
 			{ name: "Deathbringer", level: 99, icon: "🌑👤⚔️" },
-			{ name: "Catacomb Guardian", icon: "⚰️🛡️", level: 99, isDuelist: true },
-			{ name: "Eternal Lich", level: 100, icon: "🌑💀🔮", isBoss: true },
+			{ name: "Catacomb Guardian", icon: "⚰️🛡️", level: 99, type: 'DUELIST' },
+			{ name: "Eternal Lich", level: 100, icon: "🌑💀🔮", type: 'BOSS' },
 		],
 		itemsList: [
 			// Armor items
@@ -417,38 +417,38 @@ const config = {
 			{ name: "Charm of Mastery", type: "stat", stat: "bonusExp", icon: "🎓", level: 76 },
 			{ name: "Charm of Ascendancy", type: "stat", stat: "bonusExp", icon: "⚡", level: 86 },
 			// Belt items // @todo implement
-			{ name: "Peasant's Belt", type: "stat", stat: "bonusHP", icon: "👑", level: 7 },
-			{ name: "Forest Dweller Belt", type: "stat", stat: "bonusHP", icon: "🌳", level: 17 },
-			{ name: "Cave Explorer Belt", type: "stat", stat: "bonusHP", icon: "💎", level: 27 },
-			{ name: "Crimson Guard Belt", type: "stat", stat: "bonusHP", icon: "🏰", level: 37 },
-			{ name: "Storm Chaser Belt", type: "stat", stat: "bonusHP", icon: "⛈️", level: 47 },
-			{ name: "Catacomb Explorer Belt", type: "stat", stat: "bonusHP", icon: "🌑", level: 57 },
-			{ name: "Stargazer Belt", type: "stat", stat: "bonusHP", icon: "🔭", level: 67 },
-			{ name: "Tundra Traveler Belt", type: "stat", stat: "bonusHP", icon: "🌨️", level: 77 },
-			{ name: "Volcano Explorer Belt", type: "stat", stat: "bonusHP", icon: "🌋", level: 87 },
-			{ name: "Cursed Belt", type: "stat", stat: "bonusHP", icon: "💀", level: 97 },
+			// { name: "Peasant's Belt", type: "stat", stat: "bonusHP", icon: "👑", level: 7 },
+			// { name: "Forest Dweller Belt", type: "stat", stat: "bonusHP", icon: "🌳", level: 17 },
+			// { name: "Cave Explorer Belt", type: "stat", stat: "bonusHP", icon: "💎", level: 27 },
+			// { name: "Crimson Guard Belt", type: "stat", stat: "bonusHP", icon: "🏰", level: 37 },
+			// { name: "Storm Chaser Belt", type: "stat", stat: "bonusHP", icon: "⛈️", level: 47 },
+			// { name: "Catacomb Explorer Belt", type: "stat", stat: "bonusHP", icon: "🌑", level: 57 },
+			// { name: "Stargazer Belt", type: "stat", stat: "bonusHP", icon: "🔭", level: 67 },
+			// { name: "Tundra Traveler Belt", type: "stat", stat: "bonusHP", icon: "🌨️", level: 77 },
+			// { name: "Volcano Explorer Belt", type: "stat", stat: "bonusHP", icon: "🌋", level: 87 },
+			// { name: "Cursed Belt", type: "stat", stat: "bonusHP", icon: "💀", level: 97 },
 			// Amulet items //@todo implement
-			{ name: "Amulet of Glimmer", type: "stat", stat: "elementalDamage", icon: "✨", level: 8 },
-			{ name: "Amulet of Whispered Secrets", type: "stat", stat: "elementalDamage", icon: "🌳", level: 18 },
-			{ name: "Amulet of Crystalline Power", type: "stat", stat: "elementalDamage", icon: "💎", level: 28 },
-			{ name: "Amulet of Fiery Embers", type: "stat", stat: "elementalDamage", icon: "🔥", level: 38 },
-			{ name: "Amulet of Thundering Skies", type: "stat", stat: "elementalDamage", icon: "⚡", level: 48 },
-			{ name: "Amulet of Eternal Shadows", type: "stat", stat: "elementalDamage", icon: "🌑", level: 58 },
-			{ name: "Amulet of Astral Radiance", type: "stat", stat: "elementalDamage", icon: "🌌", level: 68 },
-			{ name: "Amulet of Frostborne Chill", type: "stat", stat: "elementalDamage", icon: "❄️", level: 78 },
-			{ name: "Amulet of Molten Fury", type: "stat", stat: "elementalDamage", icon: "🔥", level: 88 },
-			{ name: "Amulet of Haunting Shadows", type: "stat", stat: "elementalDamage", icon: "☠️", level: 98 },
+			// { name: "Amulet of Glimmer", type: "stat", stat: "elementalDamage", icon: "✨", level: 8 },
+			// { name: "Amulet of Whispered Secrets", type: "stat", stat: "elementalDamage", icon: "🌳", level: 18 },
+			// { name: "Amulet of Crystalline Power", type: "stat", stat: "elementalDamage", icon: "💎", level: 28 },
+			// { name: "Amulet of Fiery Embers", type: "stat", stat: "elementalDamage", icon: "🔥", level: 38 },
+			// { name: "Amulet of Thundering Skies", type: "stat", stat: "elementalDamage", icon: "⚡", level: 48 },
+			// { name: "Amulet of Eternal Shadows", type: "stat", stat: "elementalDamage", icon: "🌑", level: 58 },
+			// { name: "Amulet of Astral Radiance", type: "stat", stat: "elementalDamage", icon: "🌌", level: 68 },
+			// { name: "Amulet of Frostborne Chill", type: "stat", stat: "elementalDamage", icon: "❄️", level: 78 },
+			// { name: "Amulet of Molten Fury", type: "stat", stat: "elementalDamage", icon: "🔥", level: 88 },
+			// { name: "Amulet of Haunting Shadows", type: "stat", stat: "elementalDamage", icon: "☠️", level: 98 },
 			// Shield items // @todo implement
-			{ name: "Shimmerleaf Buckler", type: "stat", stat: "block", icon: "🍃🛡️", level: 9 },
-			{ name: "Whisperwood Kite Shield", type: "stat", stat: "block", icon: "🌳🔰", level: 19 },
-			{ name: "Crystaline Heater Shield", type: "stat", stat: "block", icon: "💎🔥", level: 29 },
-			{ name: "Crimsonfire Round Shield", type: "stat", stat: "block", icon: "🔥🔵", level: 39 },
-			{ name: "Stormforge Tower Shield", type: "stat", stat: "block", icon: "⚡⚔️", level: 49 },
-			{ name: "Lost Souls Pavise Shield", type: "stat", stat: "block", icon: "🌑🌿", level: 59 },
-			{ name: "Astral Scutum Shield", type: "stat", stat: "block", icon: "🌌⚔️", level: 69 },
-			{ name: "Frostbite Aegis Shield", type: "stat", stat: "block", icon: "❄️🔱", level: 79 },
-			{ name: "Volcanic Bulwark Shield", type: "stat", stat: "block", icon: "🔥🛡️", level: 89 },
-			{ name: "Cursed Colossus Shield", type: "stat", stat: "block", icon: "☠️🗿", level: 99 },
+			// { name: "Shimmerleaf Buckler", type: "stat", stat: "block", icon: "🍃🛡️", level: 9 },
+			// { name: "Whisperwood Kite Shield", type: "stat", stat: "block", icon: "🌳🔰", level: 19 },
+			// { name: "Crystaline Heater Shield", type: "stat", stat: "block", icon: "💎🔥", level: 29 },
+			// { name: "Crimsonfire Round Shield", type: "stat", stat: "block", icon: "🔥🔵", level: 39 },
+			// { name: "Stormforge Tower Shield", type: "stat", stat: "block", icon: "⚡⚔️", level: 49 },
+			// { name: "Lost Souls Pavise Shield", type: "stat", stat: "block", icon: "🌑🌿", level: 59 },
+			// { name: "Astral Scutum Shield", type: "stat", stat: "block", icon: "🌌⚔️", level: 69 },
+			// { name: "Frostbite Aegis Shield", type: "stat", stat: "block", icon: "❄️🔱", level: 79 },
+			// { name: "Volcanic Bulwark Shield", type: "stat", stat: "block", icon: "🔥🛡️", level: 89 },
+			// { name: "Cursed Colossus Shield", type: "stat", stat: "block", icon: "☠️🗿", level: 99 },
 		],
 		peopleInNeed: [
 			"The distressed villagers",
@@ -544,38 +544,38 @@ function generateId(name, level) {
 const ATTRIBUTES = {
 	maxHP: {
 	  base: 15,
-	  factors: [1, 2, 3, 1, 2, 3, 1, 2, 3, 4],
-	  groupFactors: [0, 5, 10, 5, 15, 25, 15, 30, 45, 60],
+	  factors: [1, 1.2, 1.4, 1.6, 1.8, 2, 2.2, 2.4, 2.6, 2.8],
+	  groupFactors: [0, 10, 20, 30, 40, 50, 60, 70, 80, 100],
 	},
 	damage: {
 	  base: 4,
-	  factors: [0.6, 1.3, 0.7, 1.4, 0.8, 1.5, 0.9, 1.6, 1, 1.7],
-	  groupFactors: [0, 5, 0, 10, 0, 15, 0, 20, 25, 30],
+	  factors: [0.9, 1.6, 1.0, 1.7, 1.1, 1.8, 1.2, 1.9, 1.3, 2],
+	  groupFactors: [0, 5, 0, 10, 0, 15, 0, 20, 0, 25],
 	},
 	defense: {
 	  base: 4,
-	  factors: [1.3, 0.6, 1.4, 0.7, 1.5, 0.8, 1.6, 0.9, 1.7, 1],
-	  groupFactors: [5, 0, 10, 0, 15, 0, 20, 0, 25, 30],
+	  factors: [1.6, 0.9, 1.7, 1.0, 1.8, 1.1, 1.9, 1.2, 2, 2],
+	  groupFactors: [0, 0, 5, 0, 10, 0, 15, 0, 20, 25],
 	},
 	precision: {
 	  base: 4,
-	  factors: [0.6, 1.3, 0.7, 1.4, 0.8, 1.5, 0.9, 1.6, 1, 1.7],
-	  groupFactors: [0, 5, 0, 10, 0, 15, 0, 20, 25, 30],
+	  factors: [0.9, 1.6, 1.0, 1.7, 1.1, 1.8, 1.2, 1.9, 1.3, 2],
+	  groupFactors: [0, 5, 0, 10, 0, 15, 0, 20, 0, 25],
 	},
 	evasion: {
 	  base: 4,
-	  factors: [1.3, 0.6, 1.4, 0.7, 1.5, 0.8, 1.6, 0.9, 1.7, 1],
-	  groupFactors: [5, 0, 10, 0, 15, 0, 20, 0, 25, 30],
+	  factors: [1.6, 0.9, 1.7, 1.0, 1.8, 1.1, 1.9, 1.2, 2, 2],
+	  groupFactors: [0, 0, 5, 0, 10, 0, 15, 0, 20, 25],
 	},
 	critical: {
 	  base: 0,
-	  factors: [0.1, 0.4, 0.2, 0.5, 0.3, 0.6, 0.4, 0.7, 0.1, 0.9],
-	  groupFactors: [0, 0, 0, 0, 0, 5, 0, 10, 0, 20],
+	  factors: [0.1, 0.3, 0.2, 0.4, 0.3, 0.5, 0.4, 0.6, 0.5, 1],
+	  groupFactors: [0, 2, 0, 3, 0, 4, 0, 5, 0, 6],
 	},
 	resistance: {
 	  base: 0,
-	  factors: [0.4, 0.1, 0.5, 0.2, 0.6, 0.3, 0.7, 0.4, 0.1, 0.9],
-	  groupFactors: [0, 0, 0, 0, 5, 0, 10, 0, 0, 20],
+	  factors: [0.3, 0.1, 0.4, 0.2, 0.5, 0.3, 0.6, 0.4, 0.7, 1],
+	  groupFactors: [2, 0, 3, 0, 4, 0, 5, 0, 6, 0],
 	},
 	// block: {
 	//   base: 0,
@@ -590,35 +590,36 @@ const ATTRIBUTES = {
 }
 
 const getAttributeValue = (level, attribute) => {
-	const group = Math.ceil(level / 10);
-	const factorIndex = (level - 1) % 10;
-	const groupFactorIndex = group - 1;
-	const factor = ATTRIBUTES[attribute].factors[factorIndex];
-	const groupFactor = ATTRIBUTES[attribute].groupFactors[groupFactorIndex];
-	return Math.floor(ATTRIBUTES[attribute].base + (level - 1) * factor + groupFactor);
+	const group = Math.ceil(level / 10)
+	const factorIndex = (level - 1) % 10
+	const groupFactorIndex = group - 1
+	const factor = ATTRIBUTES[attribute].factors[factorIndex]
+	const groupFactor = ATTRIBUTES[attribute].groupFactors[groupFactorIndex]
+	return Math.floor(ATTRIBUTES[attribute].base + (level - 1) * factor + groupFactor)
 };
 
 enemies.forEach(enemy => {
-	const { name, level, isBoss, isDuelist } = enemy;
-	enemy.id = generateId(name, level);
-	enemy.areaIndex = Math.floor((level - 1) / 10);
-	enemy.maxHP = getAttributeValue(level, 'maxHP');
-	enemy.damage = getAttributeValue(level, 'damage');
-	enemy.defense = getAttributeValue(level, 'defense');
-	enemy.precision = getAttributeValue(level, 'precision');
-	enemy.evasion = getAttributeValue(level, 'evasion');
-	enemy.critical = getAttributeValue(level, 'critical');
-	enemy.resistance = getAttributeValue(level, 'resistance');
-	enemy.isBoss = isBoss === true;
-	enemy.isDuelist = isDuelist === true;
-	enemy.currentHP = 0;
+	const { name, level, type } = enemy
+	enemy.id = generateId(name, level)
+	enemy.areaIndex = Math.floor((level - 1) / 10)
+	enemy.maxHP = getAttributeValue(level, 'maxHP')
+	enemy.damage = getAttributeValue(level, 'damage')
+	enemy.defense = getAttributeValue(level, 'defense')
+	enemy.precision = getAttributeValue(level, 'precision')
+	enemy.evasion = getAttributeValue(level, 'evasion')
+	enemy.critical = getAttributeValue(level, 'critical')
+	enemy.resistance = getAttributeValue(level, 'resistance')
+	enemy.currentHP = 0
+	if (!enemy.type) {
+		enemy.type = 'BASE'
+	}
 
-	if (isBoss) {
-	  enemy.lootChance = 1;
-	} else if (isDuelist) {
-	  enemy.lootChance = 0;
+	if (type === 'BOSS') {
+	  enemy.lootChance = 0.333
+	} else if (type ==='DUELIST') {
+	  enemy.lootChance = 0
 	} else {
-	  enemy.lootChance = 0.03;
+	  enemy.lootChance = 0.033
 	}
 });
 

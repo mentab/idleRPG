@@ -59,41 +59,41 @@ html {
 body {
 	color: var(--text);
 	background-color: var(--bg);
-	font-size: 1rem;
-	line-height: 1.25;
+	font-size: .85rem;
+	line-height: 1.1;
 	display: grid;
-	grid-template-columns: 320px 1fr;
+	grid-template-columns: 230px 1fr;
 	margin: 0;
 	height: 100%;
 }
 
 main, aside {
-	padding: 1rem;
+	padding: .5rem;
 	overflow-y: auto;
 }
 
 h1 {
-	font-size: 1.5rem;
-}
-
-h2 {
-	font-size: 1.4rem;
-}
-
-h3 {
-	font-size: 1.3rem;
-}
-
-h4 {
 	font-size: 1.2rem;
 }
 
-h5 {
+h2 {
 	font-size: 1.1rem;
 }
 
-h6 {
+h3 {
 	font-size: 1rem;
+}
+
+h4 {
+	font-size: .9rem;
+}
+
+h5 {
+	font-size: .8rem;
+}
+
+h6 {
+	font-size: .7rem;
 }
 
 p, h1, h2, h3, h4, h5, h6 {
@@ -121,8 +121,8 @@ button {
 	background-color: var(--accent);
 	font-size: 1rem;
 	color: var(--bg);
-	padding: 0.6rem 0.8rem;
-	margin: 0.4rem 0;
+	padding: .3rem .5rem;
+	margin: .2rem 0;
 	text-decoration: none;
 	font-family: inherit;
 	line-height: normal;
@@ -163,21 +163,21 @@ aside, details, pre, progress {
 
 article, fieldset, dialog {
 	border: 1px solid var(--border);
-	padding: 1rem;
+	padding: .8rem;
 	border-radius: var(--standard-border-radius);
-	margin-bottom: 1rem;
+	margin-bottom: .8rem;
 }
 
 article h2:first-child,
 section h2:first-child {
-	margin-top: 1rem;
+	margin-top: .8rem;
 }
 
 section {
 	border-top: 1px solid var(--border);
 	border-bottom: 1px solid var(--border);
-	padding: 0.5rem 0.25rem;
-	margin: 0.75rem 0;
+	padding: .4rem .2rem;
+	margin: .6rem 0;
 }
 
 section + section,
@@ -192,14 +192,14 @@ section:last-child {
 }
 
 details {
-	padding: 0.7rem 1rem;
+	padding: .6rem .9rem;
 }
 
 summary {
 	cursor: pointer;
 	font-weight: bold;
-	padding: 0.7rem 1rem;
-	margin: -0.7rem -1rem;
+	padding: 0.6rem .9rem;
+	margin: -0.6rem -.9rem;
 	word-break: break-all;
 }
 
@@ -208,7 +208,7 @@ details[open] > summary + * {
 }
 
 details[open] > summary {
-	margin-bottom: 0.5rem;
+	margin-bottom: 0.4rem;
 }
 
 details[open] > :last-child {
@@ -219,7 +219,7 @@ hr {
 	border: none;
 	height: 1px;
 	background: var(--border);
-	margin: 1rem auto;
+	margin: .5rem auto;
 }
 
 mark {
@@ -237,14 +237,14 @@ blockquote {
 	margin-inline-start: 2rem;
 	margin-inline-end: 0;
 	margin-block: 2rem;
-	padding: 0.4rem 0.8rem;
-	border-inline-start: 0.35rem solid var(--accent);
+	padding: 0.3rem 0.7rem;
+	border-inline-start: 0.3rem solid var(--accent);
 	color: var(--text-light);
 	font-style: italic;
 }
 
 cite {
-	font-size: 0.9rem;
+	font-size: 0.8rem;
 	color: var(--text-light);
 	font-style: normal;
 }
@@ -270,7 +270,7 @@ sub {
 	background: var(--accent-bg);
 	border: 2px solid var(--border);
 	border-radius: 5px;
-	padding: 1.5rem;
+	padding: 1.3rem;
 	margin: 1rem 0;
 }
 

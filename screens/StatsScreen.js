@@ -6,7 +6,7 @@ class StatsScreen {
 	}
 
 	render() {
-		const statList = document.getElementById("playerStatsList");
+		const statList = document.getElementById("stat-list");
 		statList.innerHTML = "";
 
 		const stats = [
@@ -21,8 +21,8 @@ class StatsScreen {
 		];
 
 		stats.forEach((stat) => {
-			const statItem = document.createElement('li');
-			statItem.textContent = `${stat.label}: ${stat.value}`;
+			const statItem = document.createElement('div');
+			statItem.innerHTML = `<strong>${stat.label}: </strong><br/><em>${stat.value}</em>`;
 			statList.appendChild(statItem);
 		});
 	}

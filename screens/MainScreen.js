@@ -1,6 +1,7 @@
+import { updateGameInfo } from '../modules/MessageModule.js';
+
 class MainScreen {
-	constructor(updateGameInfo, handleScreenButtonClick) {
-		this.updateGameInfo = updateGameInfo;
+	constructor(handleScreenButtonClick) {
 		this.handleScreenButtonClick = handleScreenButtonClick;
 	}
 
@@ -31,7 +32,7 @@ class MainScreen {
 	}
 
 	render() {
-		this.updateGameInfo(`Waiting for next action...`);
+		updateGameInfo(`Waiting for next action...`);
 	}
 }
 

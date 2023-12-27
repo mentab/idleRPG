@@ -1,21 +1,23 @@
 // HealModule.js
 
-export function healForMoney(player, updateGameInfo, updatePlayerStats) {
+import { updateGameInfo } from './MessageModule.js';
+
+export function healForMoney(player, updatePlayerStats) {
 	if (player.currentHP === player.maxHP) {
-		updateGameInfo("Your HP is already full!");
-		return;
+		updateGameInfo("Your HP is already full!")
+		return
 	}
 
-	const healingCost = 10;
+	const healingCost = Math.ceil(player.level / 10) * 10
 	if (player.money >= healingCost) {
-		player.money -= healingCost;
-		player.currentHP += 10; // Assuming each healing costs 10 money and heals 10 HP
+		player.money -= healingCost
+		player.currentHP += healingCost / 2
 		if (player.currentHP > player.maxHP) {
-			player.currentHP = player.maxHP;
+			player.currentHP = player.maxHP
 		}
-		updateGameInfo("You've been healed!");
-		updatePlayerStats();
+		updateGameInfo("You've been healed!")
+		updatePlayerStats()
 	} else {
-		updateGameInfo("You don't have enough coins to heal!");
+		updateGameInfo("You don't have enough coins to heal!")
 	}
 }
