@@ -220,7 +220,7 @@ class Game {
 		document.getElementById("playerMaxHP").textContent = this.player.maxHP;
 		document.getElementById("playerExperience").textContent = `${this.player.experience} / ${this.getNextLevelExperience()}`;
 		document.getElementById("playerMoney").textContent = this.player.money;
-		document.getElementById("gambleCount").textContent = this.player.gambleCount;
+		document.getElementById("gambleCost").textContent = this.player.gambleCount + 1;
 		this.updatePlayerCurrentHP();
 	}
 

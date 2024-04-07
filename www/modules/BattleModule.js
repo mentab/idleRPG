@@ -11,8 +11,8 @@ class BattleModule {
 		this.checkLevelUp = checkLevelUp;
 	}
 
-	generateEnemyInfo = (enemy) => `An enemy ${enemy.icon} ${enemy.name} has appeared!\n` +
-		   `It has ${enemy.maxHP} HP, ${enemy.damage} DAM, ${enemy.defense} DEF, ${enemy.precision} PRE, ${enemy.evasion} EVA, ${enemy.critical} CRI, ${enemy.resistance} RES`;
+	generateEnemyInfo = (enemy) => `${enemy.icon} ${enemy.name} has appeared!\n` +
+		   `${enemy.maxHP} HP, ${enemy.damage} DAM, ${enemy.defense} DEF, ${enemy.precision} PRE, ${enemy.evasion} EVA, ${enemy.critical} CRI, ${enemy.resistance} RES`;
 
 	filterEntities(entities, mandatoryFilters, optionalFilters = {}) {
 		const defaultMandatoryFilters = { ...mandatoryFilters };
@@ -51,7 +51,7 @@ class BattleModule {
 
 	battle(enemy) {
 		const maxTurns = 10000;
-		let turns = 0;
+		let turns = 1;
 		const basePlayerDamage = this.player.damage + this.player.calculateEquippedDamage();
 		const basePlayerDefense = this.player.defense + this.player.calculateEquippedDefense();
 		const basePlayerPrecision = this.player.precision + this.player.calculateEquippedPrecision();
@@ -69,79 +69,73 @@ class BattleModule {
 		const playerDamageReduction = this.calculateDamageReduction(basePlayerDefense);
 		const enemyDamageReduction = this.calculateDamageReduction(baseEnemyDefense);
 
-		const playerDamage = Math.ceil(Math.max(basePlayerDamage * (1 - enemyDamageReduction), 1));
-		const enemyDamage = Math.ceil(Math.max(baseEnemyDamage * (1 - playerDamageReduction), 1));
+		const playerDamage = Math.floor(Math.max(basePlayerDamage * (1 - enemyDamageReduction), 1));
+		const enemyDamage = Math.floor(Math.max(baseEnemyDamage * (1 - playerDamageReduction), 1));
 
 		const playerHitChance = this.calculateHitChance(basePlayerPrecision, baseEnemyEvasion);
 		const enemyHitChance = this.calculateHitChance(baseEnemyPrecision, basePlayerEvasion);
 
+		const playerCritical = basePlayerCritical / 100;
+		const enemyCritical = baseEnemyCritical / 100;
+
+		const playerResistance = basePlayerResistance / 100;
+		const enemyResistance = baseEnemyResistance / 100;
+
 		while (this.player.currentHP > 0 && enemy.currentHP > 0 && turns < maxTurns) {
+			const playerHit = Math.random() < playerHitChance;
+			const enemyHit = Math.random() < enemyHitChance;
+
+
 			// Player's Turn
-			if (Math.random() < playerHitChance) {
+			if (playerHit) {
 				let playerDamageDealt = playerDamage;
-				if (Math.random() < this.player.critical / 100) {
-					const criticalMultiplier = 1 + (this.player.critical / 100);
-					playerDamageDealt = Math.ceil(playerDamageDealt * criticalMultiplier);
-					updateGameInfo(`Critical Hit! You attack the ${enemy.icon} ${enemy.name} dealing ${playerDamageDealt} damage!`);
-				} else {
-					updateGameInfo(`You attack the ${enemy.icon} ${enemy.name} dealing ${playerDamageDealt} damage!`);
+
+				if (Math.random() < playerCritical) {
+					playerDamageDealt = Math.floor(playerDamage * (1 + playerCritical));
 				}
 
-				if (Math.random() < baseEnemyResistance / 100) {
-					const absorptionMultiplier = 1 - (baseEnemyResistance / 100);
-					const resistanceedDamage = Math.ceil(playerDamageDealt * (1 - absorptionMultiplier));
-					playerDamageDealt -= resistanceedDamage;
-					updateGameInfo(`The ${enemy.icon} ${enemy.name} resistanceed ${resistanceedDamage} of your damage!`);
+				if (Math.random() < enemyResistance) {
+					playerDamageDealt -= Math.floor(playerDamage * (1 - enemyResistance));
 				}
 
-				enemy.currentHP -= playerDamageDealt;
+				enemy.currentHP = Math.max(enemy.currentHP - playerDamageDealt, 0);
 			}
 
 			// Enemy's Turn
-			if (Math.random() < enemyHitChance) {
+			if (enemyHit) {
 				let enemyDamageDealt = enemyDamage;
-				if (Math.random() < enemy.critical / 100) {
-					const criticalMultiplier = 1 + (enemy.critical / 100);
-					enemyDamageDealt = Math.ceil(enemyDamageDealt * criticalMultiplier);
-					updateGameInfo(`Critical Hit! The ${enemy.icon} ${enemy.name} attacks you dealing ${enemyDamageDealt} damage!`);
-				} else {
-					updateGameInfo(`The ${enemy.icon} ${enemy.name} attacks you dealing ${enemyDamageDealt} damage!`);
+
+				if (Math.random() < enemyCritical) {
+					enemyDamageDealt = Math.floor(enemyDamage * (1 + enemyCritical));
 				}
 
-				if (Math.random() < basePlayerResistance / 100) {
-					const absorptionMultiplier = 1 - (basePlayerResistance / 100);
-					const resistanceedDamage = Math.ceil(enemyDamageDealt * (1 - absorptionMultiplier));
-					enemyDamageDealt -= resistanceedDamage;
-					updateGameInfo(`You resist ${resistanceedDamage} of enemy damage!`);
+				if (Math.random() < playerResistance) {
+					enemyDamageDealt -= Math.floor(enemyDamage * (1 - playerResistance));
 				}
 
-				this.player.currentHP = Math.max(this.player.currentHP -= enemyDamageDealt, 0)
+				this.player.currentHP = Math.max(this.player.currentHP - enemyDamageDealt, 0);
 			}
+
+			updateGameInfo(`Turn ${turns} : ${enemy.icon} ${enemy.currentHP}/${enemy.maxHP} - 💖 ${this.player.currentHP}/${this.player.maxHP}`);
 
 			turns++;
 		}
 
-		if (this.player.currentHP <= 0) {
-			updateGameInfo("You were defeated!");
-		} else if (enemy.currentHP <= 0) {
-			updateGameInfo(`You defeated the ${enemy.icon} ${enemy.name}!`);
+		if (enemy.currentHP <= 0) {
 			const lootChance = enemy.lootChance * (1 + this.player.bonusLoot / 100);
 
-			console.log(lootChance)
-
 			if (Math.random() < lootChance) {
-				console.log('LOOT')
 				const loot = this.generateLoot(enemy.level);
 				if (loot) {
 					this.player.inventory.push({...loot});
-					updateGameInfo(`You found a loot: ${loot.name}!`);
+					updateGameInfo(`Found ${loot.name} ${loot.icon}!`);
 				}
 			}
 
 			if (Math.random() < lootChance * 4) {
 				const moneyAmount = enemy.level * 4;
 				this.player.money += moneyAmount;
-				updateGameInfo(`You found coins : ${moneyAmount}!`);
+				updateGameInfo(`Found ${moneyAmount} coins!`);
 			}
 
 			const killedEnemies = this.player.killedEnemies;
@@ -151,8 +145,6 @@ class BattleModule {
 			} else {
 				killedEnemies.set(enemy.id, 1);
 			}
-		} else {
-			updateGameInfo("The battle ended in a draw.");
 		}
 	}
 
@@ -196,16 +188,17 @@ class BattleModule {
 	battleAndCheckResult(enemy) {
 		if (this.player.currentHP > 0) {
 			if (enemy.currentHP <= 0) {
+				updateGameInfo("Victory!");
 				const experiencePoints = this.calculateExperiencePoints(enemy);
 				this.player.experience += experiencePoints;
 				this.updatePlayerStats();
-				updateGameInfo(`You defeated the ${enemy.icon} ${enemy.name} and gained ${experiencePoints} experience points!`);
+				updateGameInfo(`Gained ${experiencePoints} EXP!`);
 				this.checkLevelUp();
 			} else {
-				updateGameInfo(`The battle with the ${enemy.icon} ${enemy.name} ended prematurely. The enemy escaped!`);
+				updateGameInfo("Draw!");
 			}
 		} else {
-		  updateGameInfo("You were defeated!");
+		  updateGameInfo("Defeat!");
 		}
 	}
 
@@ -267,13 +260,13 @@ class BattleModule {
 
 	startChallenge() {
 		const boss = this.generateEnemy({ areaIndex: this.player.areaIndex, type: 'BOSS' }, {});
-		updateGameInfo("Starting the challenge...");
+		updateGameInfo("Starting challenge...");
 		this.performBattle(boss);
 	}
 
 	startMission() {
 		const enemy = this.generateEnemy({ areaIndex: this.player.areaIndex, type: 'BASE' }, { maxLevel: this.player.level - 2 });
-		updateGameInfo("Starting the mission...");
+		updateGameInfo("Starting mission...");
 		const numEnemies = getRandomNumber(2, 3);
 		updateGameInfo(this.generateRandomIntro(enemy.name, numEnemies));
 		let totalReward = 0;
@@ -291,11 +284,11 @@ class BattleModule {
 		}
 
 		if (!isMissionFailed) {
-			updateGameInfo(`Mission completed! Total reward: ${totalReward} coins.`);
+			updateGameInfo(`Mission completed! Reward ${totalReward} bonus coins`);
 			this.player.money += totalReward;
 			this.updatePlayerStats();
 		} else {
-			updateGameInfo("Mission failed! You were defeated.");
+			updateGameInfo("Mission failed!");
 		}
 	}
 
@@ -308,9 +301,9 @@ class BattleModule {
 		if (this.player.currentHP > 0) {
 		  const rewardXP = this.calculateDuelRewardXP(enemy);
 		  this.player.experience += rewardXP;
-		  updateGameInfo(`Duel won! You gained ${rewardXP} bonus XP.`);
+		  updateGameInfo(`Duel won! Reward ${rewardXP} bonus EXP`);
 		} else {
-		  updateGameInfo("Duel lost! You were defeated.");
+		  updateGameInfo("Duel lost!");
 		}
 	}
 }
