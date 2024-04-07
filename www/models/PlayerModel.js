@@ -46,12 +46,12 @@ export class Player {
 					return finalLevel;
 				case "critical":
 				case "resistance":
-					return finalLevel / 2;
+					return Math.floor(finalLevel / 2);
 				case "regeneration":
-					return finalLevel / 25;
+					return Math.floor(finalLevel / 25);
 				case "bonusExp":
 				case "bonusLoot":
-					return finalLevel / 3;
+					return Math.floor(finalLevel / 3);
 				default:
 					return 0;
 			}

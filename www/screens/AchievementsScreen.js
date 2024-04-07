@@ -38,7 +38,7 @@ class AchievementsScreen {
 		achievementsList.innerHTML = "";
 
 		const filteredEnemies = gameConfig.enemies.filter(
-			(enemy) => enemy.areaIndex == this.player.areaIndex
+			(enemy) => enemy.areaIndex == this.player.areaIndex && enemy.type === 'BASE'
 		);
 
 		filteredEnemies.forEach((enemy) => {

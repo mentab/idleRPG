@@ -1,0 +1,15 @@
+capacitor.config.sample.json
+{
+  "appId": "",
+  "appName": "",
+  "webDir": "www",
+  "android": {
+    "buildOptions": {
+      "keystorePath": "",
+      "keystorePassword": "",
+      "keystoreAlias": "",
+      "keystoreAliasPassword": "",
+      "releaseType": ""
+    }
+  }
+}

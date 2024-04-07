@@ -10,6 +10,9 @@ class StatsScreen {
 		statList.innerHTML = "";
 
 		const stats = [
+			{ label: 'Level', value: `🎚️ ${this.player.level}` },
+			{ label: 'HP', value: `💖 ${this.player.maxHP}` },
+			{ label: 'Regeneration', value: `💚 ${this.player.regeneration} (+${this.player.calculateEquippedRegeneration()})` },
 			{ label: 'Damage', value: `⚔️ ${this.player.damage} (+${this.player.calculateEquippedDamage()})` },
 			{ label: 'Defense', value: `🛡️ ${this.player.defense} (+${this.player.calculateEquippedDefense()})` },
 			{ label: 'Precision', value: `🎯 ${this.player.precision} (+${this.player.calculateEquippedPrecision()})` },
@@ -22,7 +25,7 @@ class StatsScreen {
 
 		stats.forEach((stat) => {
 			const statItem = document.createElement('div');
-			statItem.innerHTML = `<strong>${stat.label}: </strong><br/><em>${stat.value}</em>`;
+			statItem.innerHTML = `<strong>${stat.label}: </strong><br/><em>${stat.value}</em><hr>`;
 			statList.appendChild(statItem);
 		});
 	}

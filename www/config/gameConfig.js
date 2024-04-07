@@ -3,7 +3,7 @@
 
 // @later do multiple files, one for each game
 const gameHash = window.location.hash.slice(1);
-const game = gameHash;
+const game = gameHash || 'fantasyClickerBattles';
 
 const levelUpRequirements = [
 	{ level: 2, experience: 100 },

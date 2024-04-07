@@ -277,6 +277,8 @@ class Game {
 	}
 
 	init() {
+		window.screen.orientation.lock('landscape');
+		
 		const backToMainButtons = document.querySelectorAll(".btnBackToMain");
 
 		backToMainButtons.forEach((button) => {
