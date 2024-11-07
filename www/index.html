@@ -8,8 +8,8 @@
 	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi, orientation=landscape" />
 </head>
 <body>	
-	<aside id="main-screens">
-		<div id="main-screen">
+	<aside id="choose-screens">
+		<div id="choose-screen">
 			<button id="btnExploration">🗺️ Battle</button>
 			<button id="btnChallenge">⚔️ Boss</button>
 			<button id="btnMission">🔍 Quest</button>
@@ -39,72 +39,6 @@
 			<button id="btnMoney">🐞 Coins.</button>
 		</div>
 
-		<div id="mini-game-screen" class="hidden">
-			<h2>Mini Game</h2>
-			<div id="game-area"></div>
-		</div>
-
-		<div id="areas-screen" class="hidden">
-			<button class="btnBackToMain">🔙 Back to Main</button>
-			<h2>Areas</h2>
-			<div id="area-list"></div>
-		</div>
-
-		<div id="inventory-screen" class="hidden">
-			<button class="btnBackToMain">🔙 Back to Main</button>
-			<h2>Inventory</h2>
-			<div id="item-list"></div>
-		</div>
-
-		<div id="buy-screen" class="hidden">
-			<button class="btnBackToMain">🔙 Back to Main</button>
-			<h2>Buy Items</h2>
-			<div id="shop-item-list"></div>
-		</div>
-
-		<div id="sell-screen" class="hidden">
-			<button class="btnBackToMain">🔙 Back to Main</button>
-			<h2>Sell Items</h2>
-			<div id="sell-item-list"></div>
-		</div>
-
-		<div id="stats-screen" class="hidden">
-			<button class="btnBackToMain">🔙 Back to Main</button>
-			<h2>Player Stats</h2>
-			<div id="stat-list"></div>
-		</div>
-
-		<div id="equipped-screen" class="hidden">
-			<button class="btnBackToMain">🔙 Back to Main</button>
-			<h2>Equipped Items</h2>
-			<div id="equipped-items-list"></div>
-		</div>
-
-		<div id="gather-screen" class="hidden">
-			<button class="btnBackToMain">🔙 Back to Main</button>
-			<h2>Gather Resources</h2>
-			<div id="gather-item-list"></div>
-		</div>
-
-		<div id="crafting-screen" class="hidden">
-			<button class="btnBackToMain">🔙 Back to Main</button>
-			<h2>Crafting</h2>
-			<p id="crafting-xp">Crafting XP: 0</p>
-			<div id="crafting-recipes-list"></div>
-		</div>
-
-		<div id="achievements-screen" class="hidden">
-			<button class="btnBackToMain">🔙 Back to Main</button>
-			<h2>Achievements</h2>
-			<div id="achievements-list"></div>
-		</div>
-
-		<div id="improvements-screen" class="hidden">
-			<button class="btnBackToMain">🔙 Back to Main</button>
-			<h2>Improvements</h2>
-			<div id="improvements-list"></div>
-		</div>
-
 	</aside>
 
 	<main id="information-screen">
@@ -118,8 +52,74 @@
 				💰: <span id="playerMoney"></span>
 			</p>
 		</div>
-		<div id="game-info"></div>
+
+		<div id="main-screens">
+
+			<div id="mini-game-screen" class="hidden">
+				<h2>Mini Game</h2>
+				<div id="game-area"></div>
+			</div>
+
+			<div id="areas-screen" class="hidden">
+				<h2>Areas</h2>
+				<div id="area-list"></div>
+			</div>
+
+			<div id="inventory-screen" class="hidden">
+				<h2>Inventory</h2>
+				<div id="item-list"></div>
+			</div>
+
+			<div id="buy-screen" class="hidden">
+				<h2>Buy Items</h2>
+				<div id="shop-item-list"></div>
+			</div>
+
+			<div id="sell-screen" class="hidden">
+				<h2>Sell Items</h2>
+				<div id="sell-item-list"></div>
+			</div>
+
+			<div id="stats-screen" class="hidden">
+				<h2>Player Stats</h2>
+				<div id="stat-list"></div>
+			</div>
+
+			<div id="equipped-screen" class="hidden">
+				<h2>Equipped Items</h2>
+				<div id="equipped-items-list"></div>
+			</div>
+
+			<div id="gather-screen" class="hidden">
+				<h2>Gather Resources</h2>
+				<div id="gather-item-list"></div>
+			</div>
+
+			<div id="crafting-screen" class="hidden">
+				<h2>Crafting</h2>
+				<p id="crafting-xp">Crafting XP: 0</p>
+				<div id="crafting-recipes-list"></div>
+			</div>
+
+			<div id="achievements-screen" class="hidden">
+				<h2>Achievements</h2>
+				<div id="achievements-list"></div>
+			</div>
+
+			<div id="improvements-screen" class="hidden">
+				<h2>Improvements</h2>
+				<div id="improvements-list"></div>
+			</div>
+
+			<div id="game-info-screen" class="hidden">
+				<div id="game-info-list"></div>
+			</div>
+
+		</div>
+		
 	</main>
+
+	<div id="game-notice-container"></div>
 
 	<script src="index.js" type="module"></script>
 </body>

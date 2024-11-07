@@ -1,6 +1,6 @@
 // main.js
 
-import MainScreen from './screens/MainScreen.js';
+import ChooseScreen from './screens/ChooseScreen.js';
 import AreasScreen from './screens/AreasScreen.js';
 import InventoryScreen from './screens/InventoryScreen.js';
 import BuyScreen from './screens/BuyScreen.js';
@@ -18,22 +18,22 @@ import { Player } from './models/PlayerModel.js';
 import timingGame from './games/TimingGame.js';
 import clickerGame from './games/ClickerGame.js';
 import memoryGame from './games/MemoryGame.js';
-import { updateGameInfo } from './modules/MessageModule.js';
+import { updateGameNotice } from './modules/MessageModule.js';
 
 class Game {
 	constructor() {
-		this.hpDelay = 200;
+		this.hpDelay = 2000;
 		this.player = new Player();
 		this.battleModule = new BattleModule(
 			this.player,
 			this.updatePlayerStats.bind(this),
 			this.checkLevelUp.bind(this)
 		);
-		this.mainScreen = new MainScreen(
+		this.chooseScreen = new ChooseScreen(
 			this.handleScreenButtonClick.bind(this)
 		);
 		this.miniGameScreen = new MiniGameScreen(
-			this.showMainScreen.bind(this)
+			this.showGameInfoScreen.bind(this)
 		);
 		this.miniGameScreen.registerMiniGame(timingGame);
 		this.miniGameScreen.registerMiniGame(clickerGame);
@@ -71,7 +71,7 @@ class Game {
 			this.updatePlayerStats.bind(this)
 		);
 
-		this.showMainScreen();
+		this.showGameInfoScreen();
 	}
 
 	handleScreenButtonClick(buttonId) {
@@ -125,21 +125,21 @@ class Game {
 				);
 				break;
 			case "btnExperience":
-				updateGameInfo("Adding 5000 experience...");
+				updateGameNotice("Adding 5000 experience...");
 				this.player.experience += 5000;
 				this.checkLevelUp();
 				break;
 			case "btnMoney":
-				updateGameInfo("Adding 5000 money...");
+				updateGameNotice("Adding 5000 money...");
 				this.player.money += 5000;
 				this.updatePlayerStats();
 				break;
 			case "btnSave":
-				updateGameInfo("Saving data...");
+				updateGameNotice("Saving data...");
 				this.player.savePlayerData();
 				break;
 			case "btnLoad":
-				updateGameInfo("Loading data...");
+				updateGameNotice("Loading data...");
 				this.player.loadPlayerData();
 				this.updatePlayerStats();
 				break;
@@ -151,9 +151,9 @@ class Game {
 		}
 	}
 
-	showMainScreen() {
-		this.showScreen("main-screen");
-		this.mainScreen.render();
+	showGameInfoScreen() {
+		this.showScreen("game-info-screen");
+		// this.chooseScreen.render();
 	}
 
 	showMiniGameScreen(action) {
@@ -230,16 +230,31 @@ class Game {
 	}
 
 	levelUp() {
+		// vitality
 		this.player.maxHP += 2;
 		this.player.currentHP = this.player.maxHP;
-		this.player.damage += 1;
-		this.player.defense += 1;
-		this.player.precision += 1;
-		this.player.evasion += 1;
 		if (this.player.level % 10 == 0) this.player.regeneration += 1;
-		if (this.player.level % 5 == 0) this.player.critical += 1;
-		if (this.player.level % 5 == 0) this.player.resistance += 1;
-		updateGameInfo(`Congratulations! You leveled up to level ${this.player.level}.`);
+
+		// toughness
+		this.player.toughness += 2;
+		// this.player.damage += 1;
+		// this.player.defense += 1;
+
+		// swiftness
+		this.player.swiftness += 2;
+		// this.player.precision += 1;
+		// this.player.evasion += 1;
+
+		// fortitude
+		if (this.player.level % 5 == 0) {
+			this.player.fortitude += 2;
+
+			// this.player.critical += 1;
+			// this.player.resistance += 1;
+		}
+
+		updateGameNotice(`Congratulations! You leveled up to level ${this.player.level}.`);
+		updateGameNotice(`Go to stats screen to upgrade your stats!`)
 		this.updatePlayerStats();
 	}
 	
@@ -277,16 +292,10 @@ class Game {
 	}
 
 	init() {
-		window.screen.orientation.lock('landscape');
-		
-		const backToMainButtons = document.querySelectorAll(".btnBackToMain");
-
-		backToMainButtons.forEach((button) => {
-			button.addEventListener("click", this.showMainScreen.bind(this));
-		});
+		// window.screen.orientation.lock('landscape');
 
 		this.updatePlayerStats();
-		this.mainScreen.init();
+		this.chooseScreen.init();
 		this.hpLoop();
 	}
 }

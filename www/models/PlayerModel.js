@@ -14,6 +14,9 @@ export class Player {
         this.resistance = 0;
         this.bonusExp = 0;
         this.bonusLoot = 0;
+        this.toughness = 0;
+        this.swiftness = 0;
+        this.fortitude = 0;
         this.damageItem = null;
         this.defenseItem = null;
         this.regenerationItem = null;

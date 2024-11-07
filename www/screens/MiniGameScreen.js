@@ -1,11 +1,11 @@
 // MiniGameScreen.js
 
-import { updateGameInfo } from '../modules/MessageModule.js';
+import { updateGameNotice } from '../modules/MessageModule.js';
 
 class MiniGameScreen {
-	constructor(showMainScreen) {
+	constructor(showNextScreen) {
 		this.miniGames = [];
-		this.showMainScreen = showMainScreen;
+		this.showNextScreen = showNextScreen;
 	}
 
 	registerMiniGame(miniGameFunction) {
@@ -24,7 +24,7 @@ class MiniGameScreen {
 	}
 
 	finishMiniGame(result, action) {
-		// updateGameInfo("Mini-game finished. Result:" + result);
+		// updateGameNotice("Mini-game finished. Result:" + result);
 		action(result);
 
 		// Bonuses go from 1 to 3 :
@@ -38,7 +38,7 @@ class MiniGameScreen {
 		// Combo ?
 		// Revival
 
-		this.showMainScreen();
+		this.showNextScreen();
 	}
 }
 

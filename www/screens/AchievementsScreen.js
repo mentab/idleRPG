@@ -80,7 +80,6 @@ class AchievementsScreen {
 				}
 
 				achievementsList.appendChild(rewardCard);
-				achievementsList.appendChild(document.createElement("hr"));
 			}
 		});
 	}

@@ -1,6 +1,6 @@
 import { updateGameInfo } from '../modules/MessageModule.js';
 
-class MainScreen {
+class ChooseScreen {
 	constructor(handleScreenButtonClick) {
 		this.handleScreenButtonClick = handleScreenButtonClick;
 	}
@@ -32,8 +32,8 @@ class MainScreen {
 	}
 
 	render() {
-		updateGameInfo(`Waiting for next action...`);
+		// updateGameInfo(`Waiting for next action...`);
 	}
 }
 
-export default MainScreen;
+export default ChooseScreen;

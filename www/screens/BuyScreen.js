@@ -1,7 +1,7 @@
 // BuyScreen.js
 
 import gameConfig from './../config/gameConfig.js';
-import { updateGameInfo } from '../modules/MessageModule.js';
+import { updateGameNotice } from '../modules/MessageModule.js';
 import { getItemValue } from '../modules/ItemModule.js';
 
 class BuyScreen {
@@ -54,7 +54,6 @@ class BuyScreen {
 			}
 
 			shopItems.appendChild(itemElement);
-			shopItems.appendChild(document.createElement("hr"));
 		}
 	}
 
@@ -64,7 +63,7 @@ class BuyScreen {
 		this.player.money -= cost;
 		const itemCopy = { ...item };
 		this.player.inventory.push({...itemCopy});
-		updateGameInfo(`You bought ${name} ${icon}.`);
+		updateGameNotice(`You bought ${name} ${icon}.`);
 		this.updatePlayerStats();
 		this.render();
 	}

@@ -1,6 +1,6 @@
 // GambleModule.js
 
-import { updateGameInfo } from './MessageModule.js';
+import { updateGameNotice } from './MessageModule.js';
 
 export function gambleMoney(player, updatePlayerStats) {
 	const gamblingCost = player.gambleCount + 1;
@@ -18,8 +18,8 @@ export function gambleMoney(player, updatePlayerStats) {
 			spinResult.push(symbols[randomIndex]);
 		}
 
-		updateGameInfo("Spinning slot machine...");
-		updateGameInfo("Result: " + spinResult.map(symbol => symbol.symbol).join(" "));
+		updateGameNotice("Spinning slot machine...");
+		updateGameNotice("Result: " + spinResult.map(symbol => symbol.symbol).join(" "));
 
 		const uniqueSymbols = new Set(spinResult.map(symbol => symbol.symbol));
 
@@ -30,26 +30,26 @@ export function gambleMoney(player, updatePlayerStats) {
 			switch (outcome.label) {
 				case "Experience":
 					player.bonusExp += 1;
-					updateGameInfo("You won 1 bonusExp!");
+					updateGameNotice("You won 1 bonusExp!");
 					break;
 				case "Loot":
 					player.bonusLoot += 1;
-					updateGameInfo("You won 1 bonusLoot!");
+					updateGameNotice("You won 1 bonusLoot!");
 					break;
 				case "Coins":
 					player.money += 60;
-					updateGameInfo("You won 60 coins!");
+					updateGameNotice("You won 60 coins!");
 					break;
 			}
 		} else {
 			player.money -= gamblingCost;
-			updateGameInfo("You lost " + gamblingCost + " coins!");
+			updateGameNotice("You lost " + gamblingCost + " coins!");
 		}
 
 		player.gambleCount++
 
 		updatePlayerStats();
 	} else {
-		updateGameInfo("Not enough coins!");
+		updateGameNotice("Not enough coins!");
 	}
 }

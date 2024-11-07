@@ -1,6 +1,6 @@
 // ImprovementsScreen
 
-import { updateGameInfo } from '../modules/MessageModule.js';
+import { updateGameNotice } from '../modules/MessageModule.js';
 import { getItemValue } from '../modules/ItemModule.js';
 
 class ImprovementsScreen {
@@ -28,16 +28,16 @@ class ImprovementsScreen {
 			const iconContent = item ? item.icon : '❌';
 			const nameContent = item ? item.name : 'Empty';
 
-			const { name, icon, level, stat, improvementLevel } = item;
-			const cost = this.calculateImprovementCost(item);
-
 			const itemElement = document.createElement('div');
 
 			const itemName = document.createElement('div');
-			itemName.innerHTML = `<strong>${nameContent}</strong> ${iconContent}`;
+			itemName.innerHTML = `<strong>${slot}:</strong><br/>${nameContent} ${iconContent}`;
 			itemElement.appendChild(itemName);
 
 			if (item) {
+				const { name, icon, level, stat, improvementLevel } = item;
+				const cost = this.calculateImprovementCost(item);
+
 				const itemInfo = document.createElement('div');
 				itemInfo.innerHTML = `<small><em>Level: </em><strong>${level}</strong> - <em>Stat: </em><strong>${stat}</strong></small>`;
 				itemElement.appendChild(itemInfo);
@@ -59,7 +59,6 @@ class ImprovementsScreen {
 			}
 
 			improvementsList.appendChild(itemElement);
-			improvementsList.appendChild(document.createElement("hr"));
 		});
 	}
 
@@ -76,7 +75,7 @@ class ImprovementsScreen {
 		const statMultiplier = increaseStat ? 1 : -1;
 
 		item.improvementLevel += statMultiplier;
-		updateGameInfo(`Item ${icon} ${name} has been ${increaseStat ? "upgraded" : "downgraded"}!`);
+		updateGameNotice(`Item ${icon} ${name} has been ${increaseStat ? "upgraded" : "downgraded"}!`);
 
 		this.render();
 	}

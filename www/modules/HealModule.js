@@ -1,10 +1,10 @@
 // HealModule.js
 
-import { updateGameInfo } from './MessageModule.js';
+import { updateGameNotice } from './MessageModule.js';
 
 export function healForMoney(player, updatePlayerStats) {
 	if (player.currentHP === player.maxHP) {
-		updateGameInfo("Your HP is full!")
+		updateGameNotice("Your HP is full!")
 		return
 	}
 
@@ -15,9 +15,9 @@ export function healForMoney(player, updatePlayerStats) {
 		if (player.currentHP > player.maxHP) {
 			player.currentHP = player.maxHP
 		}
-		updateGameInfo("Healed!")
+		updateGameNotice("Healed!")
 		updatePlayerStats()
 	} else {
-		updateGameInfo("Not enough coins!")
+		updateGameNotice("Not enough coins!")
 	}
 }

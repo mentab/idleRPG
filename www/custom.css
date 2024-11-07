@@ -59,7 +59,7 @@ html {
 body {
 	color: var(--text);
 	background-color: var(--bg);
-	font-size: .85rem;
+	font-size: 1rem;
 	line-height: 1.1;
 	display: grid;
 	grid-template-columns: 230px 1fr;
@@ -266,6 +266,62 @@ sub {
 	top: 0.3em; 
 }
 
+.hidden {
+	display: none;
+}
+
+#equipped-items-list,
+#improvements-list,
+#achievements-list,
+#item-list,
+#area-list,
+#stat-list,
+#shop-item-list,
+#sell-item-list {
+	display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    grid-auto-rows: minmax(160px, auto);
+}
+
+#equipped-items-list > div,
+#improvements-list > div,
+#achievements-list > div,
+#item-list > div,
+#area-list > div,
+#stat-list > div,
+#shop-item-list > div,
+#sell-item-list > div  {
+	background: var(--accent-bg);
+	border: 2px solid var(--border);
+	padding: 1em;
+	display: flex;
+    flex-direction: column;
+}
+
+#equipped-items-list > div > button,
+#improvements-list > div > button,
+#achievements-list > div > button,
+#item-list > div > button,
+#area-list > div > button,
+#stat-list > div > button,
+#shop-item-list > div > button,
+#sell-item-list > div > button {
+	margin-top: auto;
+	margin-bottom: 5px;
+}
+
+
+#game-notice-container {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
 .notice {
 	background: var(--accent-bg);
 	border: 2px solid var(--border);
@@ -274,11 +330,33 @@ sub {
 	margin: 1rem 0;
 }
 
-.hidden {
-	display: none;
+.game-notice {
+    background: var(--accent-bg);
+	border: 2px solid var(--border);
+	border-radius: 5px;
+	padding: 1.3rem;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    font-weight: bold;
+    max-width: 250px;
+    animation: slide-in 0.5s ease-out;
 }
 
+/* Animation pour afficher la notice */
+@keyframes slide-in {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
 
+/* Animation de disparition */
+.fade-out {
+    opacity: 0;
+    transform: translateX(100%);
+    transition: opacity 0.5s, transform 0.5s;
+}
 
 /* #f1e0c3 */
 /* #202b30 */

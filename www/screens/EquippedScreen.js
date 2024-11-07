@@ -1,6 +1,6 @@
 // EquippedScreen.js
 
-import { updateGameInfo } from '../modules/MessageModule.js';
+import { updateGameNotice } from '../modules/MessageModule.js';
 
 class EquippedScreen {
 	constructor(player, updatePlayerStats) {
@@ -52,7 +52,6 @@ class EquippedScreen {
 			}
 
 			equippedItemsList.appendChild(itemElement);
-			equippedItemsList.appendChild(document.createElement("hr"));
 		});
   }
 
@@ -63,7 +62,7 @@ class EquippedScreen {
 	this.player[playerProperty] = null;
 	this.player.inventory.push(item);
 
-	updateGameInfo(`Unequipped ${playerProperty}: ${icon} ${name}`);
+	updateGameNotice(`Unequipped ${playerProperty}: ${icon} ${name}`);
 
 	this.updatePlayerStats();
 	this.render();

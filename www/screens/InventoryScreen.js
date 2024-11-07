@@ -1,6 +1,6 @@
 // InventoryScreen.js
 
-import { updateGameInfo } from '../modules/MessageModule.js';
+import { updateGameNotice } from '../modules/MessageModule.js';
 
 import gameConfig from './../config/gameConfig.js';
 
@@ -17,6 +17,12 @@ class InventoryScreen {
 		const equippedItems = {};
 		for (const statName of gameConfig.statNames) {
 			equippedItems[statName] = this.player[`${statName}Item`];
+		}
+
+		if (this.player.inventory.length === 0) {
+			const emptyInventoryElement = document.createElement('strong');
+			emptyInventoryElement.innerHTML = `Your inventory is empty`;
+			inventory.appendChild(emptyInventoryElement);
 		}
 	
 		for (const item of this.player.inventory) {
@@ -42,7 +48,6 @@ class InventoryScreen {
 			itemElement.appendChild(equipButton);
 
 			inventory.appendChild(itemElement);
-			inventory.appendChild(document.createElement("hr"));
 		}
 	}
 
@@ -60,7 +65,7 @@ class InventoryScreen {
 			if (previouslyEquipped) {
 				this.player.inventory.push(previouslyEquipped);
 			}
-			updateGameInfo(`Equipped ${playerProperty}: ${icon} ${name}`);
+			updateGameNotice(`Equipped ${playerProperty}: ${icon} ${name}`);
 		} else {
 			console.log(`Unsupported item type: "stat", stat: ${stat}`);
 		}
