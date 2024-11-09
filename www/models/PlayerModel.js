@@ -33,6 +33,7 @@ export class Player {
         this.killedEnemies = new Map();
         this.claimedRewards = new Map();
         this.gambleCount = 0;
+        this.graceOfTheMeadow = 1;
     }
 
 	calculateEquippedStat(stat) {

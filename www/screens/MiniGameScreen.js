@@ -13,7 +13,7 @@ class MiniGameScreen {
 	}
 
 	render(action) {
-		// updateGameInfo("Starting Mini-game...");
+		// updateGameNotice("Starting Mini-game...");
 
 		// const randomIndex = Math.floor(Math.random() * this.miniGames.length);
 		// const selectedMiniGame = this.miniGames[randomIndex];

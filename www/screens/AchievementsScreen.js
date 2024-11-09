@@ -1,6 +1,6 @@
 // AchievementsScreen.js
 
-import { updateGameInfo } from '../modules/MessageModule.js';
+import { updateGameNotice } from '../modules/MessageModule.js';
 
 import gameConfig from './../config/gameConfig.js';
 
@@ -67,7 +67,7 @@ class AchievementsScreen {
 					rewardButton.textContent = `Claim`;
 					rewardButton.addEventListener("click", () => {
 						this.player.claimedRewards.set(id, nextMilestoneCount);
-						updateGameInfo(`You have received ${nextRewardAmount} coins as a reward!`);
+						updateGameNotice(`You have received ${nextRewardAmount} coins as a reward!`);
 						this.player.money += nextRewardAmount;
 						this.updatePlayerStats();
 						this.render();

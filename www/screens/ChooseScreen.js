@@ -1,4 +1,4 @@
-import { updateGameInfo } from '../modules/MessageModule.js';
+import { updateGameNotice } from '../modules/MessageModule.js';
 
 class ChooseScreen {
 	constructor(handleScreenButtonClick) {
@@ -15,6 +15,7 @@ class ChooseScreen {
 		this.addClickListener("btnMission");
 		this.addClickListener("btnDuel");
 		this.addClickListener("btnAreas")
+		this.addClickListener("btnSpells")
 		this.addClickListener("btnStats")
 		this.addClickListener("btnEquipped")
 		this.addClickListener("btnAchievements")
@@ -32,7 +33,7 @@ class ChooseScreen {
 	}
 
 	render() {
-		// updateGameInfo(`Waiting for next action...`);
+		// updateGameNotice(`Waiting for next action...`);
 	}
 }
 

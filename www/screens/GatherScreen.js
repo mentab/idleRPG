@@ -17,7 +17,7 @@
 */
 
 import gameConfig from './../config/gameConfig.js';
-import { updateGameInfo } from '../modules/MessageModule.js';
+import { updateGameNotice } from '../modules/MessageModule.js';
 
 class GatherScreen {
 	constructor(player, updatePlayerStats) {
@@ -26,7 +26,7 @@ class GatherScreen {
 	}
 
 	render() {
-		updateGameInfo('You are now gathering resources.');
+		updateGameNotice('You are now gathering resources.');
 
 		const gatherItems = document.getElementById("gather-item-list");
 		gatherItems.innerHTML = "";
@@ -62,11 +62,11 @@ class GatherScreen {
 
 		const xpGained = Math.max(1, 5 - levelDifference);
 
-		updateGameInfo(`You gathered ${totalGathers} ${gatheredItem.name}.`);
+		updateGameNotice(`You gathered ${totalGathers} ${gatheredItem.name}.`);
 
 		this.player.gatheringXP += xpGained * totalGathers;
 
-		updateGameInfo(`Gathering XP: ${this.player.gatheringXP}.`);
+		updateGameNotice(`Gathering XP: ${this.player.gatheringXP}.`);
 
 		for (let i = 0; i < totalGathers; i++) {
 			this.player.inventory.push({...gatheredItem});
@@ -75,7 +75,7 @@ class GatherScreen {
 		this.updatePlayerStats();
 
 		if (nextGatherLevel === this.getMaxGatherLevel()) {
-			updateGameInfo(`Congratulations, you can now gather a new resource!`);
+			updateGameNotice(`Congratulations, you can now gather a new resource!`);
 			this.render();
 		}
 	}

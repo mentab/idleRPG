@@ -1,7 +1,7 @@
 // StatsScreen.js
 
 class StatsScreen {
-	constructor(player, getNextLevelExperience) {
+	constructor(player) {
 		this.player = player;
 	}
 

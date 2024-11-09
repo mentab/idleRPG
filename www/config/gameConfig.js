@@ -172,6 +172,118 @@ const config = {
 				icon: "⚰️🌙",
 			},
 		],
+		spells: [
+	        {
+			    id: "graceOfTheMeadow",
+			    name: "Grace of the Meadow",
+			    icon: "🌼",
+			    effects: [
+			        {
+			            stat: "precision",
+			            target: "self"
+			        }
+			    ]
+			},
+			{
+			    id: "whispersOfTheForest",
+			    name: "Whispers of the Forest",
+			    icon: "🌳",
+			    effects: [
+			        {
+			            stat: "evasion",
+			            target: "self"
+			        }
+			    ]
+			},
+			{
+			    id: "crystalBarrage",
+			    name: "Crystal Barrage",
+			    icon: "💎",
+			    effects: [
+			        {
+			            stat: "evasion",
+			            target: "enemy"
+			        }
+			    ]
+			},
+			{
+			    id: "infernalWard",
+			    name: "Infernal Ward",
+			    icon: "🔥",
+			    effects: [
+			        {
+			            stat: "defense",
+			            target: "self"
+			        }
+			    ]
+			},
+			{
+			    id: "stormEmbrace",
+			    name: "Storm's Embrace",
+			    icon: "⛈️",
+			    effects: [
+			        {
+			            stat: "resistance",
+			            target: "self"
+			        }
+			    ]
+			},
+			{
+			    id: "curseOfTheTomb",
+			    name: "Curse of the Tomb",
+			    icon: "⚰️",
+			    effects: [
+			        {
+			            stat: "resistance",
+			            target: "enemy"
+			        }
+			    ]
+			},
+			{
+			    id: "celestialGaze",
+			    name: "Celestial Gaze",
+			    icon: "🔭",
+			    effects: [
+			        {
+			            stat: "precision",
+			            target: "enemy"
+			        }
+			    ]
+			},
+			{
+			    id: "iceboundStrike",
+			    name: "Icebound Strike",
+			    icon: "❄️",
+			    effects: [
+			        {
+			            stat: "defense",
+			            target: "enemy"
+			        }
+			    ]
+			},
+			{
+			    id: "moltenHex",
+			    name: "Molten Hex",
+			    icon: "🌋",
+			    effects: [
+			        {
+			            stat: "damage",
+			            target: "enemy"
+			        }
+			    ]
+			},
+			{
+			    id: "damnedFocus",
+			    name: "Damned Focus",
+			    icon: "⚰️",
+			    effects: [
+			        {
+			            stat: "damage",
+			            target: "self"
+			        }
+			    ]
+			}
+		],
 		enemies: [
 			// Shimmering Meadows
 			{ name: "Luminous Firefly", level: 1, icon: "✨" },
@@ -524,6 +636,7 @@ const configData = config[game];
 
 const areas = configData.areas;
 const enemies = configData.enemies;
+const spells = configData.spells;
 const itemsList = configData.itemsList;
 const peopleInNeed = configData.peopleInNeed;
 const aidRequests = configData.aidRequests;
@@ -621,6 +734,8 @@ enemies.forEach(enemy => {
 	} else {
 	  enemy.lootChance = 0.033
 	}
+
+	enemy.spell = spells[Math.floor(enemy.level / 10)];
 });
 
 itemsList.forEach(item => {
@@ -633,6 +748,7 @@ itemsList.forEach(item => {
 const gameConfig = {
 	areas: areas,
 	enemies: enemies,
+	spells: spells,
 	itemsList: itemsList,
 	peopleInNeed: peopleInNeed,
 	aidRequests: aidRequests,
@@ -643,7 +759,10 @@ const gameConfig = {
 	challengeVerbs: challengeVerbs,
 	randomEnemies: randomEnemies,
 	statNames: statNames,
-	levelUpRequirements: levelUpRequirements
+	levelUpRequirements: levelUpRequirements,
+	effectBaseValue: 0.2,
+	effectLevelUpvalue: 0.05,
+	spellMaxLevel: 10,
 }
 
 function deepFreeze(obj) {

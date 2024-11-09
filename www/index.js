@@ -6,6 +6,7 @@ import InventoryScreen from './screens/InventoryScreen.js';
 import BuyScreen from './screens/BuyScreen.js';
 import SellScreen from './screens/SellScreen.js';
 import StatsScreen from './screens/StatsScreen.js';
+import SpellsScreen from './screens/SpellsScreen.js';
 import EquippedScreen from './screens/EquippedScreen.js';
 import MiniGameScreen from './screens/MiniGameScreen.js';
 import AchievementsScreen from './screens/AchievementsScreen.js';
@@ -58,6 +59,9 @@ class Game {
 		this.statsScreen = new StatsScreen(
 			this.player
 		);
+		this.spellsScreen = new SpellsScreen(
+			this.player
+		);
 		this.equippedScreen = new EquippedScreen(
 			this.player,
 			this.updatePlayerStats.bind(this)
@@ -102,6 +106,9 @@ class Game {
 				break;
 			case 'btnStats':
 				this.showStatsScreen();
+				break;
+			case 'btnSpells':
+				this.showSpellsScreen();
 				break;
 			case 'btnEquipped':
 				this.showEquippedScreen();
@@ -184,6 +191,11 @@ class Game {
 	showStatsScreen() {
 		this.showScreen("stats-screen");
 		this.statsScreen.render();
+	}
+
+	showSpellsScreen() {
+		this.showScreen("spells-screen");
+		this.spellsScreen.render();
 	}
 
 	showEquippedScreen() {

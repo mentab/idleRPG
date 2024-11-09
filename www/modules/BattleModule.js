@@ -2,7 +2,7 @@
 
 import { getRandomNumber, wait } from './../utils/utils.js';
 import gameConfig from './../config/gameConfig.js';
-import { clearGameInfo, updateGameInfo, updateGameNotice } from './MessageModule.js';
+import { clearGameInfo, updateGameInfo, updateGameInfoBattle, updateGameNotice } from './MessageModule.js';
 
 class BattleModule {
 	constructor(player, updatePlayerStats, checkLevelUp) {
@@ -52,41 +52,92 @@ class BattleModule {
 	async battle(enemy) {
 		const maxTurns = 10000;
 		let turns = 1;
-		const basePlayerDamage = this.player.damage + this.player.calculateEquippedDamage();
-		const basePlayerDefense = this.player.defense + this.player.calculateEquippedDefense();
-		const basePlayerPrecision = this.player.precision + this.player.calculateEquippedPrecision();
-		const basePlayerEvasion = this.player.evasion + this.player.calculateEquippedEvasion();
-		const basePlayerCritical = this.player.critical + this.player.calculateEquippedCritical();
-		const basePlayerResistance = this.player.resistance + this.player.calculateEquippedResistance();
-
-		const baseEnemyDamage = enemy.damage;
-		const baseEnemyDefense = enemy.defense;
-		const baseEnemyPrecision = enemy.precision;
-		const baseEnemyEvasion = enemy.evasion;
-		const baseEnemyCritical = enemy.critical;
-		const baseEnemyResistance = enemy.resistance;
-
-		const playerDamageReduction = this.calculateDamageReduction(basePlayerDefense);
-		const enemyDamageReduction = this.calculateDamageReduction(baseEnemyDefense);
-
-		const playerDamage = Math.floor(Math.max(basePlayerDamage * (1 - enemyDamageReduction), 1));
-		const enemyDamage = Math.floor(Math.max(baseEnemyDamage * (1 - playerDamageReduction), 1));
-
-		const playerHitChance = this.calculateHitChance(basePlayerPrecision, baseEnemyEvasion);
-		const enemyHitChance = this.calculateHitChance(baseEnemyPrecision, basePlayerEvasion);
-
-		const playerCritical = basePlayerCritical / 100;
-		const enemyCritical = baseEnemyCritical / 100;
-
-		const playerResistance = basePlayerResistance / 100;
-		const enemyResistance = baseEnemyResistance / 100;
 
 		while (this.player.currentHP > 0 && enemy.currentHP > 0 && turns < maxTurns) {
+			const playerCopy = { ...this.player };
+			const enemyCopy = { ...enemy };
+
+			let basePlayerDamage = playerCopy.damage + this.player.calculateEquippedDamage();
+			let basePlayerDefense = playerCopy.defense + this.player.calculateEquippedDefense();
+			let basePlayerPrecision = playerCopy.precision + this.player.calculateEquippedPrecision();
+			let basePlayerEvasion = playerCopy.evasion + this.player.calculateEquippedEvasion();
+			let basePlayerCritical = playerCopy.critical + this.player.calculateEquippedCritical();
+			let basePlayerResistance = playerCopy.resistance + this.player.calculateEquippedResistance();
+	
+			let baseEnemyDamage = enemyCopy.damage;
+			let baseEnemyDefense = enemyCopy.defense;
+			let baseEnemyPrecision = enemyCopy.precision;
+			let baseEnemyEvasion = enemyCopy.evasion;
+			let baseEnemyCritical = enemyCopy.critical;
+			let baseEnemyResistance = enemyCopy.resistance;
+	
+			let playerDamageReduction = this.calculateDamageReduction(basePlayerDefense);
+			let enemyDamageReduction = this.calculateDamageReduction(baseEnemyDefense);
+	
+			let playerDamage = Math.floor(Math.max(basePlayerDamage * (1 - enemyDamageReduction), 1));
+			let enemyDamage = Math.floor(Math.max(baseEnemyDamage * (1 - playerDamageReduction), 1));
+	
+			let playerHitChance = this.calculateHitChance(basePlayerPrecision, baseEnemyEvasion);
+			let enemyHitChance = this.calculateHitChance(baseEnemyPrecision, basePlayerEvasion);
+	
+			let playerCritical = basePlayerCritical / 100;
+			let enemyCritical = baseEnemyCritical / 100;
+	
+			let playerResistance = basePlayerResistance / 100;
+			let enemyResistance = baseEnemyResistance / 100;
+
 			const playerHit = Math.random() < playerHitChance;
 			const enemyHit = Math.random() < enemyHitChance;
 
+			await wait(0.2);
 
-			await wait(1);
+			const playerSpells = [];
+
+			// Player's Spell Turn
+			for (const playerSpell of gameConfig.spells) {
+				const spellLevel = playerCopy[playerSpell.id];
+				if (spellLevel) {
+					playerSpells.push(playerSpell);
+    		    	for (let effect of playerSpell.effects) {
+    		    		let spellAmount;
+    		    		switch(effect.target) {
+    		    			case "self":
+    		    				spellAmount = Math.floor(playerCopy[effect.stat] * (gameConfig.effectBaseValue + (spellLevel * gameConfig.effectLevelUpValue)));
+    	        	    		playerCopy[effect.stat] = playerCopy[effect.stat] + spellAmount;
+    		    				break;
+    		    			case "enemy":
+    		    				spellAmount = Math.floor(enemyCopy[effect.stat] * (gameConfig.effectBaseValue + (spellLevel * gameConfig.effectLevelUpValue)));
+    	        	    		enemyCopy[effect.stat] = enemyCopy[effect.stat] - spellAmount;
+    		    				break;
+    		    		}
+    		    	}
+				}
+			}
+
+			await wait(0.2);
+
+			const enemySpells = [];
+
+			// Enemy's Spell Turn
+			if (enemyCopy.spell) {
+				const enemySpell = enemyCopy.spell;
+				enemySpells.push(enemySpell);
+				for (let effect of enemySpell.effects) {
+					let spellAmount;
+					switch(effect.target) {
+						case "self":
+							spellAmount = Math.floor(enemyCopy[effect.stat] * (gameConfig.effectBaseValue + (Math.ceil(enemyCopy.level / 10) * gameConfig.effectLevelUpValue)));
+							enemyCopy[effect.stat] = enemyCopy[effect.stat] + spellAmount;
+							break;
+						case "enemy":
+							spellAmount = Math.floor(playerCopy[effect.stat] * (gameConfig.effectBaseValue + (Math.ceil(enemyCopy.level / 10) * gameConfig.effectLevelUpValue)));
+							playerCopy[effect.stat] = playerCopy[effect.stat] - spellAmount;
+							break;
+					}
+				}
+			}
+
+			await wait(0.2);
 
 			// Player's Turn
 			if (playerHit) {
@@ -103,7 +154,7 @@ class BattleModule {
 				enemy.currentHP = Math.max(enemy.currentHP - playerDamageDealt, 0);
 			}
 
-			await wait(1);
+			await wait(0.2);
 
 			// Enemy's Turn
 			if (enemyHit) {
@@ -120,7 +171,7 @@ class BattleModule {
 				this.player.currentHP = Math.max(this.player.currentHP - enemyDamageDealt, 0);
 			}
 
-			updateGameInfo(`Turn ${turns} : ${enemy.icon} ${enemy.currentHP}/${enemy.maxHP} - 💖 ${this.player.currentHP}/${this.player.maxHP}`);
+			updateGameInfoBattle(turns, playerCopy, enemyCopy, playerSpells, enemySpells);
 
 			turns++;
 		}

@@ -1,4 +1,4 @@
-import { updateGameInfo } from '../modules/MessageModule.js';
+import { updateGameNotice } from '../modules/MessageModule.js';
 
 /*
 // Utilities for creating recipes
@@ -173,7 +173,7 @@ class CraftingScreen {
 			this.updatePlayerCraftingXP();
 		} else {
 			// Show a message to the player indicating they don't have enough ingredients
-			updateGameInfo("You don't have enough ingredients to craft this item.");
+			updateGameNotice("You don't have enough ingredients to craft this item.");
 		}
 	}
 
