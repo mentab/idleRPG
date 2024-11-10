@@ -277,7 +277,8 @@ sub {
 #area-list,
 #stat-list,
 #shop-item-list,
-#sell-item-list {
+#sell-item-list,
+#spell-list {
 	display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 20px;
@@ -291,7 +292,8 @@ sub {
 #area-list > div,
 #stat-list > div,
 #shop-item-list > div,
-#sell-item-list > div  {
+#sell-item-list > div,
+#spell-list > div  {
 	background: var(--accent-bg);
 	border: 2px solid var(--border);
 	padding: 1em;
@@ -306,7 +308,8 @@ sub {
 #area-list > div > button,
 #stat-list > div > button,
 #shop-item-list > div > button,
-#sell-item-list > div > button {
+#sell-item-list > div > button,
+#spell-list > div > button {
 	margin-top: auto;
 	margin-bottom: 5px;
 }

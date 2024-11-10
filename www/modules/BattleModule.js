@@ -2,7 +2,7 @@
 
 import { getRandomNumber, wait } from './../utils/utils.js';
 import gameConfig from './../config/gameConfig.js';
-import { clearGameInfo, updateGameInfo, updateGameInfoBattle, updateGameNotice } from './MessageModule.js';
+import { clearGameInfo, updateGameInfo, updateInfoBattle, updateGameNotice } from './MessageModule.js';
 
 class BattleModule {
 	constructor(player, updatePlayerStats, checkLevelUp) {
@@ -63,6 +63,8 @@ class BattleModule {
 			let basePlayerEvasion = playerCopy.evasion + this.player.calculateEquippedEvasion();
 			let basePlayerCritical = playerCopy.critical + this.player.calculateEquippedCritical();
 			let basePlayerResistance = playerCopy.resistance + this.player.calculateEquippedResistance();
+			let basePlayerBlock = playerCopy.block + this.player.calculateEquippedBlock();
+			let basePlayerPenetration = playerCopy.penetration + this.player.calculateEquippedPenetration();
 	
 			let baseEnemyDamage = enemyCopy.damage;
 			let baseEnemyDefense = enemyCopy.defense;
@@ -70,6 +72,8 @@ class BattleModule {
 			let baseEnemyEvasion = enemyCopy.evasion;
 			let baseEnemyCritical = enemyCopy.critical;
 			let baseEnemyResistance = enemyCopy.resistance;
+			let baseEnemyBlock = enemyCopy.block;
+			let baseEnemyPenetration = enemyCopy.penetration;
 	
 			let playerDamageReduction = this.calculateDamageReduction(basePlayerDefense);
 			let enemyDamageReduction = this.calculateDamageReduction(baseEnemyDefense);
@@ -86,28 +90,36 @@ class BattleModule {
 			let playerResistance = basePlayerResistance / 100;
 			let enemyResistance = baseEnemyResistance / 100;
 
+			let playerBlock = basePlayerBlock / 100;
+			let enemyBlock = baseEnemyBlock / 100;
+
+			let playerPenetration = basePlayerPenetration / 100;
+			let enemyPenetration = baseEnemyPenetration / 100;
+
 			const playerHit = Math.random() < playerHitChance;
 			const enemyHit = Math.random() < enemyHitChance;
 
 			await wait(0.2);
 
-			const playerSpells = [];
+			const battleMessages = [];
 
 			// Player's Spell Turn
 			for (const playerSpell of gameConfig.spells) {
 				const spellLevel = playerCopy[playerSpell.id];
 				if (spellLevel) {
-					playerSpells.push(playerSpell);
+					battleMessages.push(`${playerSpell.icon} The player cast ${playerSpell.name}`);
     		    	for (let effect of playerSpell.effects) {
     		    		let spellAmount;
     		    		switch(effect.target) {
     		    			case "self":
-    		    				spellAmount = Math.floor(playerCopy[effect.stat] * (gameConfig.effectBaseValue + (spellLevel * gameConfig.effectLevelUpValue)));
+    		    				spellAmount = Math.floor(playerCopy[effect.stat] * (gameConfig.effectValue + ((spellLevel - 1) * gameConfig.effectValue)));
     	        	    		playerCopy[effect.stat] = playerCopy[effect.stat] + spellAmount;
+    	        	    		battleMessages.push(`Player increases it's ${effect.stat} by ${spellAmount}% for the next turn!`);
     		    				break;
     		    			case "enemy":
-    		    				spellAmount = Math.floor(enemyCopy[effect.stat] * (gameConfig.effectBaseValue + (spellLevel * gameConfig.effectLevelUpValue)));
+    		    				spellAmount = Math.floor(enemyCopy[effect.stat] * (gameConfig.effectValue + ((spellLevel - 1) * gameConfig.effectValue)));
     	        	    		enemyCopy[effect.stat] = enemyCopy[effect.stat] - spellAmount;
+    	        	    		battleMessages.push(`Player reduces enemy's ${effect.stat} by ${spellAmount}% for the next turn!`);
     		    				break;
     		    		}
     		    	}
@@ -116,22 +128,22 @@ class BattleModule {
 
 			await wait(0.2);
 
-			const enemySpells = [];
-
 			// Enemy's Spell Turn
 			if (enemyCopy.spell) {
 				const enemySpell = enemyCopy.spell;
-				enemySpells.push(enemySpell);
+				battleMessages.push(`${enemySpell.icon} The enemy cast ${enemySpell.name}`);
 				for (let effect of enemySpell.effects) {
 					let spellAmount;
 					switch(effect.target) {
 						case "self":
-							spellAmount = Math.floor(enemyCopy[effect.stat] * (gameConfig.effectBaseValue + (Math.ceil(enemyCopy.level / 10) * gameConfig.effectLevelUpValue)));
+							spellAmount = Math.floor(enemyCopy[effect.stat] * (gameConfig.effectValue + (Math.ceil(enemyCopy.level / 10) * gameConfig.effectValue)));
 							enemyCopy[effect.stat] = enemyCopy[effect.stat] + spellAmount;
+							battleMessages.push(`Enemy increases it's ${effect.stat} by ${spellAmount}% for the next turn!`);
 							break;
 						case "enemy":
-							spellAmount = Math.floor(playerCopy[effect.stat] * (gameConfig.effectBaseValue + (Math.ceil(enemyCopy.level / 10) * gameConfig.effectLevelUpValue)));
+							spellAmount = Math.floor(playerCopy[effect.stat] * (gameConfig.effectValue + (Math.ceil(enemyCopy.level / 10) * gameConfig.effectValue)));
 							playerCopy[effect.stat] = playerCopy[effect.stat] - spellAmount;
+							battleMessages.push(`Enemy reduces player's ${effect.stat} by ${spellAmount}% for the next turn!`);
 							break;
 					}
 				}
@@ -141,37 +153,79 @@ class BattleModule {
 
 			// Player's Turn
 			if (playerHit) {
-				let playerDamageDealt = playerDamage;
-
-				if (Math.random() < playerCritical) {
-					playerDamageDealt = Math.floor(playerDamage * (1 + playerCritical));
-				}
-
-				if (Math.random() < enemyResistance) {
-					playerDamageDealt -= Math.floor(playerDamage * (1 - enemyResistance));
-				}
-
-				enemy.currentHP = Math.max(enemy.currentHP - playerDamageDealt, 0);
+			    battleMessages.push('🎯 The player strikes!');
+			    let playerDamageDealt = playerDamage;
+			
+			    battleMessages.push(`⚔️ Base player damage: ${playerDamageDealt}`);
+			
+			    // Checking for penetration
+			    if (Math.random() < playerPenetration) {
+			        playerDamageDealt *= 2; 
+			        battleMessages.push(`💥 Player's penetration breaks through the enemy's defense! Damage doubled to ${playerDamageDealt}`);
+			    } 
+			    // Checking for enemy block
+			    else if (Math.random() < enemyBlock) {
+			        playerDamageDealt = 0;
+			        battleMessages.push(`🛡️ The enemy blocks the attack! No damage dealt.`);
+			    } 
+			    else {
+			        // Checking for a critical hit
+			        if (Math.random() < playerCritical) {
+			            playerDamageDealt = Math.floor(playerDamage * (1 + playerCritical));
+			            battleMessages.push(`🌟 Critical hit! The player deals ${playerDamageDealt} devastating damage!`);
+			        }
+			
+			        // Checking for enemy resistance
+			        if (Math.random() < enemyResistance) {
+			            playerDamageDealt -= Math.floor(playerDamage * (1 - enemyResistance));
+			            battleMessages.push(`🛡️ The enemy resists the damage, reducing it to ${playerDamageDealt}`);
+			        }
+			    }
+			
+			    battleMessages.push(`🔥 Final damage dealt to the enemy: ${playerDamageDealt}`);
+			
+			    // Reducing enemy HP
+			    enemy.currentHP = Math.max(enemy.currentHP - playerDamageDealt, 0);
+			} else {
+			    battleMessages.push('❌ The player misses the attack!');
 			}
 
 			await wait(0.2);
 
 			// Enemy's Turn
 			if (enemyHit) {
+				battleMessages.push('🎯 The enemy strikes!');
 				let enemyDamageDealt = enemyDamage;
 
-				if (Math.random() < enemyCritical) {
-					enemyDamageDealt = Math.floor(enemyDamage * (1 + enemyCritical));
+				battleMessages.push(`⚔️ Base enemy damage: ${enemyDamageDealt}`);
+
+				if (Math.random() < enemyPenetration) {
+					enemyDamageDealt *= 2; 
+					battleMessages.push(`💥 Enemy's penetration breaks through the player's defense! Damage doubled to ${enemyDamageDealt}`);
+				} else if (Math.random() < playerBlock) {
+					enemyDamageDealt = 0;
+					battleMessages.push(`🛡️ The player blocks the attack! No damage dealt.`);
+				}
+				else {
+					if (Math.random() < enemyCritical) {
+						enemyDamageDealt = Math.floor(enemyDamage * (1 + enemyCritical));
+						battleMessages.push(`🌟 Critical hit! The enemy deals ${enemyDamageDealt} devastating damage!`);
+					}
+	
+					if (Math.random() < playerResistance) {
+						enemyDamageDealt -= Math.floor(enemyDamage * (1 - playerResistance));
+						battleMessages.push(`🛡️ The player resists the damage, reducing it to ${enemyDamageDealt}`);
+					}
 				}
 
-				if (Math.random() < playerResistance) {
-					enemyDamageDealt -= Math.floor(enemyDamage * (1 - playerResistance));
-				}
+				battleMessages.push(`🔥 Final damage dealt to the player: ${enemyDamageDealt}`);
 
 				this.player.currentHP = Math.max(this.player.currentHP - enemyDamageDealt, 0);
+			} else {
+				battleMessages.push('❌ The enemy misses the attack!');
 			}
 
-			updateGameInfoBattle(turns, playerCopy, enemyCopy, playerSpells, enemySpells);
+			updateInfoBattle(turns, playerCopy, enemyCopy, battleMessages);
 
 			turns++;
 		}

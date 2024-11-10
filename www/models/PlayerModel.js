@@ -3,20 +3,29 @@ import { mapToArray, arrayToMap } from "../utils/utils.js";
 export class Player {
     constructor() {
         this.level = 1;
+        // hp
         this.maxHP = 20;
         this.currentHP = 20;
-        this.damage = 5;
-        this.defense = 5;
-        this.precision = 5;
-        this.evasion = 5;
         this.regeneration = 1;
-        this.critical = 0;
-        this.resistance = 0;
-        this.bonusExp = 0;
-        this.bonusLoot = 0;
-        this.toughness = 0;
-        this.swiftness = 0;
+        // toughness
+        this.toughness = 8;
+        this.damage = 1;
+        this.defense = 1;
+        // swiftness
+        this.swiftness = 8;
+        this.precision = 1;
+        this.evasion = 1;
+        // fortitude
         this.fortitude = 0;
+        this.critical = 1;
+        this.resistance = 1;
+        // defiance
+        this.defiance = 0;
+        this.block = 1;
+        this.penetration = 1;
+        // bonuses
+        this.bonusExp = 1;
+        this.bonusLoot = 1;
         this.damageItem = null;
         this.defenseItem = null;
         this.regenerationItem = null;
@@ -24,6 +33,8 @@ export class Player {
         this.evasionItem = null;
         this.criticalItem = null;
         this.resistanceItem = null;
+        this.blockItem = null;
+        this.penetrationItem = null;
         this.bonusExpItem = null;
         this.bonusLootItem = null;
         this.inventory = [];
@@ -33,7 +44,17 @@ export class Player {
         this.killedEnemies = new Map();
         this.claimedRewards = new Map();
         this.gambleCount = 0;
-        this.graceOfTheMeadow = 1;
+        this.availableSpellPoints = 1;
+        this.spell1 = 0;
+        this.spell2 = 0;
+        this.spell3 = 0;
+        this.spell4 = 0;
+        this.spell5 = 0;
+        this.spell6 = 0;
+        this.spell7 = 0;
+        this.spell8 = 0;
+        this.spell9 = 0;
+        this.spell10 = 0;
     }
 
 	calculateEquippedStat(stat) {
@@ -47,15 +68,17 @@ export class Player {
 				case "damage":
 				case "precision":
 				case "evasion":
-					return finalLevel;
+					return Math.floor(finalLevel / 2);
 				case "critical":
 				case "resistance":
-					return Math.floor(finalLevel / 2);
-				case "regeneration":
-					return Math.floor(finalLevel / 25);
+                case "block":
+                case "penetration":
+					return Math.ceil(finalLevel / 10);
 				case "bonusExp":
 				case "bonusLoot":
-					return Math.floor(finalLevel / 3);
+					return Math.floor(finalLevel / 20);
+                case "regeneration":
+                    return Math.floor(finalLevel / 30);
 				default:
 					return 0;
 			}
@@ -90,6 +113,14 @@ export class Player {
 
     calculateEquippedResistance() {
         return this.calculateEquippedStat("resistance");
+    }
+
+    calculateEquippedBlock() {
+        return this.calculateEquippedStat("block");
+    }
+
+    calculateEquippedPenetration() {
+        return this.calculateEquippedStat("penetration");
     }
 
     calculateEquippedBonusExp() {

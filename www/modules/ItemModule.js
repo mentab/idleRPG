@@ -5,17 +5,21 @@ export function getItemValue(item) {
         switch (stat) {
             case "defense":
             case "damage":
+                return (level + improvementLevel) * 10;
             case "precision":
             case "evasion":
                 return (level + improvementLevel) * 20;
             case "critical":
             case "resistance":
-                return (level + improvementLevel) * 10;
+                return (level + improvementLevel) * 35;
+            case "block":
+            case "penetration":
+                return (level + improvementLevel) * 55;
             case "bonusExp":
             case "bonusLoot":
-                return (level + improvementLevel) * 50;
+                return (level + improvementLevel) * 85;
             case "regeneration":
-                return (level + improvementLevel) * 100;
+                return (level + improvementLevel) * 120;
             default:
                 return 0;
         }

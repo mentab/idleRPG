@@ -20,6 +20,8 @@ class EquippedScreen {
 			{ slot: 'Evasion', item: this.player.evasionItem },
 			{ slot: 'Critical', item: this.player.criticalItem },
 			{ slot: 'Resistance', item: this.player.resistanceItem },
+			{ slot: 'Block', item: this.player.blockItem },
+			{ slot: 'Penetration', item: this.player.penetrationItem },
 			{ slot: 'Bonus Exp', item: this.player.bonusExpItem },
 			{ slot: 'Bonus Loot', item: this.player.bonusLootItem },
 		];

@@ -242,31 +242,26 @@ class Game {
 	}
 
 	levelUp() {
-		// vitality
-		this.player.maxHP += 2;
-		this.player.currentHP = this.player.maxHP;
-		if (this.player.level % 10 == 0) this.player.regeneration += 1;
+		this.player.maxHP += 1;
 
-		// toughness
-		this.player.toughness += 2;
-		// this.player.damage += 1;
-		// this.player.defense += 1;
-
-		// swiftness
-		this.player.swiftness += 2;
-		// this.player.precision += 1;
-		// this.player.evasion += 1;
-
-		// fortitude
-		if (this.player.level % 5 == 0) {
-			this.player.fortitude += 2;
-
-			// this.player.critical += 1;
-			// this.player.resistance += 1;
+		if (this.player.level % 25 == 0) {
+			this.player.regeneration += 1;
 		}
+
+		this.player.toughness += 1;
+		this.player.swiftness += 1;
+
+		if (this.player.level % 10 == 0) {
+			this.player.fortitude += 1;
+			this.player.defiance += 1;
+			this.player.availableSpellPoints += 1;
+		}
+
+		this.player.currentHP = this.player.maxHP;
 
 		updateGameNotice(`Congratulations! You leveled up to level ${this.player.level}.`);
 		updateGameNotice(`Go to stats screen to upgrade your stats!`)
+
 		this.updatePlayerStats();
 	}
 	

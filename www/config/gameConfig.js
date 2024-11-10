@@ -114,8 +114,8 @@ const statNames = [
 	"evasion",
 	"critical",
 	"resistance",
-	//"block",
-	//"penetration"
+	"block",
+	"penetration"
 ];
 
 const config = {
@@ -174,7 +174,7 @@ const config = {
 		],
 		spells: [
 	        {
-			    id: "graceOfTheMeadow",
+			    id: "spell1",
 			    name: "Grace of the Meadow",
 			    icon: "🌼",
 			    effects: [
@@ -185,7 +185,7 @@ const config = {
 			    ]
 			},
 			{
-			    id: "whispersOfTheForest",
+			    id: "spell2",
 			    name: "Whispers of the Forest",
 			    icon: "🌳",
 			    effects: [
@@ -196,7 +196,7 @@ const config = {
 			    ]
 			},
 			{
-			    id: "crystalBarrage",
+			    id: "spell3",
 			    name: "Crystal Barrage",
 			    icon: "💎",
 			    effects: [
@@ -207,7 +207,7 @@ const config = {
 			    ]
 			},
 			{
-			    id: "infernalWard",
+			    id: "spell4",
 			    name: "Infernal Ward",
 			    icon: "🔥",
 			    effects: [
@@ -218,7 +218,7 @@ const config = {
 			    ]
 			},
 			{
-			    id: "stormEmbrace",
+			    id: "spell5",
 			    name: "Storm's Embrace",
 			    icon: "⛈️",
 			    effects: [
@@ -229,7 +229,7 @@ const config = {
 			    ]
 			},
 			{
-			    id: "curseOfTheTomb",
+			    id: "spell6",
 			    name: "Curse of the Tomb",
 			    icon: "⚰️",
 			    effects: [
@@ -240,7 +240,7 @@ const config = {
 			    ]
 			},
 			{
-			    id: "celestialGaze",
+			    id: "spell7",
 			    name: "Celestial Gaze",
 			    icon: "🔭",
 			    effects: [
@@ -251,7 +251,7 @@ const config = {
 			    ]
 			},
 			{
-			    id: "iceboundStrike",
+			    id: "spell8",
 			    name: "Icebound Strike",
 			    icon: "❄️",
 			    effects: [
@@ -262,7 +262,7 @@ const config = {
 			    ]
 			},
 			{
-			    id: "moltenHex",
+			    id: "spell9",
 			    name: "Molten Hex",
 			    icon: "🌋",
 			    effects: [
@@ -273,7 +273,7 @@ const config = {
 			    ]
 			},
 			{
-			    id: "damnedFocus",
+			    id: "spell10",
 			    name: "Damned Focus",
 			    icon: "⚰️",
 			    effects: [
@@ -540,27 +540,27 @@ const config = {
 			// { name: "Volcano Explorer Belt", type: "stat", stat: "bonusHP", icon: "🌋", level: 87 },
 			// { name: "Cursed Belt", type: "stat", stat: "bonusHP", icon: "💀", level: 97 },
 			// Amulet items //@todo implement
-			// { name: "Amulet of Glimmer", type: "stat", stat: "elementalDamage", icon: "✨", level: 8 },
-			// { name: "Amulet of Whispered Secrets", type: "stat", stat: "elementalDamage", icon: "🌳", level: 18 },
-			// { name: "Amulet of Crystalline Power", type: "stat", stat: "elementalDamage", icon: "💎", level: 28 },
-			// { name: "Amulet of Fiery Embers", type: "stat", stat: "elementalDamage", icon: "🔥", level: 38 },
-			// { name: "Amulet of Thundering Skies", type: "stat", stat: "elementalDamage", icon: "⚡", level: 48 },
-			// { name: "Amulet of Eternal Shadows", type: "stat", stat: "elementalDamage", icon: "🌑", level: 58 },
-			// { name: "Amulet of Astral Radiance", type: "stat", stat: "elementalDamage", icon: "🌌", level: 68 },
-			// { name: "Amulet of Frostborne Chill", type: "stat", stat: "elementalDamage", icon: "❄️", level: 78 },
-			// { name: "Amulet of Molten Fury", type: "stat", stat: "elementalDamage", icon: "🔥", level: 88 },
-			// { name: "Amulet of Haunting Shadows", type: "stat", stat: "elementalDamage", icon: "☠️", level: 98 },
-			// Shield items // @todo implement
-			// { name: "Shimmerleaf Buckler", type: "stat", stat: "block", icon: "🍃🛡️", level: 9 },
-			// { name: "Whisperwood Kite Shield", type: "stat", stat: "block", icon: "🌳🔰", level: 19 },
-			// { name: "Crystaline Heater Shield", type: "stat", stat: "block", icon: "💎🔥", level: 29 },
-			// { name: "Crimsonfire Round Shield", type: "stat", stat: "block", icon: "🔥🔵", level: 39 },
-			// { name: "Stormforge Tower Shield", type: "stat", stat: "block", icon: "⚡⚔️", level: 49 },
-			// { name: "Lost Souls Pavise Shield", type: "stat", stat: "block", icon: "🌑🌿", level: 59 },
-			// { name: "Astral Scutum Shield", type: "stat", stat: "block", icon: "🌌⚔️", level: 69 },
-			// { name: "Frostbite Aegis Shield", type: "stat", stat: "block", icon: "❄️🔱", level: 79 },
-			// { name: "Volcanic Bulwark Shield", type: "stat", stat: "block", icon: "🔥🛡️", level: 89 },
-			// { name: "Cursed Colossus Shield", type: "stat", stat: "block", icon: "☠️🗿", level: 99 },
+			{ name: "Amulet of Glimmer", type: "stat", stat: "penetration", icon: "✨", level: 8 },
+			{ name: "Amulet of Whispered Secrets", type: "stat", stat: "penetration", icon: "🌳", level: 18 },
+			{ name: "Amulet of Crystalline Power", type: "stat", stat: "penetration", icon: "💎", level: 28 },
+			{ name: "Amulet of Fiery Embers", type: "stat", stat: "penetration", icon: "🔥", level: 38 },
+			{ name: "Amulet of Thundering Skies", type: "stat", stat: "penetration", icon: "⚡", level: 48 },
+			{ name: "Amulet of Eternal Shadows", type: "stat", stat: "penetration", icon: "🌑", level: 58 },
+			{ name: "Amulet of Astral Radiance", type: "stat", stat: "penetration", icon: "🌌", level: 68 },
+			{ name: "Amulet of Frostborne Chill", type: "stat", stat: "penetration", icon: "❄️", level: 78 },
+			{ name: "Amulet of Molten Fury", type: "stat", stat: "penetration", icon: "🔥", level: 88 },
+			{ name: "Amulet of Haunting Shadows", type: "stat", stat: "penetration", icon: "☠️", level: 98 },
+			// Shield items
+			{ name: "Shimmerleaf Buckler", type: "stat", stat: "block", icon: "🍃🛡️", level: 9 },
+			{ name: "Whisperwood Kite Shield", type: "stat", stat: "block", icon: "🌳🔰", level: 19 },
+			{ name: "Crystaline Heater Shield", type: "stat", stat: "block", icon: "💎🔥", level: 29 },
+			{ name: "Crimsonfire Round Shield", type: "stat", stat: "block", icon: "🔥🔵", level: 39 },
+			{ name: "Stormforge Tower Shield", type: "stat", stat: "block", icon: "⚡⚔️", level: 49 },
+			{ name: "Lost Souls Pavise Shield", type: "stat", stat: "block", icon: "🌑🌿", level: 59 },
+			{ name: "Astral Scutum Shield", type: "stat", stat: "block", icon: "🌌⚔️", level: 69 },
+			{ name: "Frostbite Aegis Shield", type: "stat", stat: "block", icon: "❄️🔱", level: 79 },
+			{ name: "Volcanic Bulwark Shield", type: "stat", stat: "block", icon: "🔥🛡️", level: 89 },
+			{ name: "Cursed Colossus Shield", type: "stat", stat: "block", icon: "☠️🗿", level: 99 },
 		],
 		peopleInNeed: [
 			"The distressed villagers",
@@ -656,50 +656,50 @@ function generateId(name, level) {
 
 const ATTRIBUTES = {
 	maxHP: {
-	  base: 15,
+	  base: 10,
 	  factors: [1, 1.15, 1.3, 1.45, 1.6, 1.75, 1.9, 2.05, 2.20, 2.35],
 	  groupFactors: [0, 5, 10, 15, 20, 25, 30, 35, 40, 45],
 	},
 	damage: {
-	  base: 4,
+	  base: 5,
 	  factors: [0.9, 1.5, 1.0, 1.6, 1.1, 1.7, 1.2, 1.8, 1.3, 1.9],
 	  groupFactors: [0, 5, 0, 10, 0, 15, 0, 20, 0, 25],
 	},
 	defense: {
-	  base: 4,
+	  base: 5,
 	  factors: [1.5, 0.9, 1.6, 1.0, 1.7, 1.1, 1.8, 1.2, 1.9, 1.3],
 	  groupFactors: [0, 0, 5, 0, 10, 0, 15, 0, 20, 25],
 	},
 	precision: {
-	  base: 4,
+	  base: 5,
 	  factors: [0.9, 1.5, 1.0, 1.6, 1.1, 1.7, 1.2, 1.9, 1.3, 1.9],
 	  groupFactors: [0, 5, 0, 10, 0, 15, 0, 20, 0, 25],
 	},
 	evasion: {
-	  base: 4,
+	  base: 5,
 	  factors: [1.5, 0.9, 1.6, 1.0, 1.7, 1.1, 1.8, 1.2, 1.9, 1.3],
 	  groupFactors: [0, 0, 5, 0, 10, 0, 15, 0, 20, 25],
 	},
 	critical: {
-	  base: 0,
+	  base: 1,
 	  factors: [0.1, 0.2, 0.2, 0.3, 0.3, 0.4, 0.4, 0.5, 0.5, 0.6],
 	  groupFactors: [0, 2, 0, 4, 0, 6, 0, 8, 0, 10],
 	},
 	resistance: {
-	  base: 0,
+	  base: 1,
 	  factors: [0.2, 0.1, 0.3, 0.2, 0.4, 0.3, 0.5, 0.4, 0.6, 0.5],
 	  groupFactors: [2, 0, 4, 0, 6, 0, 8, 0, 10, 0],
 	},
-	// block: {
-	//   base: 0,
-	//   factors: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	//   groupFactors: [0, 0, 0, 0, 1, 2, 5, 10, 15, 20],
-	// },
-	// penetration: {
-	//   base: 0,
-	//   factors: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	//   groupFactors: [0, 0, 0, 0, 0, 1, 2, 5, 10, 15],
-	// }
+	block: {
+	  base: 1,
+	  factors: [0.1, 0.2, 0.2, 0.3, 0.3, 0.4, 0.4, 0.5, 0.5, 0.6],
+	  groupFactors: [0, 2, 0, 4, 0, 6, 0, 8, 0, 10],
+	},
+	penetration: {
+	  base: 1,
+	  factors: [0.1, 0.2, 0.2, 0.3, 0.3, 0.4, 0.4, 0.5, 0.5, 0.6],
+	  groupFactors: [0, 2, 0, 4, 0, 6, 0, 8, 0, 10],
+	}
 }
 
 const getAttributeValue = (level, attribute) => {
@@ -722,6 +722,8 @@ enemies.forEach(enemy => {
 	enemy.evasion = getAttributeValue(level, 'evasion')
 	enemy.critical = getAttributeValue(level, 'critical')
 	enemy.resistance = getAttributeValue(level, 'resistance')
+	enemy.block = getAttributeValue(level, 'block')
+	enemy.penetration = getAttributeValue(level, 'penetration')
 	enemy.currentHP = 0
 	if (!enemy.type) {
 		enemy.type = 'BASE'
@@ -760,8 +762,7 @@ const gameConfig = {
 	randomEnemies: randomEnemies,
 	statNames: statNames,
 	levelUpRequirements: levelUpRequirements,
-	effectBaseValue: 0.2,
-	effectLevelUpvalue: 0.05,
+	effectValue: 0.03,
 	spellMaxLevel: 10,
 }
 

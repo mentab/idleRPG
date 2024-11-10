@@ -44,6 +44,14 @@ class StatsScreen {
 				]
 			},
 			{
+				label: 'Defiance',
+				from: 'defiance',
+				stats: [
+					{ label: 'Block', from: 'block', value: `🛑 ${this.player.block} (+${this.player.calculateEquippedBlock()})` },
+					{ label: 'Penetration', from: 'penetration', value: `➡️ ${this.player.penetration} (+${this.player.calculateEquippedPenetration()})` }
+				]
+			},
+			{
 				label: 'Fortune',
 				from: null,
 				stats: [
