@@ -656,59 +656,50 @@ function generateId(name, level) {
 
 const ATTRIBUTES = {
 	maxHP: {
-	  base: 10,
-	  factors: [1, 1.15, 1.3, 1.45, 1.6, 1.75, 1.9, 2.05, 2.20, 2.35],
-	  groupFactors: [0, 5, 10, 15, 20, 25, 30, 35, 40, 45],
+	  levelFactors: [0.4, 0.45, 0.5, 0.45, 0.5, 0.55, 0.5, 0.55, 0.6, 0.7],
+	  groupBonuses: [2, 4, 8, 12, 0, 0, 0, 0, 0, 0],
 	},
 	damage: {
-	  base: 5,
-	  factors: [0.9, 1.5, 1.0, 1.6, 1.1, 1.7, 1.2, 1.8, 1.3, 1.9],
-	  groupFactors: [0, 5, 0, 10, 0, 15, 0, 20, 0, 25],
+	  levelFactors: [0.4, 0.45, 0.5, 0.45, 0.5, 0.55, 0.5, 0.55, 0.6, 0.7],
+	  groupBonuses: [1, 2, 5, 15, 0, 0, 0, 0, 0, 0],
 	},
 	defense: {
-	  base: 5,
-	  factors: [1.5, 0.9, 1.6, 1.0, 1.7, 1.1, 1.8, 1.2, 1.9, 1.3],
-	  groupFactors: [0, 0, 5, 0, 10, 0, 15, 0, 20, 25],
+	  levelFactors: [0.4, 0.45, 0.5, 0.45, 0.5, 0.55, 0.5, 0.55, 0.6, 0.7],
+	  groupBonuses: [2, 4, 3, 0, 0, 0, 0, 0, 0, 0],
 	},
 	precision: {
-	  base: 5,
-	  factors: [0.9, 1.5, 1.0, 1.6, 1.1, 1.7, 1.2, 1.9, 1.3, 1.9],
-	  groupFactors: [0, 5, 0, 10, 0, 15, 0, 20, 0, 25],
+	  levelFactors: [0.4, 0.45, 0.5, 0.45, 0.5, 0.55, 0.5, 0.55, 0.6, 0.7],
+	  groupBonuses: [1, 2, 5, 15, 0, 0, 0, 0, 0, 0],
 	},
 	evasion: {
-	  base: 5,
-	  factors: [1.5, 0.9, 1.6, 1.0, 1.7, 1.1, 1.8, 1.2, 1.9, 1.3],
-	  groupFactors: [0, 0, 5, 0, 10, 0, 15, 0, 20, 25],
+	  levelFactors: [0.4, 0.45, 0.5, 0.45, 0.5, 0.55, 0.5, 0.55, 0.6, 0.7],
+	  groupBonuses: [4, 6, 5, 0, 0, 0, 0, 0, 0, 0],
 	},
 	critical: {
-	  base: 1,
-	  factors: [0.1, 0.2, 0.2, 0.3, 0.3, 0.4, 0.4, 0.5, 0.5, 0.6],
-	  groupFactors: [0, 2, 0, 4, 0, 6, 0, 8, 0, 10],
+	  levelFactors: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+	  groupBonuses: [1, 2, 5, 15, 0, 0, 0, 0, 0, 0],
 	},
 	resistance: {
-	  base: 1,
-	  factors: [0.2, 0.1, 0.3, 0.2, 0.4, 0.3, 0.5, 0.4, 0.6, 0.5],
-	  groupFactors: [2, 0, 4, 0, 6, 0, 8, 0, 10, 0],
-	},
-	block: {
-	  base: 1,
-	  factors: [0.1, 0.2, 0.2, 0.3, 0.3, 0.4, 0.4, 0.5, 0.5, 0.6],
-	  groupFactors: [0, 2, 0, 4, 0, 6, 0, 8, 0, 10],
+	  levelFactors: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+	  groupBonuses: [3, 5, 4, 0, 0, 0, 0, 0, 0, 0],
 	},
 	penetration: {
-	  base: 1,
-	  factors: [0.1, 0.2, 0.2, 0.3, 0.3, 0.4, 0.4, 0.5, 0.5, 0.6],
-	  groupFactors: [0, 2, 0, 4, 0, 6, 0, 8, 0, 10],
-	}
+	  levelFactors: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+	  groupBonuses: [1, 0, 2, 10, 0, 0, 0, 0, 0, 0],
+	},
+	block: {
+	  levelFactors: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+	  groupBonuses: [0, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+	},
 }
 
 const getAttributeValue = (level, attribute) => {
 	const group = Math.ceil(level / 10)
 	const factorIndex = (level - 1) % 10
-	const groupFactorIndex = group - 1
-	const factor = ATTRIBUTES[attribute].factors[factorIndex]
-	const groupFactor = ATTRIBUTES[attribute].groupFactors[groupFactorIndex]
-	return Math.floor(ATTRIBUTES[attribute].base + (level - 1) * factor + groupFactor)
+	const groupIndex = group - 1
+	const factor = ATTRIBUTES[attribute].levelFactors[factorIndex]
+	const bonus = ATTRIBUTES[attribute].groupBonuses[groupIndex]
+	return Math.floor(1 + level * factor + bonus)
 };
 
 enemies.forEach(enemy => {
@@ -731,14 +722,21 @@ enemies.forEach(enemy => {
 
 	if (type === 'BOSS') {
 	  enemy.lootChance = 0.333
+	  enemy.spell = spells[Math.floor(enemy.level / 10)];
 	} else if (type ==='DUELIST') {
 	  enemy.lootChance = 0
+	  enemy.damage += Math.ceil(enemy.precision * 0.1);
+	  enemy.precision += Math.ceil(enemy.precision * 0.1);
+	  enemy.critical += Math.ceil(enemy.precision * 0.05);
+	  enemy.penetration += Math.ceil(enemy.precision * 0.05);
+	  enemy.spell = null;
 	} else {
 	  enemy.lootChance = 0.033
+	  enemy.spell = spells[Math.floor(enemy.level / 10)];
 	}
-
-	enemy.spell = spells[Math.floor(enemy.level / 10)];
 });
+
+console.log(enemies);
 
 itemsList.forEach(item => {
 	const { name, level } = item;

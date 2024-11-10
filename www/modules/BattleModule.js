@@ -12,7 +12,7 @@ class BattleModule {
 	}
 
 	generateEnemyInfo = (enemy) => `${enemy.icon} ${enemy.name} has appeared!\n` +
-		   `${enemy.maxHP} HP, ${enemy.damage} DAM, ${enemy.defense} DEF, ${enemy.precision} PRE, ${enemy.evasion} EVA, ${enemy.critical} CRI, ${enemy.resistance} RES`;
+		   `${enemy.maxHP} HP, ${enemy.damage} DAM, ${enemy.defense} DEF, ${enemy.precision} PRE, ${enemy.evasion} EVA, ${enemy.critical} CRI, ${enemy.resistance} RES, ${enemy.block} BLK, ${enemy.penetration} PEN`;
 
 	filterEntities(entities, mandatoryFilters, optionalFilters = {}) {
 		const defaultMandatoryFilters = { ...mandatoryFilters };
@@ -78,12 +78,12 @@ class BattleModule {
 			let playerDamageReduction = this.calculateDamageReduction(basePlayerDefense);
 			let enemyDamageReduction = this.calculateDamageReduction(baseEnemyDefense);
 	
-			let playerDamage = Math.floor(Math.max(basePlayerDamage * (1 - enemyDamageReduction), 1));
-			let enemyDamage = Math.floor(Math.max(baseEnemyDamage * (1 - playerDamageReduction), 1));
+			let playerDamage = Math.floor(Math.max(basePlayerDamage * (1 - enemyDamageReduction) / 2, 1));
+			let enemyDamage = Math.floor(Math.max(baseEnemyDamage * (1 - playerDamageReduction) / 2, 1));
 	
 			let playerHitChance = this.calculateHitChance(basePlayerPrecision, baseEnemyEvasion);
 			let enemyHitChance = this.calculateHitChance(baseEnemyPrecision, basePlayerEvasion);
-	
+
 			let playerCritical = basePlayerCritical / 100;
 			let enemyCritical = baseEnemyCritical / 100;
 	

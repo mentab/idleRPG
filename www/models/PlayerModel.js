@@ -4,15 +4,15 @@ export class Player {
     constructor() {
         this.level = 1;
         // hp
-        this.maxHP = 20;
-        this.currentHP = 20;
+        this.maxHP = 10;
+        this.currentHP = 10;
         this.regeneration = 1;
         // toughness
-        this.toughness = 8;
+        this.toughness = 4;
         this.damage = 1;
         this.defense = 1;
         // swiftness
-        this.swiftness = 8;
+        this.swiftness = 4;
         this.precision = 1;
         this.evasion = 1;
         // fortitude
