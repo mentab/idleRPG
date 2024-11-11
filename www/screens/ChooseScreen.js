@@ -19,6 +19,8 @@ class ChooseScreen {
 		this.addClickListener("btnStats")
 		this.addClickListener("btnEquipped")
 		this.addClickListener("btnAchievements")
+		this.addClickListener("btnGather")
+		this.addClickListener("btnCraft")
 		this.addClickListener("btnImprove")
 		this.addClickListener("btnInventory")
 		this.addClickListener("btnBuy")

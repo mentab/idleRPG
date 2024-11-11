@@ -26,6 +26,7 @@ export class Player {
         // bonuses
         this.bonusExp = 1;
         this.bonusLoot = 1;
+        // item
         this.damageItem = null;
         this.defenseItem = null;
         this.regenerationItem = null;
@@ -37,14 +38,7 @@ export class Player {
         this.penetrationItem = null;
         this.bonusExpItem = null;
         this.bonusLootItem = null;
-        this.inventory = [];
-        this.money = 0;
-        this.experience = 0;
-        this.areaIndex = 0;
-        this.killedEnemies = new Map();
-        this.claimedRewards = new Map();
-        this.gambleCount = 0;
-        this.availableSpellPoints = 1;
+        // spells
         this.spell1 = 0;
         this.spell2 = 0;
         this.spell3 = 0;
@@ -55,6 +49,16 @@ export class Player {
         this.spell8 = 0;
         this.spell9 = 0;
         this.spell10 = 0;
+        // other data
+        this.inventory = [];
+        this.money = 0;
+        this.experience = 0;
+        this.gatheringXP = 0;
+        this.areaIndex = 0;
+        this.killedEnemies = new Map();
+        this.claimedRewards = new Map();
+        this.gambleCount = 0;
+        this.availableSpellPoints = 1;
     }
 
 	calculateEquippedStat(stat) {

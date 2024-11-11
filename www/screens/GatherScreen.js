@@ -1,21 +1,5 @@
 // GatherScreen.js
 
-/*
-		gatheringItems: [
-			{ name: "Herb", type: "gathering", level: 1, icon: "🌿" },
-			{ name: "Mushroom", type: "gathering", level: 2, icon: "🍄" },
-			{ name: "Crystal", type: "gathering", level: 3, icon: "💎" },
-			{ name: "Ore", type: "gathering", level: 4, icon: "🔥" },
-			{ name: "Stone", type: "gathering", level: 5, icon: "🗻" },
-			{ name: "Bone", type: "gathering", level: 6, icon: "☠️" },
-			{ name: "Star Shard", type: "gathering", level: 7, icon: "✨" },
-			{ name: "Ice", type: "gathering", level: 8, icon: "❄️" },
-			{ name: "Ember", type: "gathering", level: 9, icon: "🔥" },
-			{ name: "Dark Essence", type: "gathering", level: 10, icon: "🌑" }
-		]
-
-*/
-
 import gameConfig from './../config/gameConfig.js';
 import { updateGameNotice } from '../modules/MessageModule.js';
 
@@ -48,6 +32,7 @@ class GatherScreen {
 	}
 
 	getMaxGatherLevel() {
+		console.log(Math.max(Math.floor(this.player.gatheringXP / 100), 1))
 		return Math.max(Math.floor(this.player.gatheringXP / 100), 1);
 	}
 

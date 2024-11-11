@@ -8,6 +8,8 @@ import SellScreen from './screens/SellScreen.js';
 import StatsScreen from './screens/StatsScreen.js';
 import SpellsScreen from './screens/SpellsScreen.js';
 import EquippedScreen from './screens/EquippedScreen.js';
+import GatherScreen from './screens/GatherScreen.js';
+import CraftScreen from './screens/CraftScreen.js';
 import MiniGameScreen from './screens/MiniGameScreen.js';
 import AchievementsScreen from './screens/AchievementsScreen.js';
 import ImprovementsScreen from './screens/ImprovementsScreen.js';
@@ -66,6 +68,12 @@ class Game {
 			this.player,
 			this.updatePlayerStats.bind(this)
 		);
+		this.gatherScreen = new GatherScreen(
+			this.player
+		);
+		this.craftScreen = new CraftScreen(
+			this.player
+		);
 		this.achievementsScreen = new AchievementsScreen(
 			this.player,
 			this.updatePlayerStats.bind(this)
@@ -115,6 +123,12 @@ class Game {
 				break;
 			case 'btnAchievements':
 				this.showAchievementsScreen();
+				break;
+			case 'btnGather':
+				this.showGatherScreen();
+				break;
+			case 'btnCraft':
+				this.showCraftScreen();
 				break;
 			case 'btnImprove':
 				this.showImprovementsScreen();
@@ -206,6 +220,16 @@ class Game {
 	showAchievementsScreen() {
 		this.showScreen("achievements-screen");
 		this.achievementsScreen.render();
+	}
+
+	showGatherScreen() {
+		this.showScreen("gather-screen");
+		this.gatherScreen.render();
+	}
+
+	showCraftScreen() {
+		this.showScreen("craft-screen");
+		this.craftScreen.render();
 	}
 
 	showImprovementsScreen() {

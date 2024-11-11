@@ -41,43 +41,6 @@ const murmurhash3_32_gc = (key) => {
 	return h >>> 0;
 }
 
-// Example of items
-gatheringItems: [
-	{ name: "Healing Herb", type: "gathering", level: 1, icon: "🌿" },
-	{ name: "Green Leaf", type: "gathering", level: 1, icon: "🍀" },
-	{ name: "Glowing Fungus", type: "gathering", level: 1, icon: "🍄" },
-	{ name: "Shimmering Petals", type: "gathering", level: 1, icon: "🌺" },
-	{ name: "Morning Dew", type: "gathering", level: 1, icon: "🌞" },
-	{ name: "Dandelion Fluff", type: "gathering", level: 1, icon: "🌼" },
-	{ name: "Mystic Mushroom", type: "gathering", level: 2, icon: "🍄" },
-	{ name: "Enchanted Moss", type: "gathering", level: 2, icon: "🍂" },
-	{ name: "Soothing Berries", type: "gathering", level: 2, icon: "🍇" },
-	{ name: "Gleaming Stones", type: "gathering", level: 2, icon: "💎" },
-	{ name: "Golden Petals", type: "gathering", level: 2, icon: "🌼" },
-	{ name: "Silverleaf", type: "gathering", level: 3, icon: "🍃" },
-	{ name: "Moonlight Orchid", type: "gathering", level: 3, icon: "🌕" },
-	{ name: "Twilight Berries", type: "gathering", level: 3, icon: "🍇" },
-	{ name: "Starlight Mushroom", type: "gathering", level: 3, icon: "✨" },
-	{ name: "Dragon's Tongue", type: "gathering", level: 4, icon: "🐉" },
-	{ name: "Serpent Scale", type: "gathering", level: 4, icon: "🐍" },
-	{ name: "Dragonfire Bloom", type: "gathering", level: 4, icon: "🔥" },
-	{ name: "Moonflower", type: "gathering", level: 5, icon: "🌼" },
-	{ name: "Ghost Orchid", type: "gathering", level: 5, icon: "👻" },
-	{ name: "Nightshade Berry", type: "gathering", level: 5, icon: "🌙" },
-	{ name: "Basilisk's Breath", type: "gathering", level: 6, icon: "🐍" },
-	{ name: "Basilisk Scale", type: "gathering", level: 6, icon: "🐉" },
-	{ name: "Venomous Petal", type: "gathering", level: 6, icon: "☠️" },
-	{ name: "Phoenix Feather", type: "gathering", level: 7, icon: "🔥" },
-	{ name: "Phoenix Ash", type: "gathering", level: 7, icon: "🌑" },
-	{ name: "Witch's Thistle", type: "gathering", level: 7, icon: "🧙‍♀️" },
-	{ name: "Enchanted Vines", type: "gathering", level: 8, icon: "🌿" },
-	{ name: "Arcane Essence", type: "gathering", level: 8, icon: "✨" },
-	{ name: "Eternal Blossom", type: "gathering", level: 9, icon: "🌸" },
-	{ name: "Celestial Petal", type: "gathering", level: 9, icon: "🌟" },
-	{ name: "Starfire Crystal", type: "gathering", level: 10, icon: "💫" },
-	{ name: "Moonlight Essence", type: "gathering", level: 10, icon: "🌕" }
-],
-
 // Recipe generation
 function getRandomIngredient(level, statIndex, ingredientIndex) {
 	const seed = `${level}${statIndex}${ingredientIndex}`;
@@ -114,7 +77,7 @@ function generateRecipes() {
 const recipes = generateRecipes();
 */
 
-class CraftingScreen {
+class CraftScreen {
 	constructor(player, recipes, updatePlayerStats) {
 		this.player = player;
 		this.recipes = recipes;
@@ -214,4 +177,4 @@ class CraftingScreen {
 	}
 }
 
-export default CraftingScreen;
+export default CraftScreen;
