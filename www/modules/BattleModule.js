@@ -112,14 +112,14 @@ class BattleModule {
     		    		let spellAmount;
     		    		switch(effect.target) {
     		    			case "self":
-    		    				spellAmount = Math.floor(playerCopy[effect.stat] * (gameConfig.effectValue + ((spellLevel - 1) * gameConfig.effectValue)));
+    		    				spellAmount = Math.ceil(playerCopy[effect.stat] * gameConfig.effectValue * spellLevel);
     	        	    		playerCopy[effect.stat] = playerCopy[effect.stat] + spellAmount;
-    	        	    		battleMessages.push(`Player increases it's ${effect.stat} by ${spellAmount}% for the next turn!`);
+    	        	    		battleMessages.push(`Player increases it's ${effect.stat} by ${spellAmount} for the next turn!`);
     		    				break;
     		    			case "enemy":
-    		    				spellAmount = Math.floor(enemyCopy[effect.stat] * (gameConfig.effectValue + ((spellLevel - 1) * gameConfig.effectValue)));
+    		    				spellAmount = Math.ceil(enemyCopy[effect.stat] * gameConfig.effectValue * spellLevel);
     	        	    		enemyCopy[effect.stat] = enemyCopy[effect.stat] - spellAmount;
-    	        	    		battleMessages.push(`Player reduces enemy's ${effect.stat} by ${spellAmount}% for the next turn!`);
+    	        	    		battleMessages.push(`Player reduces enemy's ${effect.stat} by ${spellAmount} for the next turn!`);
     		    				break;
     		    		}
     		    	}
@@ -136,14 +136,14 @@ class BattleModule {
 					let spellAmount;
 					switch(effect.target) {
 						case "self":
-							spellAmount = Math.floor(enemyCopy[effect.stat] * (gameConfig.effectValue + (Math.ceil(enemyCopy.level / 10) * gameConfig.effectValue)));
+							spellAmount = Math.ceil(enemyCopy[effect.stat] * Math.ceil(enemyCopy.level / 10) * gameConfig.effectValue);
 							enemyCopy[effect.stat] = enemyCopy[effect.stat] + spellAmount;
-							battleMessages.push(`Enemy increases it's ${effect.stat} by ${spellAmount}% for the next turn!`);
+							battleMessages.push(`Enemy increases it's ${effect.stat} by ${spellAmount} for the next turn!`);
 							break;
 						case "enemy":
-							spellAmount = Math.floor(playerCopy[effect.stat] * (gameConfig.effectValue + (Math.ceil(enemyCopy.level / 10) * gameConfig.effectValue)));
+							spellAmount = Math.ceil(playerCopy[effect.stat] * Math.ceil(enemyCopy.level / 10) * gameConfig.effectValue);
 							playerCopy[effect.stat] = playerCopy[effect.stat] - spellAmount;
-							battleMessages.push(`Enemy reduces player's ${effect.stat} by ${spellAmount}% for the next turn!`);
+							battleMessages.push(`Enemy reduces player's ${effect.stat} by ${spellAmount} for the next turn!`);
 							break;
 					}
 				}
@@ -225,7 +225,7 @@ class BattleModule {
 				battleMessages.push('❌ The enemy misses the attack!');
 			}
 
-			updateInfoBattle(turns, playerCopy, enemyCopy, battleMessages);
+			updateInfoBattle(turns, this.player, enemy, battleMessages);
 
 			turns++;
 		}

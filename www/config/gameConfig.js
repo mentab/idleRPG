@@ -781,7 +781,7 @@ enemies.forEach(enemy => {
 
 	if (type === 'BOSS') {
 	  enemy.lootChance = 0.333
-	  enemy.spell = spells[Math.floor(enemy.level / 10)];
+	  enemy.spell = spells[Math.ceil(enemy.level / 10)];
 	} else if (type ==='DUELIST') {
 	  enemy.lootChance = 0
 	  enemy.damage += Math.ceil(enemy.precision * 0.1);
@@ -791,11 +791,9 @@ enemies.forEach(enemy => {
 	  enemy.spell = null;
 	} else {
 	  enemy.lootChance = 0.033
-	  enemy.spell = spells[Math.floor(enemy.level / 10)];
+	  enemy.spell = spells[Math.ceil(enemy.level / 10)];
 	}
 });
-
-console.log(enemies);
 
 itemsList.forEach(item => {
 	const { name, level } = item;

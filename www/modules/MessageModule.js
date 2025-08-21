@@ -43,7 +43,6 @@ export function updateInfoBattle(turns, player, enemy, battleMessages) {
     </details>
     `;
 
-    // Ajouter le nouveau message au début de la liste
     gameInfoElement.insertBefore(messageElement, gameInfoElement.firstChild);
 }
 
