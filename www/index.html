@@ -2,7 +2,6 @@
 <html>
 <head>
 	<title>Fantasy Clicker Battles</title>
-	<!--<link rel="stylesheet" href="simple.css">-->
 	<link rel="stylesheet" href="custom.css">
 	<meta charset="UTF-8">
 	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi, orientation=landscape" />
@@ -30,14 +29,11 @@
 			<hr/>
 			<button id="btnAchievements">🏆 Reward</button>
 			<button id="btnGather">🌿 Gather</button>
-			<button id="btnCraft">🔨 Craft</button>
+			<!-- Craft disabled until recipe system is ready -->
 			<hr/>
 			<button id="btnSave">💾 Save</button>
 			<button id="btnLoad">📂 Load</button>
 			<button id="btnReset">🔄 Reset</button>
-			<hr/>
-			<button id="btnExperience">🐞 Exp.</button>
-			<button id="btnMoney">🐞 Coins.</button>
 		</div>
 
 	</aside>
@@ -55,11 +51,6 @@
 		</div>
 
 		<div id="main-screens">
-
-			<div id="mini-game-screen" class="hidden">
-				<h2>Mini Game</h2>
-				<div id="game-area"></div>
-			</div>
 
 			<div id="areas-screen" class="hidden">
 				<h2>Areas</h2>
@@ -118,6 +109,12 @@
 			</div>
 
 			<div id="game-info-screen" class="hidden">
+				<div id="combat-minigame-panel" class="hidden">
+					<h2>Mini-game</h2>
+					<p>Required before combat. High score → buff. Low score → debuff.</p>
+					<p id="minigame-label"></p>
+					<div id="game-area"></div>
+				</div>
 				<div id="game-info-list"></div>
 			</div>
 

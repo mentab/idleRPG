@@ -1,13 +1,14 @@
 function timingGame(resultCallback) {
 	const gameArea = document.getElementById('game-area');
-	gameArea.innerHTML = "";
+	gameArea.innerHTML = '';
 
 	const button = document.createElement('button');
-	button.innerText = 'Click Me at the Right Moment!';
+	button.innerText = 'Wait for the signal, then click!';
 	gameArea.appendChild(button);
 
 	const targetTime = Math.random() * 2000 + 1000;
-	let startTime;
+	let startTime = null;
+	let finished = false;
 
 	function calculateScore(difference) {
 		const maxDifference = 1000;
@@ -16,11 +17,18 @@ function timingGame(resultCallback) {
 	}
 
 	button.addEventListener('click', () => {
+		if (finished) return;
+		finished = true;
+
+		if (!startTime) {
+			resultCallback(15);
+			return;
+		}
+
 		const endTime = Date.now();
 		const reactionTime = endTime - startTime;
 		const difference = Math.abs(reactionTime - targetTime);
 		resultCallback(calculateScore(difference));
-		gameArea.removeChild(button);
 	});
 
 	setTimeout(() => {

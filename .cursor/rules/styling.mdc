@@ -1,0 +1,15 @@
+---
+description: UI styling — custom.css, pragmatic layout
+globs: www/**/*
+alwaysApply: false
+---
+
+# Styling rules
+
+- Use **`www/custom.css`** for shared UI. No Tailwind/Bootstrap.
+- Simple.css was early inspiration; the project uses its own **`custom.css`**, not the Simple.css package.
+- **Classes and IDs** are allowed (`hidden`, `#item-list` grids, `.game-notice`).
+- **Inline styles** in JS templates are OK when needed for one-off layout (battle bars, dynamic UI).
+- Prefer adding a rule to `custom.css` if the same layout appears twice.
+- Toggle screens with **`class="hidden"`** / `classList`.
+- In-game text: **English**.

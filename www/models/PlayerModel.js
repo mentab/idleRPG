@@ -1,4 +1,5 @@
 import { mapToArray, arrayToMap } from "../utils/utils.js";
+import { updateGameNotice } from "../modules/MessageModule.js";
 
 export class Player {
     constructor() {
@@ -143,7 +144,7 @@ export class Player {
         };
 
         localStorage.setItem("playerData", JSON.stringify(savedPlayer));
-        alert("Player data saved!");
+        updateGameNotice("Player data saved.");
     }
 
     loadPlayerData() {
@@ -157,10 +158,12 @@ export class Player {
                 claimedRewards: arrayToMap(parsedData.claimedRewards)
             });
 
-            alert("Player data loaded!");
-        } else {
-            alert("No saved data found!");
+            updateGameNotice("Player data loaded.");
+            return true;
         }
+
+        updateGameNotice("No saved data found.");
+        return false;
     }
 
     resetPlayerData() {

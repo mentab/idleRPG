@@ -9,7 +9,7 @@ import StatsScreen from './screens/StatsScreen.js';
 import SpellsScreen from './screens/SpellsScreen.js';
 import EquippedScreen from './screens/EquippedScreen.js';
 import GatherScreen from './screens/GatherScreen.js';
-import CraftScreen from './screens/CraftScreen.js';
+// CraftScreen disabled until recipe system is implemented (phase 2+)
 import MiniGameScreen from './screens/MiniGameScreen.js';
 import AchievementsScreen from './screens/AchievementsScreen.js';
 import ImprovementsScreen from './screens/ImprovementsScreen.js';
@@ -21,6 +21,7 @@ import { Player } from './models/PlayerModel.js';
 import timingGame from './games/TimingGame.js';
 import clickerGame from './games/ClickerGame.js';
 import memoryGame from './games/MemoryGame.js';
+import asciiReactionGame from './games/AsciiReactionGame.js';
 import { updateGameNotice } from './modules/MessageModule.js';
 
 class Game {
@@ -36,11 +37,12 @@ class Game {
 			this.handleScreenButtonClick.bind(this)
 		);
 		this.miniGameScreen = new MiniGameScreen(
-			this.showGameInfoScreen.bind(this)
+			this.onMiniGameComplete.bind(this)
 		);
-		this.miniGameScreen.registerMiniGame(timingGame);
-		this.miniGameScreen.registerMiniGame(clickerGame);
-		this.miniGameScreen.registerMiniGame(memoryGame);
+		this.miniGameScreen.registerMiniGame(timingGame, 'Timing');
+		this.miniGameScreen.registerMiniGame(clickerGame, 'Click rush');
+		this.miniGameScreen.registerMiniGame(memoryGame, 'Memory');
+		this.miniGameScreen.registerMiniGame(asciiReactionGame, 'ASCII reflex');
 
 		this.areasScreen = new AreasScreen(
 			this.player,
@@ -69,10 +71,8 @@ class Game {
 			this.updatePlayerStats.bind(this)
 		);
 		this.gatherScreen = new GatherScreen(
-			this.player
-		);
-		this.craftScreen = new CraftScreen(
-			this.player
+			this.player,
+			this.updatePlayerStats.bind(this)
 		);
 		this.achievementsScreen = new AchievementsScreen(
 			this.player,
@@ -127,9 +127,7 @@ class Game {
 			case 'btnGather':
 				this.showGatherScreen();
 				break;
-			case 'btnCraft':
-				this.showCraftScreen();
-				break;
+			// btnCraft: crafting screen disabled until recipes are implemented
 			case 'btnImprove':
 				this.showImprovementsScreen();
 				break;
@@ -145,24 +143,13 @@ class Game {
 					this.updatePlayerStats.bind(this)
 				);
 				break;
-			case "btnExperience":
-				updateGameNotice("Adding 5000 experience...");
-				this.player.experience += 5000;
-				this.checkLevelUp();
-				break;
-			case "btnMoney":
-				updateGameNotice("Adding 5000 money...");
-				this.player.money += 5000;
-				this.updatePlayerStats();
-				break;
 			case "btnSave":
-				updateGameNotice("Saving data...");
 				this.player.savePlayerData();
 				break;
 			case "btnLoad":
-				updateGameNotice("Loading data...");
-				this.player.loadPlayerData();
-				this.updatePlayerStats();
+				if (this.player.loadPlayerData()) {
+					this.updatePlayerStats();
+				}
 				break;
 			case "btnReset":
 				this.player.resetPlayerData();
@@ -172,13 +159,34 @@ class Game {
 		}
 	}
 
+	hideMiniGamePanel() {
+		const panel = document.getElementById('combat-minigame-panel');
+		const gameArea = document.getElementById('game-area');
+		const log = document.getElementById('game-info-list');
+
+		if (panel) panel.classList.add('hidden');
+		if (gameArea) gameArea.innerHTML = '';
+		if (log) log.classList.remove('hidden');
+	}
+
 	showGameInfoScreen() {
-		this.showScreen("game-info-screen");
-		// this.chooseScreen.render();
+		this.hideMiniGamePanel();
+		this.showScreen('game-info-screen');
+	}
+
+	onMiniGameComplete() {
+		this.hideMiniGamePanel();
 	}
 
 	showMiniGameScreen(action) {
-		this.showScreen("mini-game-screen");
+		this.showScreen('game-info-screen');
+
+		const panel = document.getElementById('combat-minigame-panel');
+		const log = document.getElementById('game-info-list');
+
+		if (panel) panel.classList.remove('hidden');
+		if (log) log.classList.add('hidden');
+
 		this.miniGameScreen.render(action);
 	}
 
@@ -227,11 +235,6 @@ class Game {
 		this.gatherScreen.render();
 	}
 
-	showCraftScreen() {
-		this.showScreen("craft-screen");
-		this.craftScreen.render();
-	}
-
 	showImprovementsScreen() {
 		this.showScreen("improvements-screen");
 		this.improvementsScreen.render();
@@ -242,9 +245,9 @@ class Game {
 		for (let i = 0; i < screens.length; i++) {
 			const screen = screens[i];
 			if (screen.id === screenId) {
-				screen.classList.remove("hidden");
+				screen.classList.remove('hidden');
 			} else {
-				screen.classList.add("hidden");
+				screen.classList.add('hidden');
 			}
 		}
 	}

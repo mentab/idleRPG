@@ -1,31 +1,25 @@
 function clickerGame(resultCallback) {
 	const gameArea = document.getElementById('game-area');
-	gameArea.innerHTML = "";
-	
+	gameArea.innerHTML = '';
+
 	const button = document.createElement('button');
-	button.innerText = 'Click Me as Many Times as You Can!';
+	button.innerText = 'Click! (3 seconds)';
 	gameArea.appendChild(button);
 
 	let clickCount = 0;
 	const gameTime = 3;
 
-	button.addEventListener('click', () => {
+	const onClick = () => {
 		clickCount++;
-		button.innerText = `Clicked: ${clickCount} times`;
-	});
+		button.innerText = `Clicks: ${clickCount}`;
+	};
 
-	function calculateScore(clickCount) {
-		return clickCount;
-	}
+	button.addEventListener('click', onClick);
 
 	setTimeout(() => {
-		button.removeEventListener('click', () => {
-			clickCount++;
-		});
+		button.removeEventListener('click', onClick);
 		button.disabled = true;
-		gameArea.removeChild(button);
-	
-		resultCallback(calculateScore(clickCount));
+		resultCallback(clickCount);
 	}, gameTime * 1000);
 }
 

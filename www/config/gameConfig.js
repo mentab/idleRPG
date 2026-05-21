@@ -687,6 +687,25 @@ const config = {
 			{ name: "Starfire Crystal", type: "gathering", level: 10, icon: "💫" },
 			{ name: "Moonlight Essence", type: "gathering", level: 10, icon: "🌕" }
 		],
+		randomEnemies: [
+			{ name: "Swordmaster", icon: "🗡️🛡️" },
+			{ name: "Dark Sorcerer", icon: "🧙‍♂️🔮" },
+			{ name: "Shadowblade", icon: "🗡️🌑" },
+			{ name: "Ice Enchantress", icon: "❄️🧙‍♀️" },
+			{ name: "Forest Ranger", icon: "🌲🏹" },
+			{ name: "Thunder Warlock", icon: "⚡🧙‍♂️" },
+			{ name: "Arcane Witch", icon: "🌌🧙‍♀️" },
+			{ name: "Storm Knight", icon: "⚡🛡️" },
+			{ name: "Plague Doctor", icon: "🩺😷" },
+			{ name: "Doombringer", icon: "☠️🗡️" },
+			{ name: "Mystic Monk", icon: "🧘‍♂️🕉️" },
+			{ name: "Frost Queen", icon: "🌨️👸" },
+			{ name: "Flame Knight", icon: "🔥⚔️" },
+			{ name: "Silent Assassin", icon: "🤫🔪" },
+			{ name: "Elven Ranger", icon: "🏹🧝" },
+			{ name: "Dwarven Guardian", icon: "⛏️🛡️" },
+			{ name: "Human Knight", icon: "👨‍🌾⚔️" }
+		],
 	}
 };
 
@@ -703,7 +722,7 @@ const groupPhrases = configData.groupPhrases;
 const actionVerbs = configData.actionVerbs;
 const locations = configData.locations;
 const challengeVerbs = configData.challengeVerbs;
-const randomEnemies = configData.randomEnemies;
+const randomEnemies = configData.randomEnemies ?? [];
 const gatheringItems = configData.gatheringItems;
 
 function generateId(name, level) {

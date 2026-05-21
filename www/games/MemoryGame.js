@@ -1,18 +1,31 @@
 function memoryGame(resultCallback) {
 	const gameArea = document.getElementById('game-area');
-	gameArea.innerHTML = "";
-	
-	const symbols = ["🗡️", "🔮", "👑"];
+	gameArea.innerHTML = '';
+
+	const symbols = ['🗡️', '🔮', '👑'];
 	const totalPairs = 3;
 	const cards = generateCards(symbols, totalPairs);
 
 	let selectedCards = [];
 	let matches = 0;
+	let misses = 0;
 	let isWaiting = false;
+	let finished = false;
+	const maxMisses = 3;
+
+	const endGame = (won) => {
+		if (finished) return;
+		finished = true;
+		clearTimeout(timeoutId);
+		resultCallback(won ? 90 : Math.max(10, 40 - misses * 10));
+	};
+
+	const timeoutId = setTimeout(() => endGame(false), 45000);
 
 	cards.forEach((card) => {
 	gameArea.appendChild(card);
 		card.addEventListener('click', () => {
+			if (finished) return;
 			if (!isWaiting && !selectedCards.includes(card) && selectedCards.length < 2) {
 				flipCard(card);
 				selectedCards.push(card);
@@ -49,9 +62,7 @@ function memoryGame(resultCallback) {
 	function createCard(symbol) {
 		const card = document.createElement('button');
 		card.innerText = '❓';
-
 		card.setAttribute('data-symbol', symbol);
-
 		return card;
 	}
 
@@ -87,13 +98,18 @@ function memoryGame(resultCallback) {
 			matches++;
 
 			if (matches === totalPairs) {
-				resultCallback(true);
+				endGame(true);
 			} else {
 				selectedCards = [];
 				isWaiting = false;
 			}
 		} else {
-			unflipCards();
+			misses++;
+			if (misses >= maxMisses) {
+				endGame(false);
+			} else {
+				unflipCards();
+			}
 		}
 	}
 }

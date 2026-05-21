@@ -32,7 +32,6 @@ class GatherScreen {
 	}
 
 	getMaxGatherLevel() {
-		console.log(Math.max(Math.floor(this.player.gatheringXP / 100), 1))
 		return Math.max(Math.floor(this.player.gatheringXP / 100), 1);
 	}
 

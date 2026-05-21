@@ -1,9 +1,11 @@
 {
   "name": "clickerbattles",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Fantasy clicker battles — browser game with optional Capacitor Android build",
+  "main": "www/index.js",
   "scripts": {
+    "dev": "npx --yes serve www -l 3000",
+    "start": "npm run dev",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

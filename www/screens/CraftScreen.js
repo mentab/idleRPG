@@ -1,3 +1,4 @@
+// Crafting UI — disabled in navigation until recipes are generated (see index.js).
 import { updateGameNotice } from '../modules/MessageModule.js';
 
 /*
@@ -78,7 +79,7 @@ const recipes = generateRecipes();
 */
 
 class CraftScreen {
-	constructor(player, recipes, updatePlayerStats) {
+	constructor(player, recipes = null, updatePlayerStats = () => {}) {
 		this.player = player;
 		this.recipes = recipes;
 		this.updatePlayerStats = updatePlayerStats;
@@ -87,6 +88,12 @@ class CraftScreen {
 	render() {
 		const craftingRecipes = document.getElementById("crafting-recipes-list");
 		craftingRecipes.innerHTML = "";
+
+		if (!this.recipes) {
+			craftingRecipes.textContent = "Crafting is not available yet.";
+			updateGameNotice("Crafting will return in a future update.");
+			return;
+		}
 
 		const craftingRecipesDiv = document.createElement('div');
 

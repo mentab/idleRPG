@@ -267,7 +267,7 @@ sub {
 }
 
 .hidden {
-	display: none;
+	display: none !important;
 }
 
 #equipped-items-list,
@@ -490,3 +490,33 @@ button:hover {
 /* .item {
 	cursor: pointer;
  }*/
+
+/* Gather screen */
+#gather-item-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+/* Mini-game (inside game-info-screen, before combat) */
+#combat-minigame-panel:not(.hidden) {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	margin-bottom: 0.5rem;
+}
+
+#game-area {
+	min-height: 120px;
+	padding: 0.5rem;
+	border: 1px dashed var(--border);
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	align-items: center;
+}
+
+#game-area pre {
+	margin: 0;
+	white-space: pre;
+}

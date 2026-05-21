@@ -3,12 +3,24 @@
 import { getRandomNumber, wait } from './../utils/utils.js';
 import gameConfig from './../config/gameConfig.js';
 import { clearGameInfo, updateGameInfo, updateInfoBattle, updateGameNotice } from './MessageModule.js';
+import { cloneCombatModifier, applyCombatModifier } from './MiniGameBonusModule.js';
 
 class BattleModule {
 	constructor(player, updatePlayerStats, checkLevelUp) {
 		this.player = player;
 		this.updatePlayerStats = updatePlayerStats;
 		this.checkLevelUp = checkLevelUp;
+		this.combatModifier = null;
+		this.retainCombatModifier = false;
+	}
+
+	setCombatModifier(modifier) {
+		this.combatModifier = cloneCombatModifier(modifier);
+	}
+
+	clearCombatModifier() {
+		this.combatModifier = null;
+		this.retainCombatModifier = false;
 	}
 
 	generateEnemyInfo = (enemy) => `${enemy.icon} ${enemy.name} has appeared!\n` +
@@ -102,6 +114,11 @@ class BattleModule {
 			await wait(0.2);
 
 			const battleMessages = [];
+
+			const miniGameLine = applyCombatModifier(this.combatModifier, playerCopy);
+			if (miniGameLine) {
+				battleMessages.push(miniGameLine);
+			}
 
 			// Player's Spell Turn
 			for (const playerSpell of gameConfig.spells) {
@@ -309,6 +326,10 @@ class BattleModule {
 		} else {
 		  updateGameInfo("Defeat!");
 		}
+
+		if (!this.retainCombatModifier) {
+			this.clearCombatModifier();
+		}
 	}
 
 	calculateExperiencePoints(enemy) {
@@ -361,21 +382,25 @@ class BattleModule {
 		return this.calculateExperiencePoints(enemy);
 	}
 
-	startExploration() {
+	startExploration(combatModifier = null) {
+		this.setCombatModifier(combatModifier);
 		const enemy = this.generateEnemy({ areaIndex: this.player.areaIndex, type: 'BASE' }, { maxLevel: this.player.level });
 		clearGameInfo();
 		updateGameNotice(`Starting exploration...`);
 		this.performBattle(enemy);
 	}
 
-	startChallenge() {
+	startChallenge(combatModifier = null) {
+		this.setCombatModifier(combatModifier);
 		const boss = this.generateEnemy({ areaIndex: this.player.areaIndex, type: 'BOSS' }, {});
 		clearGameInfo();
 		updateGameNotice("Starting challenge...");
 		this.performBattle(boss);
 	}
 
-	async startMission() {
+	async startMission(combatModifier = null) {
+		this.setCombatModifier(combatModifier);
+		this.retainCombatModifier = true;
 		const enemy = this.generateEnemy({ areaIndex: this.player.areaIndex, type: 'BASE' }, { maxLevel: this.player.level - 2 });
 		clearGameInfo();
 		updateGameNotice("Starting mission...");
@@ -403,9 +428,13 @@ class BattleModule {
 		} else {
 			updateGameInfo("Mission failed!");
 		}
+
+		this.retainCombatModifier = false;
+		this.clearCombatModifier();
 	}
 
-	async startDuel() {
+	async startDuel(combatModifier = null) {
+		this.setCombatModifier(combatModifier);
 		const enemy = this.generateEnemy({ areaIndex: this.player.areaIndex, type: 'DUELIST' }, { maxLevel: this.player.level });
 		updateGameInfo(this.generateDuelChallengeSentence(enemy));
 		
