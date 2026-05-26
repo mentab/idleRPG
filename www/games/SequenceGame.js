@@ -1,8 +1,9 @@
 // "Arcane Sequence" — watch 4 rune symbols appear in order, then replicate the sequence.
 
+import { initGameArea, createPre, createCaption, createSub, createBtnRow, createBtn } from './gameUtils.js';
+
 function sequenceGame(resultCallback) {
-	const gameArea = document.getElementById('game-area');
-	gameArea.innerHTML = '';
+	const gameArea = initGameArea();
 
 	const SYMBOLS  = ['⚔️', '🛡️', '🔥', '⚡'];
 	const sequence = [...SYMBOLS].sort(() => Math.random() - 0.5);
@@ -11,38 +12,23 @@ function sequenceGame(resultCallback) {
 	let correct    = 0;
 	let phase      = 'show';
 
-	const pre = document.createElement('pre');
-	pre.style.textAlign  = 'center';
-	pre.style.fontSize   = '2.2em';
-	pre.style.lineHeight = '1.4';
+	const pre     = createPre();
+	const caption = createCaption('Watch the sequence...');
+	const sub     = createSub();
+	const btnRow  = createBtnRow();
+	btnRow.style.minHeight = '60px';
 
-	const caption = document.createElement('p');
-	caption.textContent = 'Watch the sequence...';
-
-	const progress = document.createElement('p');
-	progress.style.letterSpacing = '6px';
-	progress.style.textAlign     = 'center';
-
-	const btnRow = document.createElement('div');
-	btnRow.style.display        = 'flex';
-	btnRow.style.gap            = '12px';
-	btnRow.style.justifyContent = 'center';
-	btnRow.style.flexWrap       = 'wrap';
-	btnRow.style.margin         = '8px 0';
-
-	gameArea.appendChild(pre);
-	gameArea.appendChild(caption);
-	gameArea.appendChild(progress);
-	gameArea.appendChild(btnRow);
+	pre.style.fontSize = '2.2em';
+	gameArea.append(pre, caption, sub, btnRow);
 
 	const updateProgress = () => {
-		progress.textContent = sequence.map((_, i) => i < recallIdx ? '●' : '○').join(' ');
+		sub.textContent = sequence.map((_, i) => i < recallIdx ? '●' : '○').join('  ');
 	};
+	updateProgress();
 
-	// Phase 1 — show each symbol with a blank flash between each
 	function showNext() {
 		if (showIdx >= sequence.length) {
-			pre.textContent = '?';
+			pre.textContent     = '?';
 			caption.textContent = 'Now repeat the sequence!';
 			phase = 'recall';
 			buildButtons();
@@ -57,15 +43,11 @@ function sequenceGame(resultCallback) {
 		}, 130);
 	}
 
-	// Phase 2 — recall buttons
 	function buildButtons() {
 		btnRow.innerHTML = '';
 		SYMBOLS.forEach(sym => {
-			const btn         = document.createElement('button');
-			btn.textContent   = sym;
+			const btn = createBtn(sym, () => handleRecall(sym));
 			btn.style.fontSize = '1.5em';
-			btn.style.padding  = '8px 16px';
-			btn.addEventListener('click', () => handleRecall(sym));
 			btnRow.appendChild(btn);
 		});
 	}
@@ -77,26 +59,25 @@ function sequenceGame(resultCallback) {
 			correct++;
 			recallIdx++;
 			updateProgress();
-			pre.textContent = '✅';
+			pre.textContent = '(^o^)';
 
 			if (recallIdx >= sequence.length) {
-				phase = 'done';
-				caption.textContent = `Perfect sequence! ✨`;
+				phase               = 'done';
+				caption.textContent = 'Perfect sequence! ✨';
 				btnRow.innerHTML    = '';
 				setTimeout(() => resultCallback(100), 700);
 			} else {
-				caption.textContent = `Correct! Keep going...`;
+				caption.textContent = 'Correct! Keep going...';
 			}
 		} else {
 			phase = 'done';
 			[...btnRow.children].forEach(b => b.disabled = true);
-			pre.textContent     = '❌';
+			pre.textContent     = '(x_x)';
 			caption.textContent = `Wrong! Expected ${sequence[recallIdx]}. Got ${correct}/${sequence.length}.`;
 			setTimeout(() => resultCallback(Math.round((correct / sequence.length) * 100)), 700);
 		}
 	}
 
-	updateProgress();
 	setTimeout(showNext, 600);
 }
 

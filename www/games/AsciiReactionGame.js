@@ -1,36 +1,32 @@
-// "Spellcast" — release the spell at peak power (center of the bar). Button, no spacebar.
+// "Spellcast" — release the spell when the gem is at peak power (center of the bar).
+
+import { initGameArea, createPre, createCaption, createSub, createBtnRow, createBtn } from './gameUtils.js';
 
 function asciiReactionGame(resultCallback) {
-	const gameArea = document.getElementById('game-area');
-	gameArea.innerHTML = '';
+	const gameArea = initGameArea();
 
-	const pre = document.createElement('pre');
-	pre.style.textAlign = 'center';
-	pre.style.lineHeight = '1.6';
+	const pre     = createPre();
+	const caption = createCaption('✨ Channel the energy — release at peak power!');
+	const sub     = createSub('Power: 0%');
+	const btnRow  = createBtnRow();
+	const btn     = createBtn('✨ Release!');
 
-	const caption = document.createElement('p');
-	caption.textContent = '✨ Channel the energy — release at peak power (center)!';
+	btnRow.appendChild(btn);
+	gameArea.append(pre, caption, sub, btnRow);
 
-	const btn = document.createElement('button');
-	btn.textContent = '✨ Release!';
-
-	gameArea.appendChild(pre);
-	gameArea.appendChild(caption);
-	gameArea.appendChild(btn);
-
-	const WIDTH = 21;
-	const CENTER = Math.floor(WIDTH / 2);
-	let position = 0;
+	const WIDTH   = 21;
+	const TARGET  = 3 + Math.floor(Math.random() * (WIDTH - 6));
+	let position  = 0;
 	let direction = 1;
-	let finished = false;
-	const speedMs = 50 + Math.floor(Math.random() * 45);
+	let finished  = false;
+	const speedMs = 45 + Math.floor(Math.random() * 35);
 
 	const render = () => {
 		const line = Array(WIDTH).fill('·');
-		line[CENTER] = '|';
+		line[TARGET]   = '|';
 		line[position] = '◆';
-		const power = Math.max(0, 100 - Math.abs(position - CENTER) * 12);
-		pre.textContent = `[${line.join('')}]\nPower: ${power}%`;
+		pre.textContent = `[${line.join('')}]`;
+		sub.textContent = `Power: ${Math.max(0, 100 - Math.abs(position - TARGET) * 12)}%`;
 	};
 
 	const finish = (score) => {
@@ -38,16 +34,16 @@ function asciiReactionGame(resultCallback) {
 		finished = true;
 		clearInterval(tick);
 		const line = Array(WIDTH).fill('·');
-		line[CENTER] = '✨';
+		line[TARGET]    = '*';
 		pre.textContent = `[${line.join('')}]`;
 		caption.textContent = score >= 80 ? '💥 Perfect release!' : score >= 50 ? '✨ Good cast!' : '💨 Off-target...';
+		sub.textContent     = `Score: ${score}`;
 		setTimeout(() => resultCallback(score), 400);
 	};
 
 	btn.addEventListener('click', () => {
 		if (finished) return;
-		const score = Math.max(0, Math.min(100, 100 - Math.abs(position - CENTER) * 12));
-		finish(score);
+		finish(Math.max(0, Math.min(100, 100 - Math.abs(position - TARGET) * 12)));
 	});
 
 	const tick = setInterval(() => {

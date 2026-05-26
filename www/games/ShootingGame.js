@@ -1,107 +1,92 @@
-// "Dodge!" — arrows fly from left or right; tap the opposite direction to dodge.
+// "Goblin Volley" — orc archers loose from left or right; dodge the right way!
+
+import { initGameArea, createPre, createCaption, createSub, createBtnRow, createBtn } from './gameUtils.js';
 
 function shootingGame(resultCallback) {
-	const gameArea = document.getElementById('game-area');
-	gameArea.innerHTML = '';
+	const gameArea = initGameArea();
 
 	const ROUNDS = 5;
-	let round = 0;
-	let score = 0;
+	let round    = 0;
+	let score    = 0;
 
-	const pre = document.createElement('pre');
-	pre.style.textAlign = 'center';
-	pre.style.lineHeight = '1.5';
+	const pre      = createPre();
+	const caption  = createCaption('Orc archers take aim — dodge their volleys!');
+	const sub      = createSub();
+	const btnRow   = createBtnRow();
+	const btnLeft  = createBtn('⬅️ Dodge Left');
+	const btnRight = createBtn('Dodge Right ➡️');
 
-	const caption = document.createElement('p');
-	caption.textContent = 'Arrows will fly at you — dodge in the opposite direction!';
-
-	const btnRow = document.createElement('div');
-	btnRow.style.display = 'flex';
-	btnRow.style.gap = '16px';
-	btnRow.style.justifyContent = 'center';
-	btnRow.style.margin = '8px 0';
-
-	const btnLeft = document.createElement('button');
-	btnLeft.textContent = '⬅️ Dodge Left';
-
-	const btnRight = document.createElement('button');
-	btnRight.textContent = 'Dodge Right ➡️';
-
-	btnRow.appendChild(btnLeft);
-	btnRow.appendChild(btnRight);
-	gameArea.appendChild(pre);
-	gameArea.appendChild(caption);
-	gameArea.appendChild(btnRow);
-
-	const setButtons = (enabled) => {
-		btnLeft.disabled = !enabled;
-		btnRight.disabled = !enabled;
-	};
-	setButtons(false);
-
-	pre.textContent = '🏹';
+	pre.textContent = ' \\o/\n  |>\n / \\';
+	btnRow.append(btnLeft, btnRight);
+	gameArea.append(pre, caption, sub, btnRow);
 
 	function runRound() {
 		if (round >= ROUNDS) {
-			pre.textContent = score === ROUNDS ? '🌟' : score >= 3 ? '✅' : '💀';
-			caption.textContent = `Combat sequence over — ${score}/${ROUNDS} dodged!`;
+			pre.textContent     = score === ROUNDS ? ' \\O/\n  |\n / \\' : score >= 3 ? '  O \n /|\\\n / \\' : ' x_x\n  |\n / \\';
+			caption.textContent = `Skirmish over — ${score}/${ROUNDS} volleys dodged!`;
+			sub.textContent     = '';
 			resultCallback(Math.round((score / ROUNDS) * 100));
 			return;
 		}
 
 		round++;
-		const fromLeft = Math.random() < 0.5;
+		const fromLeft  = Math.random() < 0.5;
+		const ARROW     = fromLeft ? '------>' : '<------';
+		const BAR_W     = 20;
+		const stepMs    = Math.max(55, 105 - (round - 1) * 12);
+		const timeoutMs = Math.max(1400, 2800 - (round - 1) * 350);
+		let pos         = fromLeft ? -7 : BAR_W;
+		let roundDone   = false;
 
-		pre.textContent = fromLeft
-			? '→→→→→→→\n→→→→→→→\n→→→→→→→'
-			: '←←←←←←←\n←←←←←←←\n←←←←←←←';
-		caption.textContent = `Round ${round}/${ROUNDS} — incoming!`;
+		caption.textContent = `Round ${round}/${ROUNDS} — dodge the volley!`;
+		sub.textContent     = round > 3 ? '⚡ Faster now!' : '';
 
-		let roundDone = false;
+		const anim = setInterval(() => {
+			const bar = Array(BAR_W).fill(' ');
+			for (let i = 0; i < 7; i++) {
+				const x = pos + i;
+				if (x >= 0 && x < BAR_W) bar[x] = ARROW[i];
+			}
+			const line = bar.join('');
+			pre.textContent = line + '\n' + line + '\n' + line;
+			pos += fromLeft ? 1 : -1;
+		}, stepMs);
 
 		const resolve = (dodgedRight) => {
 			if (roundDone) return;
 			roundDone = true;
+			clearInterval(anim);
 			clearTimeout(timeout);
-			setButtons(false);
 			btnLeft.removeEventListener('click', onLeft);
 			btnRight.removeEventListener('click', onRight);
 
-			const correct = fromLeft ? dodgedRight : !dodgedRight;
+			const correct = fromLeft ? !dodgedRight : dodgedRight;
 			if (correct) {
 				score++;
-				pre.textContent = fromLeft ? '   →→ 🏃' : '🏃 ←←   ';
-				caption.textContent = `✅ Dodged! (${score}/${round})`;
+				pre.textContent = fromLeft ? 'O ←←\n |\n/ \\' : ' →→ O\n    |\n   / \\';
+				sub.textContent = `✅ Dodged! (${score}/${round})`;
 			} else {
-				pre.textContent = '💥';
-				caption.textContent = `❌ Wrong way — hit! (${score}/${round})`;
+				pre.textContent = ' x_x\n  |\n / \\';
+				sub.textContent = `❌ Wrong way! (${score}/${round})`;
 			}
-			setTimeout(runRound, 1000);
+			setTimeout(runRound, 900);
 		};
 
 		const timeout = setTimeout(() => {
 			if (roundDone) return;
 			roundDone = true;
-			setButtons(false);
+			clearInterval(anim);
 			btnLeft.removeEventListener('click', onLeft);
 			btnRight.removeEventListener('click', onRight);
-			pre.textContent = '💀';
-			caption.textContent = `Too slow! (${score}/${round})`;
-			setTimeout(runRound, 1000);
-		}, 1500);
+			pre.textContent = ' z_z\n  |\n / \\';
+			sub.textContent = `⏱️ Too slow! (${score}/${round})`;
+			setTimeout(runRound, 900);
+		}, timeoutMs);
 
-		const onLeft = () => resolve(false);
+		const onLeft  = () => resolve(false);
 		const onRight = () => resolve(true);
-
-		setTimeout(() => {
-			if (roundDone) return;
-			setButtons(true);
-			btnLeft.addEventListener('click', onLeft);
-			btnRight.addEventListener('click', onRight);
-			caption.textContent = fromLeft
-				? '→ Arrow from the LEFT — dodge RIGHT!'
-				: '← Arrow from the RIGHT — dodge LEFT!';
-		}, 600);
+		btnLeft.addEventListener('click', onLeft);
+		btnRight.addEventListener('click', onRight);
 	}
 
 	setTimeout(runRound, 1200);

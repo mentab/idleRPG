@@ -1,81 +1,64 @@
-// "Duel of Blades" — read the enemy's telegraph and block the right zone. 5 rounds.
+// "Duel of Blades" — read the enemy's ASCII stance and block the correct zone. 5 rounds.
+
+import { initGameArea, createPre, createCaption, createSub, createBtnRow, createBtn } from './gameUtils.js';
 
 function duelGame(resultCallback) {
-	const gameArea = document.getElementById('game-area');
-	gameArea.innerHTML = '';
+	const gameArea = initGameArea();
 
 	const ROUNDS = 5;
-	let round = 0;
-	let score = 0;
+	let round    = 0;
+	let score    = 0;
 
-	const ENEMY_IDLE = ` ⚔️ \n(O) \n/|\\ \n/ \\ `;
-	const ENEMY_HIGH = `⚔️  \n(O) \n |  \n/ \\ `;
-	const ENEMY_LOW  = `    \n(O) \n/|  \n⚔️\\ `;
+	const ENEMY_IDLE = `-|- \n(O) \n/|\\ \n/ \\ `;
+	const ENEMY_HIGH = `=== \n(O) \n |  \n/ \\ `;
+	const ENEMY_MID  = `    \n(O) \n-|--\n/ \\ `;
+	const ENEMY_LOW  = `    \n(O) \n/|  \n--\\ `;
 
-	const pre = document.createElement('pre');
-	pre.style.textAlign = 'center';
-	pre.style.lineHeight = '1.5';
+	const pre     = createPre();
+	const caption = createCaption('Read the stance — block the incoming attack!');
+	const sub     = createSub();
+	const btnRow  = createBtnRow();
+	const btnHigh = createBtn('🛡️ Block High');
+	const btnMid  = createBtn('🛡️ Block Mid');
+	const btnLow  = createBtn('🛡️ Block Low');
+
 	pre.textContent = ENEMY_IDLE;
-
-	const caption = document.createElement('p');
-	caption.textContent = 'Read the stance — block before it\'s too late!';
-
-	const btnRow = document.createElement('div');
-	btnRow.style.display = 'flex';
-	btnRow.style.gap = '16px';
-	btnRow.style.justifyContent = 'center';
-	btnRow.style.margin = '8px 0';
-
-	const btnHigh = document.createElement('button');
-	btnHigh.textContent = '🛡️ Block High';
-
-	const btnLow = document.createElement('button');
-	btnLow.textContent = '🛡️ Block Low';
-
-	btnRow.appendChild(btnHigh);
-	btnRow.appendChild(btnLow);
-	gameArea.appendChild(pre);
-	gameArea.appendChild(caption);
-	gameArea.appendChild(btnRow);
-
-	const setButtons = (enabled) => {
-		btnHigh.disabled = !enabled;
-		btnLow.disabled = !enabled;
-	};
-	setButtons(false);
+	btnRow.append(btnHigh, btnMid, btnLow);
+	gameArea.append(pre, caption, sub, btnRow);
 
 	function runRound() {
 		if (round >= ROUNDS) {
-			pre.textContent = score >= 4 ? '🌟' : score >= 2 ? '⚔️' : '💀';
+			pre.textContent     = score >= 4 ? ' \\O/\n  |\n / \\\n    ' : score >= 2 ? '  O \n /|\\\n / \\\n    ' : ' x_x\n  |\n / \\\n    ';
 			caption.textContent = `Duel over — ${score}/${ROUNDS} blocks!`;
+			sub.textContent     = '';
 			resultCallback(Math.round((score / ROUNDS) * 100));
 			return;
 		}
 
 		round++;
-		const isHigh = Math.random() < 0.5;
+		const attack = Math.floor(Math.random() * 3); // 0=high, 1=mid, 2=low
 
-		pre.textContent = isHigh ? ENEMY_HIGH : ENEMY_LOW;
-		caption.textContent = `Round ${round}/${ROUNDS} — ${isHigh ? '⬆️ High stance!' : '⬇️ Low stance!'}`;
+		pre.textContent     = attack === 0 ? ENEMY_HIGH : attack === 1 ? ENEMY_MID : ENEMY_LOW;
+		caption.textContent = `Round ${round}/${ROUNDS} — read the stance!`;
 
 		let roundDone = false;
 
-		const resolve = (blockedHigh) => {
+		const resolve = (blocked) => {
 			if (roundDone) return;
 			roundDone = true;
 			clearTimeout(timeout);
-			setButtons(false);
 			btnHigh.removeEventListener('click', onHigh);
+			btnMid.removeEventListener('click', onMid);
 			btnLow.removeEventListener('click', onLow);
 
-			const correct = isHigh === blockedHigh;
+			const correct = blocked === attack;
 			if (correct) {
 				score++;
-				pre.textContent = '✨';
-				caption.textContent = `✅ Perfect block! (${score}/${round})`;
+				pre.textContent = ' \\O/\n  |\n / \\\n    ';
+				sub.textContent = `✅ Perfect block! (${score}/${round})`;
 			} else {
-				pre.textContent = '💥';
-				caption.textContent = `❌ Wrong block! (${score}/${round})`;
+				pre.textContent = ' x_x\n  |\n / \\\n    ';
+				sub.textContent = `❌ Wrong block! (${score}/${round})`;
 			}
 			setTimeout(runRound, 900);
 		};
@@ -83,23 +66,20 @@ function duelGame(resultCallback) {
 		const timeout = setTimeout(() => {
 			if (roundDone) return;
 			roundDone = true;
-			setButtons(false);
 			btnHigh.removeEventListener('click', onHigh);
+			btnMid.removeEventListener('click', onMid);
 			btnLow.removeEventListener('click', onLow);
-			pre.textContent = '💀';
-			caption.textContent = `Too slow! (${score}/${round})`;
+			pre.textContent = ' z_z\n  |\n / \\\n    ';
+			sub.textContent = `⏱️ Too slow! (${score}/${round})`;
 			setTimeout(runRound, 900);
-		}, 1300);
+		}, 2500);
 
-		const onHigh = () => resolve(true);
-		const onLow  = () => resolve(false);
-
-		setTimeout(() => {
-			if (roundDone) return;
-			setButtons(true);
-			btnHigh.addEventListener('click', onHigh);
-			btnLow.addEventListener('click', onLow);
-		}, 350);
+		const onHigh = () => resolve(0);
+		const onMid  = () => resolve(1);
+		const onLow  = () => resolve(2);
+		btnHigh.addEventListener('click', onHigh);
+		btnMid.addEventListener('click', onMid);
+		btnLow.addEventListener('click', onLow);
 	}
 
 	setTimeout(runRound, 1000);

@@ -1,110 +1,92 @@
-// "Shell Game" — track the skull through the shuffles and tap the right cup. 3 rounds.
+// "Goblin Raid" — a goblin leaps from one of three bushes; strike it before it vanishes! 5 rounds.
+
+import { initGameArea, createPre, createCaption, createSub, createBtnRow, createBtn } from './gameUtils.js';
 
 function shellGame(resultCallback) {
-	const gameArea = document.getElementById('game-area');
-	gameArea.innerHTML = '';
+	const gameArea = initGameArea();
 
-	const ROUNDS = 3;
-	const SWAPS  = 4;
+	const ROUNDS = 5;
 	let round    = 0;
 	let score    = 0;
 
-	const caption    = document.createElement('p');
-	const subCaption = document.createElement('p');
-	const cupRow     = document.createElement('div');
-	cupRow.style.display        = 'flex';
-	cupRow.style.gap            = '12px';
-	cupRow.style.justifyContent = 'center';
-	cupRow.style.margin         = '8px 0';
+	const pre     = createPre();
+	const caption = createCaption('Goblins lurk in the bushes...');
+	const sub     = createSub();
+	const btnRow  = createBtnRow();
 
-	gameArea.appendChild(caption);
-	gameArea.appendChild(subCaption);
-	gameArea.appendChild(cupRow);
+	const BUSH   = [' ,^, ', '(   )', ' \\~/ '];
+	const GOBLIN = [' /|\\ ', '(>_<)', ' \\~/ '];
 
-	const delay = (ms) => new Promise(res => setTimeout(res, ms));
+	const btns = ['⬅️ Left', '⬆️ Center', '➡️ Right'].map(label => {
+		const btn = createBtn(label);
+		btnRow.appendChild(btn);
+		return btn;
+	});
 
-	function renderCups(cups, reveal) {
-		cupRow.innerHTML = '';
-		cups.forEach((c) => {
-			const btn         = document.createElement('button');
-			btn.textContent   = reveal ? c : '🏆';
-			btn.style.fontSize = '1.6em';
-			btn.style.padding  = '8px 16px';
-			btn.disabled       = true;
-			cupRow.appendChild(btn);
-		});
+	gameArea.append(pre, caption, sub, btnRow);
+
+	function renderBushes(goblinAt = -1) {
+		const parts = [0, 1, 2].map(i => i === goblinAt ? GOBLIN : BUSH);
+		pre.textContent = [0, 1, 2].map(row => parts.map(p => p[row]).join('   ')).join('\n');
 	}
 
-	function enablePick(cups, onPick) {
-		cupRow.innerHTML = '';
-		cups.forEach((c, i) => {
-			const btn         = document.createElement('button');
-			btn.textContent   = '🏆';
-			btn.style.fontSize = '1.6em';
-			btn.style.padding  = '8px 16px';
-			btn.addEventListener('click', () => onPick(i, cups));
-			cupRow.appendChild(btn);
-		});
-	}
-
-	async function runRound() {
+	function runRound() {
 		round++;
-		caption.textContent    = `Round ${round}/${ROUNDS} — watch the skull!`;
-		subCaption.textContent = '';
+		const spot      = Math.floor(Math.random() * 3);
+		const hitWindow = Math.max(700, 1500 - (round - 1) * 150);
+		let roundDone   = false;
 
-		const cups    = ['🏆', '🏆', '🏆'];
-		const skulIdx = Math.floor(Math.random() * 3);
-		cups[skulIdx] = '💀';
+		caption.textContent = `Round ${round}/${ROUNDS} — watch the bushes!`;
+		sub.textContent     = '';
+		renderBushes(-1);
 
-		// Reveal
-		renderCups(cups, true);
-		await delay(1200);
+		setTimeout(() => {
+			if (roundDone) return;
+			renderBushes(spot);
+			sub.textContent = '⚡ Strike!';
 
-		// Hide
-		renderCups(cups, false);
-		subCaption.textContent = 'Shuffling...';
-		await delay(400);
+			const attackTimeout = setTimeout(() => {
+				if (roundDone) return;
+				roundDone = true;
+				btns.forEach(b => b.onclick = null);
+				renderBushes(-1);
+				sub.textContent = `⏱️ Too slow! The goblin fled. (${score}/${round})`;
+				setTimeout(nextRound, 1000);
+			}, hitWindow);
 
-		// Shuffle with animation
-		for (let s = 0; s < SWAPS; s++) {
-			const a = Math.floor(Math.random() * 3);
-			const b = (a + 1 + Math.floor(Math.random() * 2)) % 3;
-			[cups[a], cups[b]] = [cups[b], cups[a]];
-			renderCups(cups, false);
-			subCaption.textContent = `Swap ${s + 1}/${SWAPS}...`;
-			await delay(380);
-		}
-
-		// Ask
-		subCaption.textContent = 'Which cup hides the 💀?';
-		enablePick(cups, (picked, cups) => {
-			[...cupRow.children].forEach((b, i) => {
-				b.disabled     = true;
-				b.textContent  = cups[i];
+			btns.forEach((btn, i) => {
+				btn.onclick = () => {
+					if (roundDone) return;
+					roundDone = true;
+					clearTimeout(attackTimeout);
+					btns.forEach(b => b.onclick = null);
+					if (i === spot) {
+						score++;
+						pre.textContent = ' \\O/\n  |\n / \\';
+						sub.textContent = `✅ Slain! (${score}/${round})`;
+					} else {
+						renderBushes(-1);
+						sub.textContent = `❌ Wrong bush! (${score}/${round})`;
+					}
+					setTimeout(nextRound, 900);
+				};
 			});
-
-			if (cups[picked] === '💀') {
-				score++;
-				caption.textContent = `✅ Found it! (${score}/${round})`;
-			} else {
-				caption.textContent = `❌ Wrong cup! (${score}/${round})`;
-			}
-
-			setTimeout(() => {
-				if (round >= ROUNDS) {
-					subCaption.textContent = '';
-					caption.textContent    = `Game over — ${score}/${ROUNDS} found!`;
-					resultCallback(Math.round((score / ROUNDS) * 100));
-				} else {
-					runRound();
-				}
-			}, 1100);
-		});
+		}, 400 + Math.random() * 500);
 	}
 
-	caption.textContent = 'Get ready...';
-	renderCups(['🏆', '🏆', '🏆'], false);
-	setTimeout(() => runRound(), 700);
+	function nextRound() {
+		if (round >= ROUNDS) {
+			pre.textContent     = score >= 4 ? ' \\O/\n  |\n / \\' : score >= 2 ? '  O \n /|\\\n / \\' : ' x_x\n  |\n / \\';
+			caption.textContent = `Raid repelled — ${score}/${ROUNDS} goblins slain!`;
+			sub.textContent     = '';
+			resultCallback(Math.round((score / ROUNDS) * 100));
+		} else {
+			runRound();
+		}
+	}
+
+	renderBushes(-1);
+	setTimeout(runRound, 700);
 }
 
 export default shellGame;

@@ -1,49 +1,39 @@
-// "Dragon's Breath" — raise your shield in the window as the dragon charges its fire.
+// "Dragon's Breath" — raise your shield inside the charge window as the dragon powers up.
+
+import { initGameArea, createPre, createCaption, createSub, createBtnRow, createBtn } from './gameUtils.js';
 
 function dragonGame(resultCallback) {
-	const gameArea = document.getElementById('game-area');
-	gameArea.innerHTML = '';
+	const gameArea = initGameArea();
 
 	const TICKS      = 32;
 	const GOOD_START = 13;
-	const GOOD_END   = 23;
+	const GOOD_END   = 22;
 	const GOOD_MID   = (GOOD_START + GOOD_END) / 2;
 	let tick         = 0;
 	let finished     = false;
 
-	const DRAGON_IDLE   = `🐉\n ~~ \n ~~`;
-	const DRAGON_CHARGE = `🐉\n~~~\n🔥~~`;
-	const DRAGON_FIRE   = `🐉💥🔥🔥🔥`;
+	const DRAGON_IDLE   = `  /\\\n (o_o)\n /\\_/\\`;
+	const DRAGON_CHARGE = `  /\\\n (O_O)~~~\n /\\_/\\`;
+	const DRAGON_FIRE   = `  /\\\n (>_<)=###>\n /\\_/\\`;
 
-	const pre = document.createElement('pre');
-	pre.style.textAlign  = 'center';
-	pre.style.lineHeight = '1.5';
-	pre.textContent      = DRAGON_IDLE;
+	const pre     = createPre();
+	const caption = createCaption('The dragon is charging its breath...');
+	const sub     = createSub();
+	const btnRow  = createBtnRow();
+	const btn     = createBtn('🛡️ Shield Up!');
 
-	const caption = document.createElement('p');
-	caption.textContent = '🐉 The dragon is charging — raise your shield at the right moment!';
-
-	const barDiv = document.createElement('div');
-	barDiv.style.fontFamily  = 'monospace';
-	barDiv.style.textAlign   = 'center';
-	barDiv.style.letterSpacing = '0';
-
-	const btn = document.createElement('button');
-	btn.textContent = '🛡️ Shield Up!';
-
-	gameArea.appendChild(pre);
-	gameArea.appendChild(caption);
-	gameArea.appendChild(barDiv);
-	gameArea.appendChild(btn);
+	pre.textContent = DRAGON_IDLE;
+	btnRow.appendChild(btn);
+	gameArea.append(pre, caption, sub, btnRow);
 
 	const render = () => {
 		const bar = [];
 		for (let i = 0; i < TICKS; i++) {
-			if (i < tick)                             bar.push('█');
+			if (i < tick)                              bar.push('█');
 			else if (i >= GOOD_START && i <= GOOD_END) bar.push('▒');
-			else                                       bar.push('░');
+			else                                        bar.push('░');
 		}
-		barDiv.textContent = `[${bar.join('')}]`;
+		sub.textContent = `[${bar.join('')}]`;
 	};
 
 	const finish = (atTick) => {
@@ -58,8 +48,8 @@ function dragonGame(resultCallback) {
 		} else if (atTick <= GOOD_END) {
 			const dist  = Math.abs(atTick - GOOD_MID);
 			const score = Math.max(65, Math.round(100 - dist * 7));
-			pre.textContent     = '🛡️✨';
-			caption.textContent = dist < 1.5 ? `⚡ Perfect shield! (${score})` : `🛡️ Shielded in time! (${score})`;
+			pre.textContent     = '  O \n [=]\n / \\';
+			caption.textContent = dist < 2 ? `⚡ Perfect shield! (${score})` : `🛡️ Shielded in time! (${score})`;
 			setTimeout(() => resultCallback(score), 700);
 		} else {
 			pre.textContent     = DRAGON_FIRE;
@@ -69,7 +59,6 @@ function dragonGame(resultCallback) {
 	};
 
 	btn.addEventListener('click', () => { if (!finished) finish(tick); });
-
 	render();
 
 	const interval = setInterval(() => {

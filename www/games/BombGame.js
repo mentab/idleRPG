@@ -1,82 +1,73 @@
-// "Cut the Fuse" — the fuse burns down; cut it inside the marked zone before it explodes.
+// "Forge the Blade" — heat the iron into the glowing zone, then strike before it overheats.
+
+import { initGameArea, createPre, createCaption, createSub, createBtnRow, createBtn } from './gameUtils.js';
 
 function bombGame(resultCallback) {
-	const gameArea = document.getElementById('game-area');
-	gameArea.innerHTML = '';
+	const gameArea = initGameArea();
 
-	const FUSE_MAX  = 22;
-	const ZONE_MIN  = 7;
-	const ZONE_MAX  = 14;
-	const ZONE_MID  = (ZONE_MIN + ZONE_MAX) / 2;
-	let fuse        = FUSE_MAX;
-	let finished    = false;
+	const HEAT_MAX = 22;
+	const ZONE_MIN = 8;
+	const ZONE_MAX = 14;
+	const ZONE_MID = (ZONE_MIN + ZONE_MAX) / 2;
+	let heat     = 0;
+	let finished = false;
 
-	const pre = document.createElement('pre');
-	pre.style.textAlign = 'center';
-	pre.style.fontFamily = 'monospace';
+	const pre     = createPre();
+	const caption = createCaption('Heat the iron — strike in the ▓ zone!');
+	const sub     = createSub();
+	const btnRow  = createBtnRow();
+	const btn     = createBtn('🔨 Strike!');
 
-	const caption = document.createElement('p');
-	caption.textContent = 'Cut the fuse inside the ▓ zone!';
-
-	const legend = document.createElement('p');
-	legend.style.fontFamily = 'monospace';
-	legend.style.fontSize = '0.8em';
-	legend.style.opacity = '0.7';
-	// Fixed guide showing zone position
-	const guide = Array(FUSE_MAX).fill('·');
-	for (let i = ZONE_MIN - 1; i < ZONE_MAX; i++) guide[i] = '↑';
-	legend.textContent = `   [${guide.join('')}]`;
-
-	const btn = document.createElement('button');
-	btn.textContent = '✂️ Cut!';
-
-	gameArea.appendChild(pre);
-	gameArea.appendChild(caption);
-	gameArea.appendChild(legend);
-	gameArea.appendChild(btn);
+	btnRow.appendChild(btn);
+	gameArea.append(pre, caption, sub, btnRow);
 
 	const render = () => {
 		const bar = [];
-		for (let i = 1; i <= FUSE_MAX; i++) {
-			if (i > fuse)                            bar.push(' ');
-			else if (i >= ZONE_MIN && i <= ZONE_MAX) bar.push('▓');
-			else                                     bar.push('═');
+		for (let i = 1; i <= HEAT_MAX; i++) {
+			const inZone  = i >= ZONE_MIN && i <= ZONE_MAX;
+			const heated  = i < heat;
+			const isFront = i === heat;
+			if (isFront && inZone)  bar.push('◆');
+			else if (isFront)       bar.push('►');
+			else if (heated && inZone) bar.push('▓');
+			else if (heated)        bar.push('═');
+			else if (inZone)        bar.push('░');
+			else                    bar.push(' ');
 		}
-		pre.textContent = `💣[${bar.join('')}]~`;
+		pre.textContent = `>=[${bar.join('')}]=*`;
 	};
 
-	const finish = (atFuse) => {
+	const finish = (atHeat) => {
 		if (finished) return;
 		finished = true;
 		clearInterval(interval);
-		legend.textContent = '';
+		sub.textContent = '';
 
-		if (atFuse === 0) {
-			pre.textContent = '💥💥💥';
-			caption.textContent = 'BOOM! The bomb went off!';
-			setTimeout(() => resultCallback(5), 700);
-		} else if (atFuse > ZONE_MAX) {
-			caption.textContent = `✂️ Too early — fuse still too long! (${atFuse} left)`;
-			setTimeout(() => resultCallback(18), 700);
-		} else if (atFuse >= ZONE_MIN) {
-			const dist  = Math.abs(atFuse - ZONE_MID);
+		if (atHeat < ZONE_MIN) {
+			pre.textContent     = '>===X';
+			caption.textContent = atHeat === 0
+				? 'You never struck! The iron goes cold.'
+				: `Too cold — the blade shatters! (${atHeat}/${ZONE_MIN})`;
+			setTimeout(() => resultCallback(atHeat === 0 ? 5 : 18), 700);
+		} else if (atHeat <= ZONE_MAX) {
+			const dist  = Math.abs(atHeat - ZONE_MID);
 			const score = Math.max(65, Math.round(100 - dist * 9));
-			pre.textContent = '✂️💣';
-			caption.textContent = dist < 1.5 ? `💥 Perfect cut! (${score})` : `✅ Clean cut! (${score})`;
+			pre.textContent     = '>===*=*';
+			caption.textContent = dist < 1.5 ? `⚡ Masterwork blade! (${score})` : `🔨 Well-tempered! (${score})`;
 			setTimeout(() => resultCallback(score), 700);
 		} else {
-			caption.textContent = `😰 Too close to the bomb! (${atFuse} left)`;
-			setTimeout(() => resultCallback(28), 700);
+			pre.textContent     = '>~~~~';
+			caption.textContent = 'Overheated! The blade melts in the forge!';
+			setTimeout(() => resultCallback(5), 700);
 		}
 	};
 
-	btn.addEventListener('click', () => { if (!finished) finish(fuse); });
-
+	btn.addEventListener('click', () => { if (!finished) finish(heat); });
 	render();
 
 	const interval = setInterval(() => {
-		fuse--;
-		if (fuse <= 0) { fuse = 0; finish(0); }
+		heat++;
+		if (heat > HEAT_MAX) finish(heat);
 		else render();
 	}, 190);
 }
