@@ -22,6 +22,11 @@ import clickerGame from './games/ClickerGame.js';
 import memoryGame from './games/MemoryGame.js';
 import asciiReactionGame from './games/AsciiReactionGame.js';
 import shootingGame from './games/ShootingGame.js';
+import duelGame from './games/DuelGame.js';
+import bombGame from './games/BombGame.js';
+import shellGame from './games/ShellGame.js';
+import sequenceGame from './games/SequenceGame.js';
+import dragonGame from './games/DragonGame.js';
 import { updateGameNotice } from './modules/MessageModule.js';
 
 class Game {
@@ -40,11 +45,16 @@ class Game {
 			this.onMiniGameComplete.bind(this),
 			this.player
 		);
-		this.miniGameScreen.registerMiniGame(timingGame, 'Timing');
-		this.miniGameScreen.registerMiniGame(clickerGame, 'Click rush');
-		this.miniGameScreen.registerMiniGame(memoryGame, 'Memory');
-		this.miniGameScreen.registerMiniGame(asciiReactionGame, 'ASCII reflex');
-		this.miniGameScreen.registerMiniGame(shootingGame, 'Shooting');
+		this.miniGameScreen.registerMiniGame(timingGame, 'Parry');
+		this.miniGameScreen.registerMiniGame(clickerGame, 'Frenzy');
+		this.miniGameScreen.registerMiniGame(memoryGame, 'Rune Stones');
+		this.miniGameScreen.registerMiniGame(asciiReactionGame, 'Spellcast');
+		this.miniGameScreen.registerMiniGame(shootingGame, 'Dodge');
+		this.miniGameScreen.registerMiniGame(duelGame, 'Duel of Blades');
+		this.miniGameScreen.registerMiniGame(bombGame, 'Cut the Fuse');
+		this.miniGameScreen.registerMiniGame(shellGame, 'Shell Game');
+		this.miniGameScreen.registerMiniGame(sequenceGame, 'Arcane Sequence');
+		this.miniGameScreen.registerMiniGame(dragonGame, 'Dragon\'s Breath');
 
 		this.areasScreen = new AreasScreen(
 			this.player,

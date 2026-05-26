@@ -1,8 +1,14 @@
+// "Rune Stones" — a sorcerer flashes rune pairs; find them all before running out of chances.
+
 function memoryGame(resultCallback) {
 	const gameArea = document.getElementById('game-area');
 	gameArea.innerHTML = '';
 
-	const symbols = ['🗡️', '🔮', '👑'];
+	const intro = document.createElement('p');
+	intro.textContent = '🔮 A sorcerer flashes rune stones at you. Remember their pairs!';
+	gameArea.appendChild(intro);
+
+	const symbols = ['⚡', '🔥', '💧'];
 	const totalPairs = 3;
 	const cards = generateCards(symbols, totalPairs);
 
@@ -12,6 +18,10 @@ function memoryGame(resultCallback) {
 	let isWaiting = false;
 	let finished = false;
 	const maxMisses = 3;
+
+	const missCounter = document.createElement('p');
+	missCounter.textContent = `Mistakes left: ${maxMisses}`;
+	gameArea.appendChild(missCounter);
 
 	const endGame = (won) => {
 		if (finished) return;
@@ -23,13 +33,12 @@ function memoryGame(resultCallback) {
 	const timeoutId = setTimeout(() => endGame(false), 45000);
 
 	cards.forEach((card) => {
-	gameArea.appendChild(card);
+		gameArea.appendChild(card);
 		card.addEventListener('click', () => {
 			if (finished) return;
 			if (!isWaiting && !selectedCards.includes(card) && selectedCards.length < 2) {
 				flipCard(card);
 				selectedCards.push(card);
-
 				if (selectedCards.length === 2) {
 					isWaiting = true;
 					setTimeout(checkMatch, 1000);
@@ -40,22 +49,14 @@ function memoryGame(resultCallback) {
 
 	function generateCards(symbols, totalPairs) {
 		const cards = [];
-
 		for (let i = 0; i < totalPairs; i++) {
-			const symbol = symbols[i];
-			const card1 = createCard(symbol);
-			const card2 = createCard(symbol);
-
-			cards.push(card1);
-			cards.push(card2);
+			cards.push(createCard(symbols[i]));
+			cards.push(createCard(symbols[i]));
 		}
-
-		// Shuffle the cards using Fisher-Yates algorithm
 		for (let i = cards.length - 1; i > 0; i--) {
 			const j = Math.floor(Math.random() * (i + 1));
 			[cards[i], cards[j]] = [cards[j], cards[i]];
 		}
-
 		return cards;
 	}
 
@@ -67,44 +68,30 @@ function memoryGame(resultCallback) {
 	}
 
 	function flipCard(card) {
-		const symbol = card.getAttribute('data-symbol');
-
-		card.innerText = symbol;
-
-		// Set a short timeout to flip the card back if not matched
+		card.innerText = card.getAttribute('data-symbol');
 		setTimeout(() => {
-			if (!selectedCards.includes(card)) {
-				card.innerText = '❓';
-			}
+			if (!selectedCards.includes(card)) card.innerText = '❓';
 		}, 1000);
 	}
 
 	function unflipCards() {
-		selectedCards.forEach((card) => {
-			card.innerText = '❓';
-		});
+		selectedCards.forEach((card) => { card.innerText = '❓'; });
 		selectedCards = [];
 		isWaiting = false;
 	}
 
 	function checkMatch() {
 		const [card1, card2] = selectedCards;
-		const symbol1 = card1.getAttribute('data-symbol');
-		const symbol2 = card2.getAttribute('data-symbol');
-
-		if (symbol1 === symbol2) {
-			card1.removeEventListener('click', () => {});
-			card2.removeEventListener('click', () => {});
+		if (card1.getAttribute('data-symbol') === card2.getAttribute('data-symbol')) {
+			card1.disabled = true;
+			card2.disabled = true;
 			matches++;
-
-			if (matches === totalPairs) {
-				endGame(true);
-			} else {
-				selectedCards = [];
-				isWaiting = false;
-			}
+			selectedCards = [];
+			isWaiting = false;
+			if (matches === totalPairs) endGame(true);
 		} else {
 			misses++;
+			missCounter.textContent = `Mistakes left: ${maxMisses - misses}`;
 			if (misses >= maxMisses) {
 				endGame(false);
 			} else {
