@@ -9,26 +9,34 @@
 <body>	
 	<aside id="choose-screens">
 		<div id="choose-screen">
+			<small><strong>⚔️ Combat</strong></small>
 			<button id="btnExploration">🗺️ Battle</button>
-			<button id="btnChallenge">⚔️ Boss</button>
-			<button id="btnMission">🔍 Quest</button>
+			<button id="btnChallenge">👑 Boss</button>
+			<button id="btnMission">🔍 Mission</button>
 			<button id="btnDuel">🤼 Duel</button>
 			<hr/>
-			<button id="btnGamble">🎲 Play (<span id="gambleCost"></span>)</button>
-			<button id="btnHeal">💊 Heal</button>
-			<hr/>
-			<button id="btnAreas">🗺️ Travel</button>
-			<button id="btnStats">📊 Stats</button>
-			<button id="btnSpells">📖 Spells</button>
-			<hr/>
+			<small><strong>🎒 Gestion</strong></small>
 			<button id="btnEquipped">🛡️ Gear</button>
 			<button id="btnInventory">🎒 Bag</button>
 			<button id="btnShop">💰 Shop</button>
 			<button id="btnImprove">🔨 Forge</button>
 			<hr/>
-			<button id="btnAchievements">🏆 Reward</button>
+			<small><strong>📊 Progression</strong></small>
+			<button id="btnStats">📊 Stats</button>
+			<button id="btnSpells">📖 Spells</button>
+			<button id="btnAreas">🗺️ Travel</button>
+			<button id="btnAchievements">🏆 Rewards</button>
+			<hr/>
+			<small><strong>✨ Prestige</strong></small>
+			<button id="btnContracts">📋 Contracts</button>
+			<button id="btnRelics">💎 Relics</button>
+			<button id="btnAscend" disabled>🌟 Ascend</button>
+			<hr/>
+			<small><strong>🔧 Other</strong></small>
+			<button id="btnGamble">🎲 Play (<span id="gambleCost"></span>)</button>
+			<button id="btnHeal">💊 Heal</button>
 			<button id="btnGather">🌿 Gather</button>
-			<!-- Craft disabled until recipe system is ready -->
+			<button id="btnCraft">⚒️ Craft</button>
 			<hr/>
 			<button id="btnSave">💾 Save</button>
 			<button id="btnLoad">📂 Load</button>
@@ -46,6 +54,7 @@
 				🌟: <span id="playerExperience"></span>
 				<br/>
 				💰: <span id="playerMoney"></span>
+				<span id="playerPrestige" style="margin-left:0.5rem;color:#ffd700;"></span>
 			</p>
 		</div>
 
@@ -105,6 +114,22 @@
 				<div id="improvements-list"></div>
 			</div>
 
+			<div id="relics-screen" class="hidden">
+				<h2>Relics</h2>
+				<p><small>Spend prestige points earned by Ascending to unlock permanent bonuses.</small></p>
+				<div id="relics-list"></div>
+			</div>
+
+			<div id="quest-screen" class="hidden">
+				<h2>Contracts</h2>
+				<div id="quest-list"></div>
+			</div>
+
+			<div id="ascend-screen" class="hidden">
+				<h2>🌟 Ascend</h2>
+				<div id="ascend-screen-content"></div>
+			</div>
+
 			<div id="game-info-screen" class="hidden">
 				<div id="combat-minigame-panel" class="hidden">
 					<h2>Mini-game</h2>
@@ -112,7 +137,6 @@
 					<p id="minigame-label"></p>
 					<div id="game-area"></div>
 				</div>
-				<button id="flee-button" class="hidden">🏃 Flee</button>
 				<div id="game-info-list"></div>
 			</div>
 

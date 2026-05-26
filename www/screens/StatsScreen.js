@@ -1,8 +1,9 @@
 // StatsScreen.js
 
 class StatsScreen {
-	constructor(player) {
+	constructor(player, updatePlayerStats = () => {}) {
 		this.player = player;
+		this.updatePlayerStats = updatePlayerStats;
 	}
 
 	render() {
@@ -62,14 +63,13 @@ class StatsScreen {
 		];
 
 		groupStats.forEach((groupStat) => {
-			const remainingPoints = this.player[groupStat.from];
 			const groupStatList = document.createElement('div');
 			groupStatList.innerHTML = `<em>${groupStat.label} : </em>`;
 
 			if (groupStat.from) {
+				const remainingPoints = this.player[groupStat.from];
 				const remainingText = document.createElement('div');
 				remainingText.innerHTML = `<strong>Points available: ${remainingPoints}</strong>`;
-
 				groupStatList.appendChild(remainingText);
 			}
 
@@ -80,27 +80,29 @@ class StatsScreen {
 				groupStatList.appendChild(statItem);
 
 				if (groupStat.from) {
-					if (this.player[stat.from] > 1) {
-						const buttonRemove = document.createElement('button');
-						buttonRemove.innerHTML = '-';
-						buttonRemove.addEventListener('click', () => {
-							this.player[stat.from]--;
-							this.player[groupStat.from]++;
-							this.render();
-						});
-						groupStatList.appendChild(buttonRemove);
-					}
+					const removeCost = Math.max(10, this.player.level * 10);
 
-					if (remainingPoints) {
-						const buttonAdd = document.createElement('button');
-						buttonAdd.innerHTML = '+';
-						buttonAdd.addEventListener('click', () => {
-							this.player[stat.from]++;
-							this.player[groupStat.from]--;
-							this.render();
-						});
-						groupStatList.appendChild(buttonAdd);
-					}
+					const buttonRemove = document.createElement('button');
+					buttonRemove.textContent = `− (${removeCost}g)`;
+					buttonRemove.disabled = this.player[stat.from] <= 1 || this.player.money < removeCost;
+					buttonRemove.addEventListener('click', () => {
+						this.player[stat.from]--;
+						this.player[groupStat.from]++;
+						this.player.money -= removeCost;
+						this.updatePlayerStats();
+						this.render();
+					});
+					groupStatList.appendChild(buttonRemove);
+
+					const buttonAdd = document.createElement('button');
+					buttonAdd.textContent = '+';
+					buttonAdd.disabled = !this.player[groupStat.from];
+					buttonAdd.addEventListener('click', () => {
+						this.player[stat.from]++;
+						this.player[groupStat.from]--;
+						this.render();
+					});
+					groupStatList.appendChild(buttonAdd);
 				}
 
 			});

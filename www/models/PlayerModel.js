@@ -1,4 +1,4 @@
-import { mapToArray, arrayToMap } from "../utils/utils.js";
+import { mapToArray, arrayToMap, getRarityMultiplier } from "../utils/utils.js";
 import { updateGameNotice } from "../modules/MessageModule.js";
 
 export class Player {
@@ -60,13 +60,22 @@ export class Player {
         this.claimedRewards = new Map();
         this.gambleCount = 0;
         this.availableSpellPoints = 1;
+        // prestige / meta-progression
+        this.prestigeLevel = 0;
+        this.prestigePoints = 0;
+        this.relicsOwned = [];
+        this.highestLevel = 1;
+        // daily quests
+        this.dailyQuests = [];
+        this.lastQuestDate = null;
     }
 
 	calculateEquippedStat(stat) {
 		const item = this[stat + "Item"];
 		if (item) {
-			const { level, improvementLevel } = item;
-			const finalLevel = level + improvementLevel;
+			const { level, improvementLevel, craftRank } = item;
+			const effectiveLevel = level + improvementLevel + (craftRank ?? 0) * 3;
+			const finalLevel = Math.floor(effectiveLevel * getRarityMultiplier(level));
 
 			switch (stat) {
 				case "defense":
@@ -165,6 +174,30 @@ export class Player {
             }
         }
         return null;
+    }
+
+    ascend() {
+        const prestigePointsEarned = Math.floor(this.level / 10);
+
+        const persistent = {
+            prestigeLevel: this.prestigeLevel + 1,
+            prestigePoints: this.prestigePoints + prestigePointsEarned,
+            relicsOwned: [...this.relicsOwned],
+            killedEnemies: this.killedEnemies,
+            claimedRewards: this.claimedRewards,
+            highestLevel: Math.max(this.highestLevel, this.level),
+            dailyQuests: this.dailyQuests,
+            lastQuestDate: this.lastQuestDate,
+        };
+
+        // Reset in-place so all existing references remain valid
+        const defaults = new Player();
+        for (const key of Object.keys(defaults)) {
+            this[key] = defaults[key];
+        }
+        Object.assign(this, persistent);
+
+        return prestigePointsEarned;
     }
 
     savePlayerData() {

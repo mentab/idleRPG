@@ -3,8 +3,9 @@
 import gameConfig from './../config/gameConfig.js';
 
 class SpellsScreen {
-	constructor(player) {
+	constructor(player, updatePlayerStats = () => {}) {
 		this.player = player;
+		this.updatePlayerStats = updatePlayerStats;
 	}
 
 	render() {
@@ -18,7 +19,7 @@ class SpellsScreen {
 
 		gameConfig.spells.forEach((spell, index) => {
 			const spellLevel = this.player[spell.id];
-			
+
 			const minLevelRequired = index * 10;
 
 			const effectPercent = spellLevel
@@ -29,7 +30,7 @@ class SpellsScreen {
 				const targetLabel = effect.target === "self" ? "your" : "enemy's";
 				return `${sign}${effectPercent}% ${targetLabel} <strong>${effect.stat}</strong>`;
 			}).join(', ');
-			
+
 			const spellItem = document.createElement('div');
 			spellItem.innerHTML = `${spell.icon}
 			<strong>${spell.name}</strong><br/>
@@ -38,28 +39,30 @@ class SpellsScreen {
 			<small>${spellDescription}</small><br/><br/>`;
 
 			if (this.player.level >= minLevelRequired) {
-				if (spellLevel > 0) {
-					const buttonRemove = document.createElement('button');
-					buttonRemove.innerHTML = '-';
-					buttonRemove.addEventListener('click', () => {
-						this.player[spell.id]--;
-						this.player.availableSpellPoints++;
-						this.render();
-					});
-					spellItem.appendChild(buttonRemove);
-				}
-	
-				if (this.player.availableSpellPoints) {
-					const buttonAdd = document.createElement('button');
-					buttonAdd.innerHTML = '+';
-					buttonAdd.addEventListener('click', () => {
-						this.player[spell.id]++;
-						this.player.availableSpellPoints--;
-						this.render();
-					});
-					spellItem.appendChild(buttonAdd);
-				}	
-			}	
+				const removeCost = Math.max(20, this.player.level * 20);
+
+				const buttonRemove = document.createElement('button');
+				buttonRemove.textContent = `− (${removeCost}g)`;
+				buttonRemove.disabled = spellLevel === 0 || this.player.money < removeCost;
+				buttonRemove.addEventListener('click', () => {
+					this.player[spell.id]--;
+					this.player.availableSpellPoints++;
+					this.player.money -= removeCost;
+					this.updatePlayerStats();
+					this.render();
+				});
+				spellItem.appendChild(buttonRemove);
+
+				const buttonAdd = document.createElement('button');
+				buttonAdd.textContent = '+';
+				buttonAdd.disabled = !this.player.availableSpellPoints;
+				buttonAdd.addEventListener('click', () => {
+					this.player[spell.id]++;
+					this.player.availableSpellPoints--;
+					this.render();
+				});
+				spellItem.appendChild(buttonAdd);
+			}
 
 			spellList.appendChild(spellItem);
 		});

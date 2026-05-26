@@ -46,13 +46,16 @@ export function createCombatModifier(score, playerStats = null) {
 		stat = COMBAT_STATS[Math.floor(Math.random() * COMBAT_STATS.length)];
 	}
 
+	const extraTurns = (playerStats?.relicsOwned?.includes('veterans_eye') && tier >= 2) ? 1 : 0;
+
 	if (tier >= 2) {
+		const baseTurns = tier === 3 ? 3 : 2;
 		return {
 			type: 'buff',
 			stat,
 			percent: tier === 3 ? 15 : 10,
-			turns: tier === 3 ? 3 : 2,
-			turnsLeft: tier === 3 ? 3 : 2,
+			turns: baseTurns + extraTurns,
+			turnsLeft: baseTurns + extraTurns,
 			score: normalized,
 			tier,
 		};

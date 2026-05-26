@@ -1,6 +1,10 @@
 export function getItemValue(item) {
     const { type, stat, level, improvementLevel  } = item;
 
+    if (type === "gathering") {
+        return Math.max(1, level * 2);
+    }
+
     if (type === "stat") {
         switch (stat) {
             case "defense":

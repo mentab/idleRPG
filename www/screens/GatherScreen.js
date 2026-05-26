@@ -7,6 +7,7 @@ class GatherScreen {
 	constructor(player, updatePlayerStats) {
 		this.player = player;
 		this.updatePlayerStats = updatePlayerStats;
+		this.cooldowns = new Map();
 	}
 
 	render() {
@@ -23,7 +24,15 @@ class GatherScreen {
 
 		filteredItems.forEach((item) => {
 			const itemElement = document.createElement('button');
-			itemElement.textContent = `${item.name} ${item.icon} (Level ${item.level})`;
+
+			const lastGather = this.cooldowns.get(item.name) ?? 0;
+			const remaining = Math.ceil(60 - (Date.now() - lastGather) / 1000);
+			if (remaining > 0) {
+				itemElement.textContent = `${item.name} ${item.icon} (${remaining}s)`;
+				itemElement.disabled = true;
+			} else {
+				itemElement.textContent = `${item.name} ${item.icon} (Level ${item.level})`;
+			}
 
 			itemElement.addEventListener('click', () => this.gatherResource(item));
 
@@ -36,11 +45,19 @@ class GatherScreen {
 	}
 
 	gatherResource(gatheredItem) {
+		const lastGather = this.cooldowns.get(gatheredItem.name) ?? 0;
+		const elapsed = (Date.now() - lastGather) / 1000;
+		const cooldownSec = 60;
+		if (elapsed < cooldownSec) {
+			updateGameNotice(`${gatheredItem.name} is on cooldown (${Math.ceil(cooldownSec - elapsed)}s remaining).`);
+			return;
+		}
+		this.cooldowns.set(gatheredItem.name, Date.now());
+
 		const maxGatherLevel = this.getMaxGatherLevel();
 		const nextGatherLevel = maxGatherLevel + 1;
 
 		const levelDifference = maxGatherLevel - gatheredItem.level;
-		const extraGatherChance = Math.min(0.5, levelDifference * 0.05);
 		let totalGathers = 1 + Math.floor(Math.random() * (levelDifference + 1));
 		totalGathers = Math.min(totalGathers, 10);
 
@@ -60,6 +77,8 @@ class GatherScreen {
 
 		if (nextGatherLevel === this.getMaxGatherLevel()) {
 			updateGameNotice(`Congratulations, you can now gather a new resource!`);
+			this.render();
+		} else {
 			this.render();
 		}
 	}

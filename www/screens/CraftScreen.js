@@ -1,187 +1,127 @@
-// Crafting UI — disabled in navigation until recipes are generated (see index.js).
+// CraftScreen.js — craft equipment from gathered resources
+import gameConfig from '../config/gameConfig.js';
 import { updateGameNotice } from '../modules/MessageModule.js';
+import { getRarityClass, getRarityLabel } from '../utils/utils.js';
 
-/*
-// Utilities for creating recipes
-const xorshift128plus = (seed) => {
-	let x = murmurhash3_32_gc(gameSeed + seed) || 1;
-	x = (x ^ (x >>> 15)) >>> 0;
-	x = (x ^ (x << 10)) >>> 0;
-	x = (x ^ (x >>> 3)) >>> 0;
-
-	return () => {
-		x += 0x6D2B79F5;
-		x = (x ^ (x >>> 15)) >>> 0;
-		x = (x ^ (x << 10)) >>> 0;
-		x = (x ^ (x >>> 3)) >>> 0;
-		return (x >>> 0) / 0xFFFFFFFF;
-	};
-}
-
-const murmurhash3_32_gc = (key) => {
-	let h = 0;
-
-	for (let i = 0; i < key.length; i++) {
-		let k = key.charCodeAt(i);
-		k = k * 0xcc9e2d51;
-		k = (k << 15) | (k >>> 17);
-		k = k * 0x1b873593;
-
-		h ^= k;
-		h = (h << 13) | (h >>> 19);
-		h = h * 5 + 0xe6546b64;
-	}
-
-	h ^= key.length;
-	h ^= h >>> 16;
-	h = h * 0x85ebca6b;
-	h ^= h >>> 13;
-	h = h * 0xc2b2ae35;
-	h ^= h >>> 16;
-
-	return h >>> 0;
-}
-
-// Recipe generation
-function getRandomIngredient(level, statIndex, ingredientIndex) {
-	const seed = `${level}${statIndex}${ingredientIndex}`;
-	const rng = xorshift128plus(seed);
-	const filteredItems = gatheringItems.filter(item => item.level <= level * 2);
-	const randomIndex = Math.floor(rng() * filteredItems.length);
-	return filteredItems[randomIndex];
-}
-
-function generateRecipe(level, statIndex) {
-	const ingredients = [];
-	const ingredientCount = level * 2;
-	for (let ingredientIndex = 0; ingredientIndex < ingredientCount; ingredientIndex++) {
-		const item = getRandomIngredient(level, statIndex, ingredientIndex);
-		ingredients.push(item);
-	}
-	return ingredients;
-}
-
-function generateRecipes() {
-	const recipes = {};
-
-	for (let statIndex = 0; statIndex < statNames.length; statIndex++) {
-		const stat = statNames[statIndex];
-		recipes[stat] = [];
-		for (let level = 1; level <= 5; level++) {
-			recipes[stat].push(generateRecipe(level, statIndex));
-		}
-	}
-
-	return recipes;
-}
-
-const recipes = generateRecipes();
-*/
+const FAILURE_RATES = [0.10, 0.15, 0.15, 0.25, 0.25, 0.35, 0.35, 0.45, 0.45, 0.55];
+const CRAFT_COOLDOWN = 90; // seconds
 
 class CraftScreen {
-	constructor(player, recipes = null, updatePlayerStats = () => {}) {
-		this.player = player;
-		this.recipes = recipes;
-		this.updatePlayerStats = updatePlayerStats;
-	}
+    constructor(player, updatePlayerStats) {
+        this.player = player;
+        this.updatePlayerStats = updatePlayerStats;
+        this.cooldowns = new Map();
+    }
 
-	render() {
-		const craftingRecipes = document.getElementById("crafting-recipes-list");
-		craftingRecipes.innerHTML = "";
+    render() {
+        const container = document.getElementById('crafting-recipes-list');
+        container.innerHTML = '';
 
-		if (!this.recipes) {
-			craftingRecipes.textContent = "Crafting is not available yet.";
-			updateGameNotice("Crafting will return in a future update.");
-			return;
-		}
+        const area = gameConfig.areas[this.player.areaIndex];
+        const header = document.getElementById('crafting-xp');
+        if (header) header.textContent = `Recipes for: ${area.icon} ${area.name}`;
 
-		const craftingRecipesDiv = document.createElement('div');
+        const recipes = gameConfig.craftRecipes.filter(r => r.areaIndex === this.player.areaIndex);
 
-		for (const stat of Object.keys(this.recipes)) {
-			const statDetails = document.createElement('details');
-			const statSummary = document.createElement('summary');
-			statSummary.textContent = `${stat} Recipes`;
-			statDetails.appendChild(statSummary);
+        if (recipes.length === 0) {
+            container.innerHTML = '<strong>No recipes available here.</strong>';
+            return;
+        }
 
-			for (const level in this.recipes[stat]) {
-				const levelRecipe = this.recipes[stat][level];
-				const recipeBtn = document.createElement('button');
+        for (const recipe of recipes) {
+            const card = document.createElement('div');
+            const rarity = getRarityClass(recipe.level);
 
-				// Create a div to hold the ingredient icons inside the button
-				const ingredientsDiv = document.createElement('div');
+            const nameEl = document.createElement('div');
+            nameEl.innerHTML = `<strong class="${rarity}">${recipe.icon} ${recipe.name}</strong>`;
+            card.appendChild(nameEl);
 
-				for (const ingredient of levelRecipe) {
-					const ingredientIcon = document.createElement('span');
-					ingredientIcon.textContent = ingredient.icon;
-					ingredientsDiv.appendChild(ingredientIcon);
-				}
+            const infoEl = document.createElement('div');
+            const failRate = Math.round((FAILURE_RATES[recipe.areaIndex] ?? 0.5) * 100);
+            infoEl.innerHTML = `<small><em>Stat:</em> <strong>${recipe.stat}</strong> — <em>Lv:</em> <strong>${recipe.level}</strong> — <span class="${rarity}">${getRarityLabel(recipe.level)}</span> — <em>Fail:</em> <strong>${failRate}%</strong></small>`;
+            card.appendChild(infoEl);
 
-				// Append the ingredients div to the button's innerHTML
-				recipeBtn.innerHTML = `Craft of ${stat} ${level}<br>${ingredientsDiv.innerHTML}`;
+            const ingDiv = document.createElement('div');
+            let canCraft = true;
+            for (const ing of recipe.ingredients) {
+                const have = this.player.inventory.filter(i => i.name === ing.name).length;
+                const enough = have >= ing.qty;
+                if (!enough) canCraft = false;
+                const ingEl = document.createElement('div');
+                ingEl.innerHTML = `<small style="color:${enough ? 'inherit' : '#f44336'}">${ing.name}: ${have}/${ing.qty}</small>`;
+                ingDiv.appendChild(ingEl);
+            }
+            card.appendChild(ingDiv);
 
-				recipeBtn.addEventListener('click', () => this.craftRecipe(levelRecipe));
+            const lastCraft = this.cooldowns.get(recipe.id) ?? 0;
+            const remaining = Math.ceil(CRAFT_COOLDOWN - (Date.now() - lastCraft) / 1000);
+            const onCooldown = remaining > 0;
 
-				statDetails.appendChild(recipeBtn);
-			}
+            const btn = document.createElement('button');
+            btn.disabled = !canCraft || onCooldown;
+            btn.textContent = onCooldown ? `⏳ ${remaining}s` : '⚒️ Craft';
+            btn.addEventListener('click', () => this.craft(recipe));
+            card.appendChild(btn);
 
-			craftingRecipesDiv.appendChild(statDetails);
-		}
+            container.appendChild(card);
+        }
+    }
 
-		craftingRecipes.appendChild(craftingRecipesDiv);
-	}
+    craft(recipe) {
+        // Check cooldown
+        const lastCraft = this.cooldowns.get(recipe.id) ?? 0;
+        if ((Date.now() - lastCraft) / 1000 < CRAFT_COOLDOWN) {
+            updateGameNotice('Recipe is on cooldown.');
+            return;
+        }
 
-	craftRecipe(recipe) {
-		// Check if the player has enough ingredients for the recipe
-		if (this.checkIngredients(recipe)) {
-			// Deduct the ingredients from the player's inventory
-			this.deductIngredients(recipe);
-			// Increase the player's craftingXP when a recipe is crafted
-			this.player.craftingXP += 5;
-			// Implement the crafting logic here (apply effects, add crafted item to the inventory, etc.)
-			// @todo
-			// Show a success message to the player
-			this.updatePlayerCraftingXP();
-		} else {
-			// Show a message to the player indicating they don't have enough ingredients
-			updateGameNotice("You don't have enough ingredients to craft this item.");
-		}
-	}
+        for (const ing of recipe.ingredients) {
+            const have = this.player.inventory.filter(i => i.name === ing.name).length;
+            if (have < ing.qty) {
+                updateGameNotice(`Not enough ${ing.name}.`);
+                return;
+            }
+        }
+        for (const ing of recipe.ingredients) {
+            let removed = 0;
+            this.player.inventory = this.player.inventory.filter(i => {
+                if (i.name === ing.name && removed < ing.qty) {
+                    removed++;
+                    return false;
+                }
+                return true;
+            });
+        }
 
-	checkIngredients(ingredients) {
-		// Count the occurrences of each ingredient in the recipe
-		const recipeCounts = {};
-		ingredients.forEach((ingredient) => {
-			recipeCounts[ingredient.name] = (recipeCounts[ingredient.name] || 0) + 1;
-		});
+        // Set cooldown
+        this.cooldowns.set(recipe.id, Date.now());
 
-		// Count the occurrences of each ingredient in the player's inventory
-		const inventoryCounts = {};
-		this.player.inventory.forEach((item) => {
-			inventoryCounts[item.name] = (inventoryCounts[item.name] || 0) + 1;
-		});
+        // Failure rate
+        const failureRate = FAILURE_RATES[recipe.areaIndex] ?? 0.5;
+        if (Math.random() < failureRate) {
+            updateGameNotice(`💔 Crafting failed! Materials consumed.`);
+            this.updatePlayerStats();
+            this.render();
+            return;
+        }
 
-		// Check if the player has enough of each ingredient in the inventory
-		return Object.keys(recipeCounts).every((ingredientName) => {
-			const requiredQuantity = recipeCounts[ingredientName];
-			const countInInventory = inventoryCounts[ingredientName] || 0;
-			return countInInventory >= requiredQuantity;
-		});
-	}
-
-	deductIngredients(ingredients) {
-		ingredients.forEach((ingredient) => {
-			// Find the first item with the same name in the player's inventory and remove it
-			const index = this.player.inventory.findIndex((item) => item.name === ingredient.name);
-			if (index !== -1) {
-				this.player.inventory.splice(index, 1);
-			}
-		});
-	}
-
-	updatePlayerCraftingXP() {
-		const craftingXPDisplay = document.getElementById('crafting-xp');
-		craftingXPDisplay.textContent = `Crafting XP: ${this.player.craftingXP}`;
-	}
+        // Success — add craftRank: 2 to the item
+        const item = {
+            id: recipe.id,
+            name: recipe.name,
+            icon: recipe.icon,
+            stat: recipe.stat,
+            level: recipe.level,
+            type: 'stat',
+            areaIndex: recipe.areaIndex,
+            improvementLevel: 0,
+            craftRank: 2,
+        };
+        this.player.inventory.push(item);
+        updateGameNotice(`Crafted ${recipe.icon} ${recipe.name}!`);
+        this.updatePlayerStats();
+        this.render();
+    }
 }
 
 export default CraftScreen;

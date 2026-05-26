@@ -17,33 +17,63 @@ export function updateGameInfo(message) {
     }
 }
 
-export function updateInfoBattle(turns, player, enemy, battleMessages) {
+export function updateBattleSummary(rounds, player, enemy, playerHPBefore = null) {
     const gameInfoElement = document.getElementById("game-info-list");
-    const messageElement = document.createElement("section");
+    const el = document.createElement("section");
 
-    const playerHealthPercentage = (player.currentHP / player.maxHP) * 100;
-    const enemyHealthPercentage = (enemy.currentHP / enemy.maxHP) * 100;
+    const nRounds = rounds.length;
+    const last = nRounds > 0 ? rounds[nRounds - 1] : { playerHP: player.currentHP, enemyHP: enemy.currentHP, fled: false };
+    const fled    = last.fled;
+    const victory = last.enemyHP <= 0;
+    const defeat  = last.playerHP <= 0;
 
-    messageElement.innerHTML = `
-    <div class="game-info" style="display: flex; justify-content: space-between; align-items: center; padding: 10px; margin: 10px 0;">
-        <div class="player-info" style="flex: 1; padding-right: 10px;">
-            <p><strong>💖 [Player] : ${player.currentHP}/${player.maxHP}</strong></p>
-            <progress class="health-bar" value="${playerHealthPercentage}" max="100" style="width: 100%; height: 20px;"></progress>
-            <p>${Math.round(playerHealthPercentage)}% HP</p>
+    const damageDealt = enemy.maxHP - last.enemyHP;
+    const damageTaken = playerHPBefore != null ? Math.max(0, playerHPBefore - last.playerHP) : '?';
+
+    let outcomeText, outcomeColor;
+    if (fled)         { outcomeText = '🏃 Retreated';  outcomeColor = '#ff9800'; }
+    else if (victory) { outcomeText = '⚔️ Victory!';   outcomeColor = '#4caf50'; }
+    else if (defeat)  { outcomeText = '💀 Defeat';     outcomeColor = '#f44336'; }
+    else              { outcomeText = '⏱️ Draw';       outcomeColor = '#888888'; }
+
+    const roundsHTML = rounds.map(r => {
+        const events = r.messages.map(m => `<span>${m}</span>`).join('<br>');
+        return `
+        <tr>
+            <td style="padding:0.2rem 0.4rem;border-bottom:1px solid var(--border);opacity:0.5;font-weight:bold;vertical-align:top">${r.turn}</td>
+            <td style="padding:0.2rem 0.4rem;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6">${events}</td>
+            <td style="padding:0.2rem 0.4rem;border-bottom:1px solid var(--border);text-align:right;white-space:nowrap;opacity:0.75;vertical-align:top">${r.playerHP}/${player.maxHP}</td>
+            <td style="padding:0.2rem 0.4rem;border-bottom:1px solid var(--border);text-align:right;white-space:nowrap;opacity:0.75;vertical-align:top">${r.enemyHP}/${enemy.maxHP}</td>
+        </tr>`;
+    }).join('');
+
+    el.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem;">
+            <span><strong>${enemy.icon} ${enemy.name}</strong> <small style="opacity:0.7">Lv ${enemy.level}</small></span>
+            <strong style="color:${outcomeColor};font-size:1.05rem">${outcomeText}</strong>
         </div>
-        <div class="enemy-info" style="flex: 1; padding-left: 10px;">
-            <p><strong>${enemy.icon} [${enemy.name}] : ${enemy.currentHP}/${enemy.maxHP}</strong></p>
-            <progress class="health-bar" value="${enemyHealthPercentage}" max="100" style="width: 100%; height: 20px;"></progress>
-            <p>${Math.round(enemyHealthPercentage)}% HP</p>
+        <div style="display:flex;gap:1.2rem;flex-wrap:wrap;opacity:0.85;margin-bottom:0.3rem;">
+            <small>🔄 ${nRounds} round${nRounds !== 1 ? 's' : ''}</small>
+            <small>🗡️ Dealt <strong>${damageDealt}</strong></small>
+            <small>🩸 Took <strong>${damageTaken}</strong></small>
+            <small>💖 <strong>${last.playerHP}/${player.maxHP}</strong> HP left</small>
         </div>
-    </div>
-    <details>
-        <summary>Details</summary>
-        ${battleMessages.join('<br/>')}
-    </details>
-    `;
+        <details>
+            <summary><small>Round details</small></summary>
+            <table style="width:100%;border-collapse:collapse;font-size:0.8em;margin-top:0.25rem">
+                <thead>
+                    <tr style="opacity:0.5">
+                        <th style="text-align:left;padding:0.2rem 0.4rem;border-bottom:1px solid var(--border);width:2rem">#</th>
+                        <th style="text-align:left;padding:0.2rem 0.4rem;border-bottom:1px solid var(--border)">Events</th>
+                        <th style="text-align:right;padding:0.2rem 0.4rem;border-bottom:1px solid var(--border);white-space:nowrap">💖 HP</th>
+                        <th style="text-align:right;padding:0.2rem 0.4rem;border-bottom:1px solid var(--border);white-space:nowrap">${enemy.icon} HP</th>
+                    </tr>
+                </thead>
+                <tbody>${roundsHTML}</tbody>
+            </table>
+        </details>`;
 
-    gameInfoElement.insertBefore(messageElement, gameInfoElement.firstChild);
+    gameInfoElement.insertBefore(el, gameInfoElement.firstChild);
 }
 
 export function updateGameNotice(message) {

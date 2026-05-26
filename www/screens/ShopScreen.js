@@ -3,11 +3,13 @@
 import gameConfig from './../config/gameConfig.js';
 import { updateGameNotice } from '../modules/MessageModule.js';
 import { getItemValue } from '../modules/ItemModule.js';
+import { getRarityClass, getRarityLabel } from '../utils/utils.js';
 
 class ShopScreen {
-	constructor(player, updatePlayerStats) {
+	constructor(player, updatePlayerStats, questModule = null) {
 		this.player = player;
 		this.updatePlayerStats = updatePlayerStats;
+		this.questModule = questModule;
 	}
 
 	render() {
@@ -26,15 +28,16 @@ class ShopScreen {
 		for (const item of filteredItems) {
 			const { stat, level, icon, name } = item;
 			const cost = Math.ceil(getItemValue(item));
+			const rarity = getRarityClass(level);
 
 			const itemElement = document.createElement('div');
 
 			const itemName = document.createElement('div');
-			itemName.innerHTML = `<strong>${name}</strong> ${icon}`;
+			itemName.innerHTML = `<strong class="${rarity}">${name}</strong> ${icon}`;
 			itemElement.appendChild(itemName);
 
 			const itemInfo = document.createElement('div');
-			itemInfo.innerHTML = `<small><em>Level: </em><strong>${level}</strong> - <em>Stat: </em><strong>${stat}</strong></small>`;
+			itemInfo.innerHTML = `<small><em>Level: </em><strong>${level}</strong> - <em>Stat: </em><strong>${stat}</strong> - <span class="${rarity}">${getRarityLabel(level)}</span></small>`;
 			itemElement.appendChild(itemInfo);
 
 			const costInfo = document.createElement('div');
@@ -47,6 +50,7 @@ class ShopScreen {
 				buyButton.addEventListener('click', () => {
 					this.player.money -= cost;
 					this.player.inventory.push({ ...item });
+					if (this.questModule) this.questModule.trackEvent('shopSpend', cost);
 					updateGameNotice(`You bought ${name} ${icon}.`);
 					this.updatePlayerStats();
 					this.render();
@@ -71,25 +75,22 @@ class ShopScreen {
 
 		for (const { item, quantity } of grouped) {
 			const { icon, name, stat, level, improvementLevel } = item;
-			const value = Math.ceil(getItemValue(item) / 2);
+			const isGathering = item.type === 'gathering';
+			const value = isGathering ? getItemValue(item) : Math.ceil(getItemValue(item) / 2);
 
 			const itemElement = document.createElement('div');
 
-			const itemIcon = document.createElement('div');
-			itemIcon.innerHTML = `${icon}`;
-			itemElement.appendChild(itemIcon);
-
 			const itemName = document.createElement('div');
-			itemName.innerHTML = `<strong>${name}</strong> <em>x${quantity}</em>`;
+			itemName.innerHTML = `${icon} <strong>${name}</strong> <em>×${quantity}</em>`;
 			itemElement.appendChild(itemName);
 
 			const itemInfo = document.createElement('div');
-			itemInfo.innerHTML = `<small><em>Level: </em><strong>${level}</strong> - <em>Stat: </em><strong>${stat}</strong></small>`;
+			if (isGathering) {
+				itemInfo.innerHTML = `<small><em>Lv${level} — crafting material</em></small>`;
+			} else {
+				itemInfo.innerHTML = `<small><em>Level: </em><strong>${level}</strong> - <em>Stat: </em><strong>${stat}</strong> - <em>Improvement: </em><strong>${improvementLevel}</strong></small>`;
+			}
 			itemElement.appendChild(itemInfo);
-
-			const improvementInfo = document.createElement('div');
-			improvementInfo.innerHTML = `<em>ImprovementLevel: </em><strong>${improvementLevel}</strong>`;
-			itemElement.appendChild(improvementInfo);
 
 			const valueInfo = document.createElement('div');
 			valueInfo.innerHTML = `Value: <strong>${value}</strong>`;

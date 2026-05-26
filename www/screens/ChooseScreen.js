@@ -20,6 +20,7 @@ class ChooseScreen {
 		this.addClickListener("btnEquipped")
 		this.addClickListener("btnAchievements")
 		this.addClickListener("btnGather")
+		this.addClickListener("btnCraft")
 		this.addClickListener("btnImprove")
 		this.addClickListener("btnInventory")
 		this.addClickListener("btnShop")
@@ -28,6 +29,9 @@ class ChooseScreen {
 		this.addClickListener("btnSave")
 		this.addClickListener("btnLoad")
 		this.addClickListener("btnReset")
+		this.addClickListener("btnRelics")
+		this.addClickListener("btnContracts")
+		this.addClickListener("btnAscend")
 	}
 
 	render() {

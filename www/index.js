@@ -8,15 +8,19 @@ import StatsScreen from './screens/StatsScreen.js';
 import SpellsScreen from './screens/SpellsScreen.js';
 import EquippedScreen from './screens/EquippedScreen.js';
 import GatherScreen from './screens/GatherScreen.js';
-// CraftScreen disabled until recipe system is implemented (phase 2+)
+import CraftScreen from './screens/CraftScreen.js';
 import MiniGameScreen from './screens/MiniGameScreen.js';
 import AchievementsScreen from './screens/AchievementsScreen.js';
 import ImprovementsScreen from './screens/ImprovementsScreen.js';
+import RelicsScreen from './screens/RelicsScreen.js';
+import QuestScreen from './screens/QuestScreen.js';
 import gameConfig from './config/gameConfig.js';
 import BattleModule from './modules/BattleModule.js';
 import { healForMoney } from './modules/HealModule.js';
 import { gambleMoney } from './modules/GambleModule.js';
 import { Player } from './models/PlayerModel.js';
+import { StreakModule } from './modules/StreakModule.js';
+import { QuestModule } from './modules/QuestModule.js';
 import timingGame from './games/TimingGame.js';
 import clickerGame from './games/ClickerGame.js';
 import memoryGame from './games/MemoryGame.js';
@@ -28,22 +32,32 @@ import shellGame from './games/ShellGame.js';
 import sequenceGame from './games/SequenceGame.js';
 import dragonGame from './games/DragonGame.js';
 import { updateGameNotice } from './modules/MessageModule.js';
+import AscendScreen from './screens/AscendScreen.js';
+import { DebugPanel } from './modules/DebugPanel.js';
 
 class Game {
 	constructor() {
 		this.hpDelay = 2000;
 		this.player = new Player();
+		this.streakModule = new StreakModule();
+		this.questModule = new QuestModule(this.player);
 		this.battleModule = new BattleModule(
 			this.player,
 			this.updatePlayerStats.bind(this),
-			this.checkLevelUp.bind(this)
+			this.checkLevelUp.bind(this),
+			this.streakModule,
+			this.questModule
 		);
+		this.inBattle = false;
+		this.battleModule.onBattleEnd = () => { this.inBattle = false; };
 		this.chooseScreen = new ChooseScreen(
 			this.handleScreenButtonClick.bind(this)
 		);
 		this.miniGameScreen = new MiniGameScreen(
 			this.onMiniGameComplete.bind(this),
-			this.player
+			this.player,
+			this.streakModule,
+			this.questModule
 		);
 		this.miniGameScreen.registerMiniGame(timingGame, 'Parry');
 		this.miniGameScreen.registerMiniGame(clickerGame, 'Frenzy');
@@ -66,19 +80,26 @@ class Game {
 		);
 		this.shopScreen = new ShopScreen(
 			this.player,
-			this.updatePlayerStats.bind(this)
+			this.updatePlayerStats.bind(this),
+			this.questModule
 		);
 		this.statsScreen = new StatsScreen(
-			this.player
+			this.player,
+			this.updatePlayerStats.bind(this)
 		);
 		this.spellsScreen = new SpellsScreen(
-			this.player
+			this.player,
+			this.updatePlayerStats.bind(this)
 		);
 		this.equippedScreen = new EquippedScreen(
 			this.player,
 			this.updatePlayerStats.bind(this)
 		);
 		this.gatherScreen = new GatherScreen(
+			this.player,
+			this.updatePlayerStats.bind(this)
+		);
+		this.craftScreen = new CraftScreen(
 			this.player,
 			this.updatePlayerStats.bind(this)
 		);
@@ -90,11 +111,43 @@ class Game {
 			this.player,
 			this.updatePlayerStats.bind(this)
 		);
+		this.relicsScreen = new RelicsScreen(
+			this.player,
+			this.updatePlayerStats.bind(this)
+		);
+		this.questScreen = new QuestScreen(
+			this.questModule,
+			this.updatePlayerStats.bind(this)
+		);
+		this.ascendScreen = new AscendScreen(
+			this.player,
+			this.questModule,
+			this.updatePlayerStats.bind(this),
+			this.showGameInfoScreen.bind(this)
+		);
+
+		this.debugPanel = new DebugPanel({
+			player: this.player,
+			battleModule: this.battleModule,
+			gatherScreen: this.gatherScreen,
+			craftScreen: this.craftScreen,
+			questModule: this.questModule,
+			updatePlayerStats: this.updatePlayerStats.bind(this),
+			checkLevelUp: this.checkLevelUp.bind(this),
+		});
 
 		this.showGameInfoScreen();
 	}
 
 	handleScreenButtonClick(buttonId) {
+		const lockedDuringBattle = ['btnExploration','btnChallenge','btnMission','btnDuel',
+			'btnAreas','btnInventory','btnShop','btnStats','btnSpells','btnEquipped',
+			'btnAchievements','btnGather','btnCraft','btnImprove','btnRelics','btnContracts','btnAscend','btnGamble','btnHeal'];
+		if (this.inBattle && lockedDuringBattle.includes(buttonId)) {
+			updateGameNotice('Finish the current battle first!');
+			return;
+		}
+
 		switch (buttonId) {
 			case 'btnExploration':
 				this.showMiniGameScreen(this.battleModule.startExploration.bind(this.battleModule));
@@ -132,9 +185,20 @@ class Game {
 			case 'btnGather':
 				this.showGatherScreen();
 				break;
-			// btnCraft: crafting screen disabled until recipes are implemented
+			case 'btnCraft':
+				this.showCraftScreen();
+				break;
 			case 'btnImprove':
 				this.showImprovementsScreen();
+				break;
+			case 'btnRelics':
+				this.showRelicsScreen();
+				break;
+			case 'btnContracts':
+				this.showQuestScreen();
+				break;
+			case 'btnAscend':
+				this.showAscendScreen();
 				break;
 			case "btnGamble":
 				gambleMoney(
@@ -192,6 +256,7 @@ class Game {
 		if (panel) panel.classList.remove('hidden');
 		if (log) log.classList.add('hidden');
 
+		this.inBattle = true;
 		this.miniGameScreen.render(action);
 	}
 
@@ -235,9 +300,29 @@ class Game {
 		this.gatherScreen.render();
 	}
 
+	showCraftScreen() {
+		this.showScreen("crafting-screen");
+		this.craftScreen.render();
+	}
+
 	showImprovementsScreen() {
 		this.showScreen("improvements-screen");
 		this.improvementsScreen.render();
+	}
+
+	showRelicsScreen() {
+		this.showScreen("relics-screen");
+		this.relicsScreen.render();
+	}
+
+	showQuestScreen() {
+		this.showScreen("quest-screen");
+		this.questScreen.render();
+	}
+
+	showAscendScreen() {
+		this.showScreen('ascend-screen');
+		this.ascendScreen.render();
 	}
 
 	showScreen(screenId) {
@@ -260,6 +345,20 @@ class Game {
 		document.getElementById("playerExperience").textContent = `${this.player.experience} / ${this.getNextLevelExperience()}`;
 		document.getElementById("playerMoney").textContent = this.player.money;
 		document.getElementById("gambleCost").textContent = this.player.gambleCount + 1;
+
+		const prestigeEl = document.getElementById("playerPrestige");
+		if (prestigeEl) {
+			prestigeEl.textContent = this.player.prestigeLevel > 0 ? `✨ Prestige ${this.player.prestigeLevel}` : '';
+		}
+
+		const ascendBtn = document.getElementById("btnAscend");
+		if (ascendBtn) {
+			ascendBtn.disabled = this.player.level < gameConfig.prestigeMinLevel;
+			ascendBtn.title = this.player.level < gameConfig.prestigeMinLevel
+				? `Reach level ${gameConfig.prestigeMinLevel} to Ascend`
+				: `Ascend now! Earn ${Math.floor(this.player.level / 10)} prestige points`;
+		}
+
 		this.updatePlayerCurrentHP();
 	}
 
@@ -297,8 +396,11 @@ class Game {
 	init() {
 		// window.screen.orientation.lock('landscape');
 
+		this.player.loadPlayerData();
+		this.questModule.initDailyQuests(gameConfig.questPool);
 		this.updatePlayerStats();
 		this.chooseScreen.init();
+		this.debugPanel.init();
 		this.hpLoop();
 	}
 }

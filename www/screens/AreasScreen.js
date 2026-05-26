@@ -29,8 +29,14 @@ class AreasScreen {
 
 			const minLevelDisplay = minLevelRequired === 0 ? 1 : minLevelRequired;
 			const travelInfo = document.createElement('div');
-			travelInfo.innerHTML = `<small><em>Min Level: </em><strong>${minLevelDisplay}</strong>`;
+			travelInfo.innerHTML = `<small><em>Min Level: </em><strong>${minLevelDisplay}</strong></small>`;
 			areaElement.appendChild(travelInfo);
+
+			if (area.modifiers && area.modifiers.length > 0) {
+				const modEl = document.createElement('div');
+				modEl.innerHTML = `<small class="area-modifier">⚠️ Enemies: ${area.modifiers.map(m => m.label).join(', ')}</small>`;
+				areaElement.appendChild(modEl);
+			}
 
 			if (this.player.areaIndex === index) {
 				const travelInfo = document.createElement('div');
@@ -52,11 +58,14 @@ class AreasScreen {
 	}
 
 	travelToArea(area, index) {
-		const { icon, name, description } = area
-		this.player.areaIndex = index
-        updateGameNotice(`${description}.`)
-        this.updatePlayerStats()
-		this.render()
+		const { icon, name, description, modifiers } = area;
+		this.player.areaIndex = index;
+		updateGameNotice(`Traveled to ${name} ${icon}.`);
+		if (modifiers && modifiers.length > 0) {
+			updateGameNotice(`⚠️ Area hazard — enemies here have: ${modifiers.map(m => m.label).join(', ')}`);
+		}
+		this.updatePlayerStats();
+		this.render();
 	}
 }
 

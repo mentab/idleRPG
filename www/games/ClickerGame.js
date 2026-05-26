@@ -1,54 +1,70 @@
-// "Goblin Horde" — beat back as many goblins as you can in 4 seconds.
+// "Goblin Horde" — strike goblins, but time your hits on the pulse for bonus damage.
 
 import { initGameArea, createPre, createCaption, createSub, createBtnRow, createBtn } from './gameUtils.js';
+
+const DURATION      = 4000;  // 4s total
+const PULSE_EVERY   = 700;   // pulse window every 700ms
+const PULSE_WINDOW  = 220;   // 220ms to hit the pulse
+const PTS_PULSE     = 8;     // perfect hit during pulse
+const PTS_NORMAL    = 4;     // normal hit
+
+const FRAME_IDLE    = ` >:(\n/|\\\n/ \\`;
+const FRAME_OPEN    = ` >:O\n\\|/\n/ \\`; // vulnerable (pulse window)
+const FRAME_HIT     = ` X_X\n/|\\\n/ \\`;
 
 function clickerGame(resultCallback) {
 	const gameArea = initGameArea();
 
-	const frames = [
-		` >:(\n/|\\\n/ \\`,
-		` >:D\n\\|/\n/ \\`,
-		` >:O\n /|\\\n  |`,
-	];
-
 	const pre     = createPre();
-	const caption = createCaption('A goblin horde swarms you — cut them down!');
-	const sub     = createSub('0 strikes');
+	const caption = createCaption('Goblins swarm! Strike them — hit while they OPEN for bonus!');
+	const sub     = createSub('Waiting...');
 	const btnRow  = createBtnRow();
 	const btn     = createBtn('⚔️ Strike!');
 
-	pre.textContent = frames[0];
+	pre.textContent = FRAME_IDLE;
 	btnRow.appendChild(btn);
 	gameArea.append(pre, caption, sub, btnRow);
 
-	let clicks   = 0;
-	let frameIdx = 0;
+	let points       = 0;
+	let totalClicks  = 0;
+	let pulseActive  = false;
+	let hitFlash     = false;
 
-	const anim = setInterval(() => {
-		frameIdx        = (frameIdx + 1) % frames.length;
-		pre.textContent = frames[frameIdx];
-	}, 250);
-
-	const milestones = [
-		{ at: 5,  text: 'Rally!' },
-		{ at: 10, text: 'Relentless!' },
-		{ at: 15, text: 'Unstoppable!' },
-		{ at: 20, text: 'LEGENDARY!' },
-	];
+	// Pulse loop — goblin briefly opens up
+	const pulseInterval = setInterval(() => {
+		pulseActive = true;
+		pre.textContent = FRAME_OPEN;
+		setTimeout(() => {
+			if (!hitFlash) pre.textContent = FRAME_IDLE;
+			pulseActive = false;
+		}, PULSE_WINDOW);
+	}, PULSE_EVERY);
 
 	btn.addEventListener('click', () => {
-		clicks++;
-		const milestone = milestones.slice().reverse().find(m => clicks >= m.at);
-		sub.textContent = `${clicks} strike${clicks !== 1 ? 's' : ''}!${milestone ? ' ' + milestone.text : ''}`;
+		totalClicks++;
+		if (pulseActive) {
+			points += PTS_PULSE;
+			sub.textContent = `⚡ PERFECT! ${totalClicks} strikes — ${points} pts`;
+		} else {
+			points += PTS_NORMAL;
+			sub.textContent = `${totalClicks} strikes — ${points} pts`;
+		}
+		// Flash hit frame briefly
+		hitFlash = true;
+		pre.textContent = FRAME_HIT;
+		setTimeout(() => {
+			hitFlash = false;
+			pre.textContent = pulseActive ? FRAME_OPEN : FRAME_IDLE;
+		}, 100);
 	});
 
 	setTimeout(() => {
-		clearInterval(anim);
+		clearInterval(pulseInterval);
 		btn.disabled        = true;
 		pre.textContent     = ' >>>\n >>>\n >>>';
-		caption.textContent = `The goblins flee! ${clicks} strikes landed.`;
-		resultCallback(Math.min(100, Math.round(clicks * 5)));
-	}, 4000);
+		caption.textContent = `Horde repelled! ${totalClicks} strikes — ${points} pts`;
+		resultCallback(Math.min(100, points));
+	}, DURATION);
 }
 
 export default clickerGame;
