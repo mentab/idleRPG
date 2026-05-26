@@ -26,11 +26,12 @@ function shootingGame(resultCallback) {
 		gameArea.appendChild(target);
 	}
 
-	// Update the score displayed in the game area
+	const scoreDisplay = document.createElement('div');
+	scoreDisplay.innerText = `Score: 0`;
+	gameArea.appendChild(scoreDisplay);
+
 	function updateScore() {
-		const scoreDisplay = document.createElement('div');
 		scoreDisplay.innerText = `Score: ${score}`;
-		gameArea.appendChild(scoreDisplay);
 	}
 
 	// Start the game by creating targets at regular intervals
@@ -42,7 +43,6 @@ function shootingGame(resultCallback) {
 		}, gameTime * 1000);
 	}
 
-	// Start the game when the page loads
 	startGame();
 }
 

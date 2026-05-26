@@ -12,6 +12,12 @@ class BattleModule {
 		this.checkLevelUp = checkLevelUp;
 		this.combatModifier = null;
 		this.retainCombatModifier = false;
+		this.fleeMode = false;
+		this.fleeRequested = false;
+		this.fleedFromBattle = false;
+		this.bossMode = false;
+		this.bossPhaseTriggered = false;
+		this._fleeHandler = null;
 	}
 
 	setCombatModifier(modifier) {
@@ -59,6 +65,28 @@ class BattleModule {
 	generateEnemy(mandatoryFilters, optionalFilters = {}) {
 		const eligibleEntities = this.filterEntities(gameConfig.enemies, mandatoryFilters, optionalFilters);
 		return this.generateEntity(eligibleEntities);
+	}
+
+	_showFlee() {
+		const fleeButton = document.getElementById('flee-button');
+		if (fleeButton) {
+			fleeButton.classList.remove('hidden');
+			this._fleeHandler = () => { this.fleeRequested = true; };
+			fleeButton.addEventListener('click', this._fleeHandler);
+		}
+	}
+
+	_hideFlee() {
+		const fleeButton = document.getElementById('flee-button');
+		if (fleeButton) {
+			fleeButton.classList.add('hidden');
+			if (this._fleeHandler) {
+				fleeButton.removeEventListener('click', this._fleeHandler);
+				this._fleeHandler = null;
+			}
+		}
+		this.fleeMode = false;
+		this.fleeRequested = false;
 	}
 
 	async battle(enemy) {
@@ -114,6 +142,20 @@ class BattleModule {
 			await wait(0.2);
 
 			const battleMessages = [];
+
+			// Boss phase 2: triggers once when boss falls below 50% HP
+			if (this.bossMode && !this.bossPhaseTriggered && enemy.currentHP <= Math.floor(enemy.maxHP / 2)) {
+				this.bossPhaseTriggered = true;
+				enemy.damage = Math.floor(enemy.damage * 1.3);
+				enemy.precision = Math.floor(enemy.precision * 1.3);
+				battleMessages.push(`💀 ${enemy.name} enters a rage! Damage and precision increased!`);
+			}
+
+			// Duelist taunts each turn
+			if (enemy.type === 'DUELIST') {
+				const verb = gameConfig.challengeVerbs[Math.floor(Math.random() * gameConfig.challengeVerbs.length)];
+				battleMessages.push(`💬 ${enemy.name} ${verb} you!`);
+			}
 
 			const miniGameLine = applyCombatModifier(this.combatModifier, playerCopy);
 			if (miniGameLine) {
@@ -244,7 +286,18 @@ class BattleModule {
 
 			updateInfoBattle(turns, this.player, enemy, battleMessages);
 
+			// Flee check: player can flee when HP drops below 33% in exploration mode
+			if (this.fleeMode && this.fleeRequested) {
+				this._hideFlee();
+				this.fleedFromBattle = true;
+				break;
+			}
+
 			turns++;
+		}
+
+		if (this.fleeMode) {
+			this._hideFlee();
 		}
 
 		if (enemy.currentHP <= 0) {
@@ -304,22 +357,31 @@ class BattleModule {
 		return filteredItems[randomIndex];
 	}
 
-	async performBattle(enemy) {
+	async performBattle(enemy, awardXP = true) {
 		updateGameInfo(this.generateEnemyInfo(enemy));
 		enemy.currentHP = enemy.maxHP;
 		await this.battle(enemy);
-		this.battleAndCheckResult(enemy);
+		this.battleAndCheckResult(enemy, awardXP);
 	}
 
-	battleAndCheckResult(enemy) {
+	battleAndCheckResult(enemy, awardXP = true) {
+		if (this.fleedFromBattle) {
+			this.fleedFromBattle = false;
+			updateGameInfo("You fled from battle!");
+			if (!this.retainCombatModifier) this.clearCombatModifier();
+			return;
+		}
+
 		if (this.player.currentHP > 0) {
 			if (enemy.currentHP <= 0) {
 				updateGameInfo("Victory!");
-				const experiencePoints = this.calculateExperiencePoints(enemy);
-				this.player.experience += experiencePoints;
-				this.updatePlayerStats();
-				updateGameNotice(`Gained ${experiencePoints} EXP!`);
-				this.checkLevelUp();
+				if (awardXP) {
+					const experiencePoints = this.calculateExperiencePoints(enemy);
+					this.player.experience += experiencePoints;
+					this.updatePlayerStats();
+					updateGameNotice(`Gained ${experiencePoints} EXP!`);
+					this.checkLevelUp();
+				}
 			} else {
 				updateGameInfo("Draw!");
 			}
@@ -384,18 +446,27 @@ class BattleModule {
 
 	startExploration(combatModifier = null) {
 		this.setCombatModifier(combatModifier);
+		this.fleeMode = true;
+		this.fleeRequested = false;
+		this.fleedFromBattle = false;
 		const enemy = this.generateEnemy({ areaIndex: this.player.areaIndex, type: 'BASE' }, { maxLevel: this.player.level });
 		clearGameInfo();
 		updateGameNotice(`Starting exploration...`);
+		this._showFlee();
 		this.performBattle(enemy);
 	}
 
 	startChallenge(combatModifier = null) {
 		this.setCombatModifier(combatModifier);
+		this.bossMode = true;
+		this.bossPhaseTriggered = false;
 		const boss = this.generateEnemy({ areaIndex: this.player.areaIndex, type: 'BOSS' }, {});
 		clearGameInfo();
 		updateGameNotice("Starting challenge...");
-		this.performBattle(boss);
+		this.performBattle(boss).then(() => {
+			this.bossMode = false;
+			this.bossPhaseTriggered = false;
+		});
 	}
 
 	async startMission(combatModifier = null) {
@@ -406,6 +477,7 @@ class BattleModule {
 		updateGameNotice("Starting mission...");
 		const numEnemies = getRandomNumber(2, 3);
 		updateGameInfo(this.generateRandomIntro(enemy.name, numEnemies));
+		updateGameNotice("Your HP carries between fights — survive all enemies!");
 		let totalReward = 0;
 		let isMissionFailed = false;
 
@@ -437,17 +509,20 @@ class BattleModule {
 		this.setCombatModifier(combatModifier);
 		const enemy = this.generateEnemy({ areaIndex: this.player.areaIndex, type: 'DUELIST' }, { maxLevel: this.player.level });
 		updateGameInfo(this.generateDuelChallengeSentence(enemy));
-		
-		await this.performBattle(enemy);
-		
-		if (this.player.currentHP > 0) {
-		  const rewardXP = this.calculateDuelRewardXP(enemy);
-		  this.player.experience += rewardXP;
-		  updateGameInfo(`Duel won!`);
-		  updateGameNotice(`Reward ${rewardXP} bonus EXP`);
-		} else {
-		  updateGameInfo("Duel lost!");
+
+		await this.performBattle(enemy, false);
+
+		if (this.player.currentHP > 0 && !this.fleedFromBattle) {
+			const rewardXP = Math.floor(this.calculateExperiencePoints(enemy) * 1.5);
+			this.player.experience += rewardXP;
+			this.updatePlayerStats();
+			updateGameInfo(`Duel won!`);
+			updateGameNotice(`Gained ${rewardXP} XP (Duel bonus!)`);
+			this.checkLevelUp();
+		} else if (this.player.currentHP <= 0) {
+			updateGameInfo("Duel lost!");
 		}
+		this.fleedFromBattle = false;
 	}
 }
 

@@ -3,8 +3,7 @@
 import ChooseScreen from './screens/ChooseScreen.js';
 import AreasScreen from './screens/AreasScreen.js';
 import InventoryScreen from './screens/InventoryScreen.js';
-import BuyScreen from './screens/BuyScreen.js';
-import SellScreen from './screens/SellScreen.js';
+import ShopScreen from './screens/ShopScreen.js';
 import StatsScreen from './screens/StatsScreen.js';
 import SpellsScreen from './screens/SpellsScreen.js';
 import EquippedScreen from './screens/EquippedScreen.js';
@@ -22,6 +21,7 @@ import timingGame from './games/TimingGame.js';
 import clickerGame from './games/ClickerGame.js';
 import memoryGame from './games/MemoryGame.js';
 import asciiReactionGame from './games/AsciiReactionGame.js';
+import shootingGame from './games/ShootingGame.js';
 import { updateGameNotice } from './modules/MessageModule.js';
 
 class Game {
@@ -37,12 +37,14 @@ class Game {
 			this.handleScreenButtonClick.bind(this)
 		);
 		this.miniGameScreen = new MiniGameScreen(
-			this.onMiniGameComplete.bind(this)
+			this.onMiniGameComplete.bind(this),
+			this.player
 		);
 		this.miniGameScreen.registerMiniGame(timingGame, 'Timing');
 		this.miniGameScreen.registerMiniGame(clickerGame, 'Click rush');
 		this.miniGameScreen.registerMiniGame(memoryGame, 'Memory');
 		this.miniGameScreen.registerMiniGame(asciiReactionGame, 'ASCII reflex');
+		this.miniGameScreen.registerMiniGame(shootingGame, 'Shooting');
 
 		this.areasScreen = new AreasScreen(
 			this.player,
@@ -52,11 +54,7 @@ class Game {
 			this.player,
 			this.updatePlayerStats.bind(this)
 		);
-		this.buyScreen = new BuyScreen(
-			this.player,
-			this.updatePlayerStats.bind(this)
-		);
-		this.sellScreen = new SellScreen(
+		this.shopScreen = new ShopScreen(
 			this.player,
 			this.updatePlayerStats.bind(this)
 		);
@@ -106,11 +104,8 @@ class Game {
 			case 'btnInventory':
 				this.showInventoryScreen();
 				break;
-			case 'btnBuy':
-				this.showBuyScreen();
-				break;
-			case 'btnSell':
-				this.showSellScreen();
+			case 'btnShop':
+				this.showShopScreen();
 				break;
 			case 'btnStats':
 				this.showStatsScreen();
@@ -200,14 +195,9 @@ class Game {
 		this.inventoryScreen.render();
 	}
 
-	showBuyScreen() {
-		this.showScreen("buy-screen");
-		this.buyScreen.render();
-	}
-
-	showSellScreen() {
-		this.showScreen("sell-screen");
-		this.sellScreen.render();
+	showShopScreen() {
+		this.showScreen("shop-screen");
+		this.shopScreen.render();
 	}
 
 	showStatsScreen() {
@@ -268,49 +258,18 @@ class Game {
 		return nextLevelRequirement ? nextLevelRequirement.experience : "MAX";
 	}
 
-	levelUp() {
-		this.player.maxHP += 1;
-
-		if (this.player.level % 25 == 0) {
-			this.player.regeneration += 1;
-		}
-
-		this.player.toughness += 1;
-		this.player.swiftness += 1;
-
-		if (this.player.level % 10 == 0) {
-			this.player.fortitude += 1;
-			this.player.defiance += 1;
-			this.player.availableSpellPoints += 1;
-		}
-
-		this.player.currentHP = this.player.maxHP;
-
-		updateGameNotice(`Congratulations! You leveled up to level ${this.player.level}.`);
-		updateGameNotice(`Go to stats screen to upgrade your stats!`)
-
-		this.updatePlayerStats();
-	}
-	
 	checkLevelUp() {
-		const currentLevel = this.player.level;
-		const experiencePoints = this.player.experience;
-	
-		for (let i = 0; i < gameConfig.levelUpRequirements.length; i++) {
-			const requirement = gameConfig.levelUpRequirements[i];
-			if (currentLevel < requirement.level && experiencePoints >= requirement.experience) {
-				this.player.level = requirement.level;
-				this.player.experience = requirement.experience;
-				this.levelUp();
-				this.updatePlayerStats();
-				break;
-			}
+		const newLevel = this.player.checkLevelUp(gameConfig.levelUpRequirements);
+		if (newLevel !== null) {
+			updateGameNotice(`Congratulations! You leveled up to level ${newLevel}.`);
+			updateGameNotice(`Go to stats screen to upgrade your stats!`);
+			this.updatePlayerStats();
 		}
 	}
 
 	regenerateHP() {
 		if (this.player.currentHP < this.player.maxHP) {
-			this.player.currentHP = Math.min(this.player.maxHP, this.player.currentHP + this.player.regeneration + this.player.calculateEquippedRegeneration());
+			this.player.regenerate();
 			this.updatePlayerCurrentHP();
 		}
 	}

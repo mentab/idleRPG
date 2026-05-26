@@ -21,22 +21,21 @@ class SpellsScreen {
 			
 			const minLevelRequired = index * 10;
 
-			let spellDescription = [];
-			for (const effect of spell.effects) {
-				spellDescription.push(effect.target === "self" ? "+" : "-");
-				spellDescription.push(spellLevel ? (gameConfig.effectValue + ((spellLevel - 1) * gameConfig.effectValue)) * 100 : 0);
-				spellDescription.push("%");
-				spellDescription.push(effect.target);
-				spellDescription.push(effect.stat);
-				spellDescription.push("<br/>");
-			}
+			const effectPercent = spellLevel
+				? Math.round((gameConfig.effectValue + (spellLevel - 1) * gameConfig.effectValue) * 100)
+				: 0;
+			const spellDescription = spell.effects.map(effect => {
+				const sign = effect.target === "self" ? "+" : "-";
+				const targetLabel = effect.target === "self" ? "your" : "enemy's";
+				return `${sign}${effectPercent}% ${targetLabel} <strong>${effect.stat}</strong>`;
+			}).join(', ');
 			
 			const spellItem = document.createElement('div');
 			spellItem.innerHTML = `${spell.icon}
 			<strong>${spell.name}</strong><br/>
 			<small><em>Min Level: </em><strong>${minLevelRequired}</strong><br/>
 			<em>Current spell level: ${this.player[spell.id]}</em><br/><br/>
-			<small>${spellDescription.join(' ')}</small><br/><br/>`;
+			<small>${spellDescription}</small><br/><br/>`;
 
 			if (this.player.level >= minLevelRequired) {
 				if (spellLevel > 0) {

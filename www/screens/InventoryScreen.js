@@ -23,8 +23,17 @@ class InventoryScreen {
 			const emptyInventoryElement = document.createElement('strong');
 			emptyInventoryElement.innerHTML = `Your inventory is empty`;
 			inventory.appendChild(emptyInventoryElement);
+			return;
 		}
-	
+
+		const sortButton = document.createElement('button');
+		sortButton.textContent = 'Sort by Level ↓';
+		sortButton.addEventListener('click', () => {
+			this.player.inventory.sort((a, b) => (b.level + b.improvementLevel) - (a.level + a.improvementLevel));
+			this.render();
+		});
+		inventory.appendChild(sortButton);
+
 		for (const item of this.player.inventory) {
 			const { icon, name, stat, level, improvementLevel } = item;
 
@@ -41,6 +50,22 @@ class InventoryScreen {
 			const improvementInfo = document.createElement('div');
 			improvementInfo.innerHTML = `<em>ImprovementLevel: </em><strong>${improvementLevel}</strong>`;
 			itemElement.appendChild(improvementInfo);
+
+			const equippedItem = this.player[`${stat}Item`];
+			if (equippedItem) {
+				const equippedFinal = equippedItem.level + equippedItem.improvementLevel;
+				const thisFinal = level + improvementLevel;
+				const diff = thisFinal - equippedFinal;
+				const comparisonEl = document.createElement('div');
+				if (diff > 0) {
+					comparisonEl.innerHTML = `<small style="color:green">▲ +${diff} vs equipped</small>`;
+				} else if (diff < 0) {
+					comparisonEl.innerHTML = `<small style="color:red">▼ ${diff} vs equipped</small>`;
+				} else {
+					comparisonEl.innerHTML = `<small><em>= same as equipped</em></small>`;
+				}
+				itemElement.appendChild(comparisonEl);
+			}
 
 			const equipButton = document.createElement('button');
 			equipButton.textContent = `Equip`;

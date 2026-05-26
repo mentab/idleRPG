@@ -27,8 +27,9 @@ class AreasScreen {
 			areaName.innerHTML = `${icon}<br/><strong>${name}</strong>`;
 			areaElement.appendChild(areaName);
 
+			const minLevelDisplay = minLevelRequired === 0 ? 1 : minLevelRequired;
 			const travelInfo = document.createElement('div');
-			travelInfo.innerHTML = `<small><em>Min Level: </em><strong>${minLevelRequired}</strong>`;
+			travelInfo.innerHTML = `<small><em>Min Level: </em><strong>${minLevelDisplay}</strong>`;
 			areaElement.appendChild(travelInfo);
 
 			if (this.player.areaIndex === index) {
@@ -40,6 +41,10 @@ class AreasScreen {
 				areaButton.textContent = `Travel`;
 				areaButton.addEventListener('click', () => this.travelToArea(area, index));
 				areaElement.appendChild(areaButton);
+			} else {
+				const lockedText = document.createElement('small');
+				lockedText.innerHTML = `🔒 Requires level <strong>${minLevelDisplay}</strong>`;
+				areaElement.appendChild(lockedText);
 			}
 
 			areaList.appendChild(areaElement);

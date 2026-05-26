@@ -78,12 +78,12 @@ export class Player {
 				case "resistance":
                 case "block":
                 case "penetration":
-					return Math.ceil(finalLevel / 10);
+					return Math.ceil(finalLevel / 5);
 				case "bonusExp":
 				case "bonusLoot":
 					return Math.floor(finalLevel / 20);
                 case "regeneration":
-                    return Math.floor(finalLevel / 30);
+                    return Math.floor(finalLevel / 15);
 				default:
 					return 0;
 			}
@@ -134,6 +134,37 @@ export class Player {
 
     calculateEquippedBonusLoot() {
         return this.calculateEquippedStat("bonusLoot");
+    }
+
+    levelUp() {
+        this.maxHP += 1;
+        if (this.level % 25 === 0) {
+            this.regeneration += 1;
+        }
+        this.toughness += 1;
+        this.swiftness += 1;
+        if (this.level % 10 === 0) {
+            this.fortitude += 1;
+            this.defiance += 1;
+            this.availableSpellPoints += 1;
+        }
+        this.currentHP = this.maxHP;
+    }
+
+    regenerate() {
+        this.currentHP = Math.min(this.maxHP, this.currentHP + this.regeneration + this.calculateEquippedRegeneration());
+    }
+
+    checkLevelUp(levelUpRequirements) {
+        for (const requirement of levelUpRequirements) {
+            if (this.level < requirement.level && this.experience >= requirement.experience) {
+                this.level = requirement.level;
+                this.experience = requirement.experience;
+                this.levelUp();
+                return this.level;
+            }
+        }
+        return null;
     }
 
     savePlayerData() {

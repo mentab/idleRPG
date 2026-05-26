@@ -27,7 +27,7 @@ export function normalizeMiniGameScore(rawResult) {
  * @param {number} score 0–100
  * @returns {{ type: 'buff'|'debuff', stat: string, percent: number, turns: number, score: number, tier: number }}
  */
-export function createCombatModifier(score) {
+export function createCombatModifier(score, playerStats = null) {
 	const normalized = normalizeMiniGameScore(score);
 	let tier;
 
@@ -36,7 +36,15 @@ export function createCombatModifier(score) {
 	else if (normalized >= 30) tier = 1;
 	else tier = 0;
 
-	const stat = COMBAT_STATS[Math.floor(Math.random() * COMBAT_STATS.length)];
+	// Buffs amplify the player's strongest stat; debuffs hit randomly
+	let stat;
+	if (playerStats && tier >= 2) {
+		stat = COMBAT_STATS.reduce((best, s) =>
+			(playerStats[s] ?? 0) > (playerStats[best] ?? 0) ? s : best
+		);
+	} else {
+		stat = COMBAT_STATS[Math.floor(Math.random() * COMBAT_STATS.length)];
+	}
 
 	if (tier >= 2) {
 		return {

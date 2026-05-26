@@ -21,7 +21,12 @@ class ImprovementsScreen {
 			{ slot: 'Damage', item: this.player.damageItem },
 			{ slot: 'Defense', item: this.player.defenseItem },
 			{ slot: 'Precision', item: this.player.precisionItem },
-			{ slot: 'Evasion', item: this.player.evasionItem }
+			{ slot: 'Evasion', item: this.player.evasionItem },
+			{ slot: 'Critical', item: this.player.criticalItem },
+			{ slot: 'Resistance', item: this.player.resistanceItem },
+			{ slot: 'Block', item: this.player.blockItem },
+			{ slot: 'Penetration', item: this.player.penetrationItem },
+			{ slot: 'Regeneration', item: this.player.regenerationItem },
 		];
 
 		upgradableItems.forEach(({ slot, item }) => {
@@ -45,7 +50,12 @@ class ImprovementsScreen {
 				const improvementInfo = document.createElement('div');
 				improvementInfo.innerHTML = `<em>ImprovementLevel: </em><strong>${improvementLevel}</strong>`;
 				itemElement.appendChild(improvementInfo);
-	
+
+				const statBonus = this.player.calculateEquippedStat(stat);
+				const bonusInfo = document.createElement('div');
+				bonusInfo.innerHTML = `<small>Current bonus: <strong>+${statBonus} ${stat}</strong></small>`;
+				itemElement.appendChild(bonusInfo);
+
 				const costInfo = document.createElement('div');
 				costInfo.innerHTML = `Cost: <strong>${cost}</strong>`;
 				itemElement.appendChild(costInfo);
