@@ -7,10 +7,18 @@ const FAILURE_RATES = [0.10, 0.15, 0.15, 0.25, 0.25, 0.35, 0.35, 0.45, 0.45, 0.5
 const CRAFT_COOLDOWN = 90; // seconds
 
 class CraftScreen {
-    constructor(player, updatePlayerStats) {
+    constructor(player, updatePlayerStats, questModule = null) {
         this.player = player;
         this.updatePlayerStats = updatePlayerStats;
+        this.questModule = questModule;
         this.cooldowns = new Map();
+        this._timerInterval = null;
+    }
+
+    _effectiveFailRate(areaIndex) {
+        const base = FAILURE_RATES[areaIndex] ?? 0.5;
+        const reduction = (this.player.prestigeLevel ?? 0) * 0.05;
+        return Math.max(0.05, base - reduction);
     }
 
     render() {
@@ -19,7 +27,11 @@ class CraftScreen {
 
         const area = gameConfig.areas[this.player.areaIndex];
         const header = document.getElementById('crafting-xp');
-        if (header) header.textContent = `Recipes for: ${area.icon} ${area.name}`;
+        if (header) {
+            const prestigeLevel = this.player.prestigeLevel ?? 0;
+            const reductionLabel = prestigeLevel > 0 ? ` <small style="color:#4da6ff">(-${prestigeLevel * 5}% fail from prestige)</small>` : '';
+            header.innerHTML = `Recipes for: ${area.icon} ${area.name}${reductionLabel}`;
+        }
 
         const recipes = gameConfig.craftRecipes.filter(r => r.areaIndex === this.player.areaIndex);
 
@@ -37,7 +49,7 @@ class CraftScreen {
             card.appendChild(nameEl);
 
             const infoEl = document.createElement('div');
-            const failRate = Math.round((FAILURE_RATES[recipe.areaIndex] ?? 0.5) * 100);
+            const failRate = Math.round(this._effectiveFailRate(recipe.areaIndex) * 100);
             infoEl.innerHTML = `<small><em>Stat:</em> <strong>${recipe.stat}</strong> — <em>Lv:</em> <strong>${recipe.level}</strong> — <span class="${rarity}">${getRarityLabel(recipe.level)}</span> — <em>Fail:</em> <strong>${failRate}%</strong></small>`;
             card.appendChild(infoEl);
 
@@ -58,6 +70,7 @@ class CraftScreen {
             const onCooldown = remaining > 0;
 
             const btn = document.createElement('button');
+            btn.dataset.recipeId = recipe.id;
             btn.disabled = !canCraft || onCooldown;
             btn.textContent = onCooldown ? `⏳ ${remaining}s` : '⚒️ Craft';
             btn.addEventListener('click', () => this.craft(recipe));
@@ -65,6 +78,33 @@ class CraftScreen {
 
             container.appendChild(card);
         }
+
+        this._startTimer();
+    }
+
+    _startTimer() {
+        if (this._timerInterval) clearInterval(this._timerInterval);
+
+        this._timerInterval = setInterval(() => {
+            const container = document.getElementById('crafting-recipes-list');
+            if (!container) { clearInterval(this._timerInterval); return; }
+
+            let anyOnCooldown = false;
+            for (const btn of container.querySelectorAll('button[data-recipe-id]')) {
+                const recipeId = btn.dataset.recipeId;
+                const lastCraft = this.cooldowns.get(recipeId) ?? 0;
+                const remaining = Math.ceil(CRAFT_COOLDOWN - (Date.now() - lastCraft) / 1000);
+                if (remaining > 0) {
+                    anyOnCooldown = true;
+                    btn.textContent = `⏳ ${remaining}s`;
+                } else if (btn.textContent.startsWith('⏳')) {
+                    // Cooldown just expired — re-render to re-enable properly
+                    this.render();
+                    return;
+                }
+            }
+            if (!anyOnCooldown) clearInterval(this._timerInterval);
+        }, 500);
     }
 
     craft(recipe) {
@@ -96,8 +136,8 @@ class CraftScreen {
         // Set cooldown
         this.cooldowns.set(recipe.id, Date.now());
 
-        // Failure rate
-        const failureRate = FAILURE_RATES[recipe.areaIndex] ?? 0.5;
+        // Failure rate (reduced by prestige)
+        const failureRate = this._effectiveFailRate(recipe.areaIndex);
         if (Math.random() < failureRate) {
             updateGameNotice(`💔 Crafting failed! Materials consumed.`);
             this.updatePlayerStats();
@@ -118,7 +158,8 @@ class CraftScreen {
             craftRank: 2,
         };
         this.player.inventory.push(item);
-        updateGameNotice(`Crafted ${recipe.icon} ${recipe.name}!`);
+        updateGameNotice(`⚒️ Crafted ${recipe.icon} ${recipe.name}!`);
+        if (this.questModule) this.questModule.trackEvent('craftItem', 1);
         this.updatePlayerStats();
         this.render();
     }

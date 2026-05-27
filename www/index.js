@@ -97,11 +97,13 @@ class Game {
 		);
 		this.gatherScreen = new GatherScreen(
 			this.player,
-			this.updatePlayerStats.bind(this)
+			this.updatePlayerStats.bind(this),
+			this.questModule
 		);
 		this.craftScreen = new CraftScreen(
 			this.player,
-			this.updatePlayerStats.bind(this)
+			this.updatePlayerStats.bind(this),
+			this.questModule
 		);
 		this.achievementsScreen = new AchievementsScreen(
 			this.player,

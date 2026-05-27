@@ -29,6 +29,10 @@ const QUEST_POOL = [
     { id: 'q_shop',          description: 'Spend 100 coins at the shop',      type: 'shopSpend',       target: 100, reward: { type: 'prestigePoints', amount: 1  } },
     { id: 'q_minigame80_3',  description: 'Score ≥80 on 3 mini-games',        type: 'miniGameScore80', target: 3,   reward: { type: 'xp',            amount: 300 } },
     { id: 'q_exploration10', description: 'Win 10 Exploration battles',       type: 'explorationWin',  target: 10,  reward: { type: 'coins',         amount: 200 } },
+    { id: 'q_gather5',       description: 'Gather 5 resources',               type: 'gatherResource',  target: 5,   reward: { type: 'coins',         amount: 80  } },
+    { id: 'q_gather15',      description: 'Gather 15 resources',              type: 'gatherResource',  target: 15,  reward: { type: 'xp',            amount: 250 } },
+    { id: 'q_craft1',        description: 'Craft an item',                    type: 'craftItem',       target: 1,   reward: { type: 'prestigePoints', amount: 1  } },
+    { id: 'q_craft3',        description: 'Craft 3 items',                    type: 'craftItem',       target: 3,   reward: { type: 'coins',         amount: 300 } },
 ];
 const CRAFT_RECIPES = [
     // Area 0 — Shimmering Meadows

@@ -88,7 +88,8 @@ class ShopScreen {
 			if (isGathering) {
 				itemInfo.innerHTML = `<small><em>Lv${level} — crafting material</em></small>`;
 			} else {
-				itemInfo.innerHTML = `<small><em>Level: </em><strong>${level}</strong> - <em>Stat: </em><strong>${stat}</strong> - <em>Improvement: </em><strong>${improvementLevel}</strong></small>`;
+				const craftBadge = item.craftRank ? ` <span style="color:#4da6ff">⚒️ Crafted</span>` : '';
+				itemInfo.innerHTML = `<small><em>Level: </em><strong>${level}</strong> - <em>Stat: </em><strong>${stat}</strong> - <em>Improvement: </em><strong>${improvementLevel}</strong>${craftBadge}</small>`;
 			}
 			itemElement.appendChild(itemInfo);
 
@@ -100,9 +101,17 @@ class ShopScreen {
 				const sellAllButton = document.createElement('button');
 				sellAllButton.textContent = 'Sell All';
 				sellAllButton.addEventListener('click', () => {
-					const qty = this.player.inventory.filter(i => i.name === item.name && i.improvementLevel === item.improvementLevel).length;
+					const qty = this.player.inventory.filter(i =>
+						i.name === item.name
+						&& (i.improvementLevel ?? 0) === (item.improvementLevel ?? 0)
+						&& (i.craftRank ?? 0) === (item.craftRank ?? 0)
+					).length;
 					this.player.money += value * qty;
-					this.player.inventory = this.player.inventory.filter(i => i.name !== item.name);
+					this.player.inventory = this.player.inventory.filter(i =>
+						!(i.name === item.name
+						&& (i.improvementLevel ?? 0) === (item.improvementLevel ?? 0)
+						&& (i.craftRank ?? 0) === (item.craftRank ?? 0))
+					);
 					updateGameNotice(`Sold ${qty}x ${name} for ${value * qty} coins.`);
 					this.updatePlayerStats();
 					this.render();
@@ -132,11 +141,13 @@ class ShopScreen {
 		const grouped = [];
 		const seen = new Set();
 		for (const item of this.player.inventory) {
-			const key = `${item.name}-${item.improvementLevel}`;
+			const key = `${item.name}-${item.improvementLevel ?? 0}-${item.craftRank ?? 0}`;
 			if (!seen.has(key)) {
 				seen.add(key);
 				const quantity = this.player.inventory.filter(
-					i => i.name === item.name && i.improvementLevel === item.improvementLevel
+					i => i.name === item.name
+						&& (i.improvementLevel ?? 0) === (item.improvementLevel ?? 0)
+						&& (i.craftRank ?? 0) === (item.craftRank ?? 0)
 				).length;
 				grouped.push({ item, quantity });
 			}

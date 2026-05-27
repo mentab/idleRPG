@@ -54,7 +54,6 @@ export class Player {
         this.inventory = [];
         this.money = 0;
         this.experience = 0;
-        this.gatheringXP = 0;
         this.areaIndex = 0;
         this.killedEnemies = new Map();
         this.claimedRewards = new Map();
