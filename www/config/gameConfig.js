@@ -2,6 +2,111 @@
 
 
 // @later do multiple files, one for each game
+
+const RELICS = [
+    { id: 'iron_will',        icon: '🔩', name: 'Iron Will',         cost: 3, description: '+10% XP from all combat' },
+    { id: 'veterans_eye',     icon: '👁️', name: "Veteran's Eye",     cost: 2, description: 'Mini-game buffs last +1 extra turn' },
+    { id: 'scavenger',        icon: '🦅', name: 'Scavenger',         cost: 4, description: '+15% item loot drop chance' },
+    { id: 'lucky_strike',     icon: '⚡', name: 'Lucky Strike',      cost: 5, description: 'Critical hits deal 3× damage instead of 2×' },
+    { id: 'challengers_mark', icon: '👑', name: "Challenger's Mark", cost: 3, description: 'Boss fights award 2× XP' },
+    { id: 'gold_rush',        icon: '💰', name: 'Gold Rush',         cost: 4, description: '+20% coins from all battles' },
+    { id: 'survivors_grit',   icon: '💪', name: "Survivor's Grit",   cost: 3, description: 'Heal 10% max HP after every victory' },
+    { id: 'battle_hardened',  icon: '🛡️', name: 'Battle Hardened',  cost: 5, description: '+5 flat bonus to damage and defense in combat' },
+    { id: 'blood_taste',      icon: '🩸', name: 'Blood Taste',       cost: 2, description: 'Win streak bonuses (coins/XP) are doubled' },
+    { id: 'unstoppable',      icon: '🔥', name: 'Unstoppable',       cost: 6, description: 'Every 10-win streak grants a free item drop' },
+];
+
+const QUEST_POOL = [
+    { id: 'q_exploration',   description: 'Win 5 Exploration battles',        type: 'explorationWin',  target: 5,   reward: { type: 'coins',         amount: 100 } },
+    { id: 'q_minigame80',    description: 'Score ≥80 on a mini-game',         type: 'miniGameScore80', target: 1,   reward: { type: 'coins',         amount: 80  } },
+    { id: 'q_no_flee',       description: 'Win 3 battles without fleeing',    type: 'winNoFlee',       target: 3,   reward: { type: 'xp',            amount: 200 } },
+    { id: 'q_boss',          description: 'Defeat a Boss',                    type: 'challengeWin',   target: 1,   reward: { type: 'coins',         amount: 150 } },
+    { id: 'q_duels',         description: 'Win 3 Duels',                      type: 'duelWin',         target: 3,   reward: { type: 'xp',            amount: 300 } },
+    { id: 'q_streak5',       description: 'Reach a 5-win streak',             type: 'streak5',         target: 1,   reward: { type: 'coins',         amount: 200 } },
+    { id: 'q_mission',       description: 'Complete a Mission',               type: 'missionWin',      target: 1,   reward: { type: 'xp',            amount: 250 } },
+    { id: 'q_loot',          description: 'Pick up 2 items from combat',      type: 'lootDrop',        target: 2,   reward: { type: 'coins',         amount: 120 } },
+    { id: 'q_any10',         description: 'Win 10 battles of any type',       type: 'anyWin',          target: 10,  reward: { type: 'xp',            amount: 400 } },
+    { id: 'q_shop',          description: 'Spend 100 coins at the shop',      type: 'shopSpend',       target: 100, reward: { type: 'prestigePoints', amount: 1  } },
+    { id: 'q_minigame80_3',  description: 'Score ≥80 on 3 mini-games',        type: 'miniGameScore80', target: 3,   reward: { type: 'xp',            amount: 300 } },
+    { id: 'q_exploration10', description: 'Win 10 Exploration battles',       type: 'explorationWin',  target: 10,  reward: { type: 'coins',         amount: 200 } },
+    { id: 'q_gather5',       description: 'Gather 5 resources',               type: 'gatherResource',  target: 5,   reward: { type: 'coins',         amount: 80  } },
+    { id: 'q_gather15',      description: 'Gather 15 resources',              type: 'gatherResource',  target: 15,  reward: { type: 'xp',            amount: 250 } },
+    { id: 'q_craft1',        description: 'Craft an item',                    type: 'craftItem',       target: 1,   reward: { type: 'prestigePoints', amount: 1  } },
+    { id: 'q_craft3',        description: 'Craft 3 items',                    type: 'craftItem',       target: 3,   reward: { type: 'coins',         amount: 300 } },
+];
+const CRAFT_RECIPES = [
+    // Area 0 — Shimmering Meadows
+    { id: 'craft_meadow_def',  areaIndex: 0, name: 'Meadow Guard',     icon: '🌿🛡️', stat: 'defense',     level: 9,
+      ingredients: [{ name: 'Healing Herb', qty: 5 }, { name: 'Green Leaf', qty: 4 }, { name: 'Morning Dew', qty: 1 }] },
+    { id: 'craft_meadow_dmg',  areaIndex: 0, name: 'Meadow Shiv',      icon: '🌼🔪',  stat: 'damage',      level: 9,
+      ingredients: [{ name: 'Green Leaf', qty: 5 }, { name: 'Shimmering Petals', qty: 3 }, { name: 'Dandelion Fluff', qty: 1 }] },
+    { id: 'craft_meadow_crit', areaIndex: 0, name: 'Nature Band',      icon: '🍀💍',  stat: 'critical',    level: 8,
+      ingredients: [{ name: 'Healing Herb', qty: 4 }, { name: 'Glowing Fungus', qty: 3 }, { name: 'Dandelion Fluff', qty: 2 }] },
+    // Area 1 — Whispering Forest
+    { id: 'craft_forest_def',  areaIndex: 1, name: 'Thornweave Guard', icon: '🌿🧥',  stat: 'defense',     level: 19,
+      ingredients: [{ name: 'Enchanted Moss', qty: 5 }, { name: 'Mystic Mushroom', qty: 4 }, { name: 'Silverleaf', qty: 2 }] },
+    { id: 'craft_forest_dmg',  areaIndex: 1, name: 'Moonbark Blade',   icon: '🌕🏏',  stat: 'damage',      level: 19,
+      ingredients: [{ name: 'Mystic Mushroom', qty: 5 }, { name: 'Gleaming Stones', qty: 3 }, { name: 'Silverleaf', qty: 2 }] },
+    { id: 'craft_forest_eva',  areaIndex: 1, name: 'Starleaf Trinket', icon: '✨🔮',  stat: 'evasion',     level: 18,
+      ingredients: [{ name: 'Soothing Berries', qty: 5 }, { name: 'Gleaming Stones', qty: 3 }, { name: 'Golden Petals', qty: 2 }] },
+    // Area 2 — Crystal Caverns
+    { id: 'craft_crystal_def', areaIndex: 2, name: 'Crystal Mail',     icon: '💎🛡️', stat: 'defense',     level: 29,
+      ingredients: [{ name: 'Twilight Berries', qty: 5 }, { name: 'Starlight Mushroom', qty: 4 }, { name: 'Serpent Scale', qty: 2 }] },
+    { id: 'craft_crystal_dmg', areaIndex: 2, name: 'Crystal Edge',     icon: '💎🔪',  stat: 'damage',      level: 29,
+      ingredients: [{ name: 'Starlight Mushroom', qty: 5 }, { name: "Dragon's Tongue", qty: 4 }, { name: 'Serpent Scale', qty: 2 }] },
+    { id: 'craft_crystal_pre', areaIndex: 2, name: 'Crystal Focus',    icon: '💎🧤',  stat: 'precision',   level: 28,
+      ingredients: [{ name: 'Twilight Berries', qty: 4 }, { name: 'Moonlight Orchid', qty: 3 }, { name: "Dragon's Tongue", qty: 2 }] },
+    // Area 3 — Crimson Citadel
+    { id: 'craft_crimson_def', areaIndex: 3, name: 'Hellfire Plate',   icon: '🔥🛡️', stat: 'defense',     level: 39,
+      ingredients: [{ name: 'Moonflower', qty: 5 }, { name: 'Ghost Orchid', qty: 4 }, { name: 'Dragonfire Bloom', qty: 2 }] },
+    { id: 'craft_crimson_dmg', areaIndex: 3, name: 'Crimson Blade',    icon: '🩸⚔️',  stat: 'damage',      level: 39,
+      ingredients: [{ name: 'Ghost Orchid', qty: 5 }, { name: 'Nightshade Berry', qty: 4 }, { name: 'Dragonfire Bloom', qty: 2 }] },
+    { id: 'craft_crimson_crit',areaIndex: 3, name: 'Blood Ring',       icon: '🩸💍',  stat: 'critical',    level: 38,
+      ingredients: [{ name: 'Moonflower', qty: 4 }, { name: 'Nightshade Berry', qty: 3 }, { name: 'Dragonfire Bloom', qty: 2 }] },
+    // Area 4 — Stormy Peaks
+    { id: 'craft_stormy_def',  areaIndex: 4, name: 'Stormweave Mail',  icon: '⛈️🧥',  stat: 'defense',     level: 49,
+      ingredients: [{ name: "Basilisk's Breath", qty: 5 }, { name: 'Basilisk Scale', qty: 4 }, { name: 'Venomous Petal', qty: 2 }] },
+    { id: 'craft_stormy_dmg',  areaIndex: 4, name: 'Thunderfang',      icon: '⚡🔪',  stat: 'damage',      level: 49,
+      ingredients: [{ name: 'Basilisk Scale', qty: 5 }, { name: "Basilisk's Breath", qty: 4 }, { name: 'Venomous Petal', qty: 2 }] },
+    { id: 'craft_stormy_eva',  areaIndex: 4, name: 'Windveil Trinket', icon: '🌪️🔮',  stat: 'evasion',     level: 48,
+      ingredients: [{ name: "Basilisk's Breath", qty: 4 }, { name: 'Basilisk Scale', qty: 3 }, { name: 'Venomous Petal', qty: 2 }] },
+    // Area 5 — Lost Catacombs
+    { id: 'craft_lost_def',    areaIndex: 5, name: 'Crypt Shroud',     icon: '⚰️🧥',  stat: 'defense',     level: 59,
+      ingredients: [{ name: 'Phoenix Feather', qty: 5 }, { name: 'Phoenix Ash', qty: 4 }, { name: "Witch's Thistle", qty: 2 }] },
+    { id: 'craft_lost_dmg',    areaIndex: 5, name: 'Shadow Fang',      icon: '👤🔪',  stat: 'damage',      level: 59,
+      ingredients: [{ name: 'Phoenix Ash', qty: 5 }, { name: 'Phoenix Feather', qty: 4 }, { name: "Witch's Thistle", qty: 2 }] },
+    { id: 'craft_lost_crit',   areaIndex: 5, name: 'Shadow Loop',      icon: '🌑☠️',  stat: 'critical',    level: 58,
+      ingredients: [{ name: 'Phoenix Feather', qty: 4 }, { name: 'Phoenix Ash', qty: 3 }, { name: "Witch's Thistle", qty: 2 }] },
+    // Area 6 — Celestial Observatory
+    { id: 'craft_celest_def',  areaIndex: 6, name: 'Starlight Vestment', icon: '✨🧥',  stat: 'defense',     level: 69,
+      ingredients: [{ name: 'Enchanted Vines', qty: 6 }, { name: 'Arcane Essence', qty: 4 }] },
+    { id: 'craft_celest_dmg',  areaIndex: 6, name: 'Celestial Blade',   icon: '🌌⚔️',  stat: 'damage',      level: 69,
+      ingredients: [{ name: 'Arcane Essence', qty: 6 }, { name: 'Enchanted Vines', qty: 4 }] },
+    { id: 'craft_celest_pen',  areaIndex: 6, name: 'Oracle Amulet',     icon: '🌌✨',  stat: 'penetration', level: 68,
+      ingredients: [{ name: 'Enchanted Vines', qty: 5 }, { name: 'Arcane Essence', qty: 4 }] },
+    // Area 7 — Frozen Tundra
+    { id: 'craft_frozen_def',  areaIndex: 7, name: 'Frost Guard',     icon: '❄️🛡️', stat: 'defense',     level: 79,
+      ingredients: [{ name: 'Eternal Blossom', qty: 6 }, { name: 'Celestial Petal', qty: 4 }] },
+    { id: 'craft_frozen_dmg',  areaIndex: 7, name: 'Blizzard Edge',   icon: '❄️⚔️',  stat: 'damage',      level: 79,
+      ingredients: [{ name: 'Celestial Petal', qty: 6 }, { name: 'Eternal Blossom', qty: 4 }] },
+    { id: 'craft_frozen_blk',  areaIndex: 7, name: 'Tundra Shield',   icon: '❄️🔰',  stat: 'block',       level: 78,
+      ingredients: [{ name: 'Eternal Blossom', qty: 5 }, { name: 'Celestial Petal', qty: 4 }] },
+    // Area 8 — Volcanic Depths
+    { id: 'craft_volcanic_def',areaIndex: 8, name: 'Magma Plate',     icon: '🌋🛡️', stat: 'defense',     level: 89,
+      ingredients: [{ name: 'Starfire Crystal', qty: 6 }, { name: 'Moonlight Essence', qty: 4 }] },
+    { id: 'craft_volcanic_dmg',areaIndex: 8, name: 'Ember Sword',     icon: '🔥⚔️',  stat: 'damage',      level: 89,
+      ingredients: [{ name: 'Moonlight Essence', qty: 6 }, { name: 'Starfire Crystal', qty: 4 }] },
+    { id: 'craft_volcanic_crit',areaIndex:8, name: 'Magma Ring',      icon: '🌋💍',  stat: 'critical',    level: 88,
+      ingredients: [{ name: 'Starfire Crystal', qty: 5 }, { name: 'Moonlight Essence', qty: 4 }] },
+    // Area 9 — Cursed Catacombs
+    { id: 'craft_cursed_def',  areaIndex: 9, name: 'Undying Shroud',  icon: '☠️🧥',  stat: 'defense',     level: 99,
+      ingredients: [{ name: 'Starfire Crystal', qty: 8 }, { name: 'Moonlight Essence', qty: 6 }] },
+    { id: 'craft_cursed_dmg',  areaIndex: 9, name: 'Cursed Reaper',   icon: '💀⚔️',  stat: 'damage',      level: 99,
+      ingredients: [{ name: 'Moonlight Essence', qty: 8 }, { name: 'Starfire Crystal', qty: 6 }] },
+    { id: 'craft_cursed_res',  areaIndex: 9, name: 'Soul Seal',       icon: '🌑🧣',  stat: 'resistance',  level: 98,
+      ingredients: [{ name: 'Starfire Crystal', qty: 6 }, { name: 'Moonlight Essence', qty: 6 }] },
+];
+
 const gameHash = window.location.hash.slice(1);
 const game = gameHash || 'fantasyClickerBattles';
 
@@ -125,51 +230,90 @@ const config = {
 				name: "Shimmering Meadows",
 				description: "Shimmering Meadows is a picturesque landscape filled with vibrant wildflowers and lush greenery. Crystal-clear streams meander through the meadows, reflecting the sunlight and creating a dazzling display. The air is fresh and fragrant, carrying the scent of blooming flowers. It is a serene and tranquil place, inviting adventurers to explore its natural beauty.",
 				icon: "🌼🌿",
+				modifiers: [],
 			},
 			{
 				name: "Whispering Forest",
 				description: "Whispering Forest is an enchanted realm dominated by towering ancient trees. The dense canopy casts a mesmerizing pattern of light and shadow on the forest floor. Soft whispers seem to emanate from the trees, creating an otherworldly ambiance. The air is cool and crisp, and the ground is covered in a carpet of moss and fallen leaves. It is a place of mystery and magic, where secrets are whispered among the ancient trees.",
 				icon: "🌳🍂",
+				modifiers: [
+					{ stat: 'evasion', bonus: 0.15, label: 'EVA +15%' },
+				],
 			},
 			{
 				name: "Crystal Caverns",
 				description: "Crystal Caverns is a subterranean wonderland adorned with shimmering crystals of various hues. The cavern walls glisten with an ethereal glow, creating a breathtaking sight. Stalactites and stalagmites form intricate formations, giving the cave an otherworldly appearance. The air is cool and tinged with a hint of mineral scent. It is a place where the beauty of the underground world unfolds, waiting to be discovered.",
 				icon: "💎🕳️",
+				modifiers: [
+					{ stat: 'defense', bonus: 0.20, label: 'DEF +20%' },
+				],
 			},
 			{
 				name: "Crimson Citadel",
 				description: "Crimson Citadel stands tall amidst a rugged landscape, its imposing architecture evoking a sense of power and mystery. The citadel is adorned with intricate carvings and towering spires that reach for the sky. Fiery torches illuminate the halls, casting dancing shadows. The air is thick with an aura of danger and forbidden knowledge. It is a place of dark allure, where only the boldest dare to venture.",
 				icon: "🏰🔥",
+				modifiers: [
+					{ stat: 'damage', bonus: 0.15, label: 'DMG +15%' },
+				],
 			},
 			{
 				name: "Stormy Peaks",
 				description: "Stormy Peaks is a realm of towering mountains and relentless storms. Jagged cliffs and rocky terrain create a treacherous landscape. Thunder rumbles through the peaks, accompanied by flashes of lightning that light up the dark sky. Winds howl fiercely, carrying a sense of raw power. It is a place where nature's fury reigns supreme, testing the resilience and bravery of those who dare to conquer it.",
 				icon: "🏔️⛈️",
+				modifiers: [
+					{ stat: 'evasion',   bonus: 0.15, label: 'EVA +15%' },
+					{ stat: 'precision', bonus: 0.15, label: 'PRE +15%' },
+				],
 			},
 			{
 				name: "Lost Catacombs",
 				description: "Lost Catacombs lie hidden beneath the surface, a labyrinthine maze of ancient tunnels and forgotten chambers. Crumbling pillars and eerie statues line the passageways, exuding an aura of decay and mystery. Flickering torches cast long shadows, adding to the sense of foreboding. The air is thick with the scent of dampness and ancient secrets. It is a place where the past lingers, waiting to be unearthed.",
 				icon: "⚰️🕯️",
+				modifiers: [
+					{ stat: 'defense',    bonus: 0.20, label: 'DEF +20%' },
+					{ stat: 'resistance', bonus: 0.20, label: 'RES +20%' },
+				],
 			},
 			{
 				name: "Celestial Observatory",
 				description: "Celestial Observatory is a celestial haven perched atop a high peak. The observatory offers a panoramic view of the star-studded night sky, where constellations twinkle in their eternal dance. Telescopes and instruments stand ready to unravel the mysteries of the cosmos. The air is crisp and tinged with the scent of fresh air and anticipation. It is a place where the wonders of the universe unfold, inviting stargazers and dreamers.",
 				icon: "🔭🌌",
+				modifiers: [
+					{ stat: 'damage',    bonus: 0.15, label: 'DMG +15%' },
+					{ stat: 'precision', bonus: 0.15, label: 'PRE +15%' },
+				],
 			},
 			{
 				name: "Frozen Tundra",
 				description: "Frozen Tundra stretches as far as the eye can see, a frozen wasteland cloaked in eternal winter. Snow-covered plains and icy peaks dominate the landscape, glistening in the pale sunlight. Frosty winds whip through the tundra, biting at exposed skin. The air is filled with a sense of icy solitude and quietude. It is a place of harsh beauty, where survival is a constant battle against the elements.",
 				icon: "❄️🏔️",
+				modifiers: [
+					{ stat: 'defense',    bonus: 0.20, label: 'DEF +20%' },
+					{ stat: 'evasion',    bonus: 0.20, label: 'EVA +20%' },
+					{ stat: 'resistance', bonus: 0.15, label: 'RES +15%' },
+				],
 			},
 			{
 				name: "Volcanic Depths",
 				description: "Volcanic Depths is a fiery abyss filled with molten rock and intense heat. Rivers of lava flow through the depths, casting an ominous glow on the jagged rock formations. Sulfurous fumes fill the air, creating an acrid and suffocating atmosphere. Tremors shake the ground, a constant reminder of the volatile nature of the place. It is a realm of searing danger and untamed power, where only the most fearless dare to tread.",
 				icon: "🌋🔥",
+				modifiers: [
+					{ stat: 'damage',      bonus: 0.25, label: 'DMG +25%' },
+					{ stat: 'critical',    bonus: 0.20, label: 'CRIT +20%' },
+					{ stat: 'penetration', bonus: 0.20, label: 'PEN +20%' },
+				],
 			},
 			{
 				name: "Cursed Catacombs",
 				description: "Cursed Catacombs hold the remnants of a forgotten civilization, entwined with dark magic and cursed energies. Crumbling tombs and crypts line the underground passages, bearing eerie inscriptions and macabre symbols. Flickering candles barely illuminate the desolate corridors, shrouded in an eternal twilight. The air is heavy with a sense of ancient curses and restless spirits. It is a place where the line between life and death blurs, testing the resolve of intrepid explorers.",
 				icon: "⚰️🌙",
+				modifiers: [
+					{ stat: 'damage',      bonus: 0.20, label: 'DMG +20%' },
+					{ stat: 'defense',     bonus: 0.20, label: 'DEF +20%' },
+					{ stat: 'evasion',     bonus: 0.20, label: 'EVA +20%' },
+					{ stat: 'precision',   bonus: 0.15, label: 'PRE +15%' },
+					{ stat: 'critical',    bonus: 0.15, label: 'CRIT +15%' },
+				],
 			},
 		],
 		spells: [
@@ -644,48 +788,51 @@ const config = {
 		]
 		*/
 		gatheringItems: [
-			{ name: "Healing Herb", type: "gathering", level: 1, icon: "🌿" },
-			{ name: "Green Leaf", type: "gathering", level: 1, icon: "🍀" },
-			{ name: "Glowing Fungus", type: "gathering", level: 1, icon: "🍄" },
-			{ name: "Shimmering Petals", type: "gathering", level: 1, icon: "🌺" },
-			{ name: "Morning Dew", type: "gathering", level: 1, icon: "🌞" },
-			{ name: "Dandelion Fluff", type: "gathering", level: 1, icon: "🌼" },
-
-			{ name: "Mystic Mushroom", type: "gathering", level: 2, icon: "🍄" },
-			{ name: "Enchanted Moss", type: "gathering", level: 2, icon: "🍂" },
-			{ name: "Soothing Berries", type: "gathering", level: 2, icon: "🍇" },
-			{ name: "Gleaming Stones", type: "gathering", level: 2, icon: "💎" },
-			{ name: "Golden Petals", type: "gathering", level: 2, icon: "🌼" },
-
-			{ name: "Silverleaf", type: "gathering", level: 3, icon: "🍃" },
-			{ name: "Moonlight Orchid", type: "gathering", level: 3, icon: "🌕" },
-			{ name: "Twilight Berries", type: "gathering", level: 3, icon: "🍇" },
-			{ name: "Starlight Mushroom", type: "gathering", level: 3, icon: "✨" },
-
-			{ name: "Dragon's Tongue", type: "gathering", level: 4, icon: "🐉" },
-			{ name: "Serpent Scale", type: "gathering", level: 4, icon: "🐍" },
-			{ name: "Dragonfire Bloom", type: "gathering", level: 4, icon: "🔥" },
-
-			{ name: "Moonflower", type: "gathering", level: 5, icon: "🌼" },
-			{ name: "Ghost Orchid", type: "gathering", level: 5, icon: "👻" },
-			{ name: "Nightshade Berry", type: "gathering", level: 5, icon: "🌙" },
-
-			{ name: "Basilisk's Breath", type: "gathering", level: 6, icon: "🐍" },
-			{ name: "Basilisk Scale", type: "gathering", level: 6, icon: "🐉" },
-			{ name: "Venomous Petal", type: "gathering", level: 6, icon: "☠️" },
-
-			{ name: "Phoenix Feather", type: "gathering", level: 7, icon: "🔥" },
-			{ name: "Phoenix Ash", type: "gathering", level: 7, icon: "🌑" },
-			{ name: "Witch's Thistle", type: "gathering", level: 7, icon: "🧙‍♀️" },
-
-			{ name: "Enchanted Vines", type: "gathering", level: 8, icon: "🌿" },
-			{ name: "Arcane Essence", type: "gathering", level: 8, icon: "✨" },
-
-			{ name: "Eternal Blossom", type: "gathering", level: 9, icon: "🌸" },
-			{ name: "Celestial Petal", type: "gathering", level: 9, icon: "🌟" },
-			
-			{ name: "Starfire Crystal", type: "gathering", level: 10, icon: "💫" },
-			{ name: "Moonlight Essence", type: "gathering", level: 10, icon: "🌕" }
+			// Area 0 — Shimmering Meadows (minGatherLevel 1)
+			{ name: "Healing Herb",      areaIndex: 0, tier: 1, weight: 50, icon: "🌿", type: "gathering" },
+			{ name: "Green Leaf",        areaIndex: 0, tier: 1, weight: 50, icon: "🍀", type: "gathering" },
+			{ name: "Glowing Fungus",    areaIndex: 0, tier: 2, weight: 25, icon: "🍄", type: "gathering" },
+			{ name: "Shimmering Petals", areaIndex: 0, tier: 2, weight: 25, icon: "🌺", type: "gathering" },
+			{ name: "Morning Dew",       areaIndex: 0, tier: 3, weight: 10, icon: "🌞", type: "gathering" },
+			{ name: "Dandelion Fluff",   areaIndex: 0, tier: 3, weight: 10, icon: "🌼", type: "gathering" },
+			// Area 1 — Whispering Forest (minGatherLevel 3)
+			{ name: "Mystic Mushroom",   areaIndex: 1, tier: 1, weight: 50, icon: "🍄", type: "gathering" },
+			{ name: "Enchanted Moss",    areaIndex: 1, tier: 1, weight: 50, icon: "🍂", type: "gathering" },
+			{ name: "Gleaming Stones",   areaIndex: 1, tier: 2, weight: 25, icon: "💎", type: "gathering" },
+			{ name: "Soothing Berries",  areaIndex: 1, tier: 2, weight: 25, icon: "🍇", type: "gathering" },
+			{ name: "Silverleaf",        areaIndex: 1, tier: 3, weight: 10, icon: "🍃", type: "gathering" },
+			{ name: "Golden Petals",     areaIndex: 1, tier: 3, weight: 10, icon: "🌼", type: "gathering" },
+			// Area 2 — Crystal Caverns (minGatherLevel 5)
+			{ name: "Twilight Berries",   areaIndex: 2, tier: 1, weight: 50, icon: "🍇", type: "gathering" },
+			{ name: "Starlight Mushroom", areaIndex: 2, tier: 1, weight: 50, icon: "✨", type: "gathering" },
+			{ name: "Moonlight Orchid",   areaIndex: 2, tier: 2, weight: 25, icon: "🌕", type: "gathering" },
+			{ name: "Dragon's Tongue",    areaIndex: 2, tier: 2, weight: 25, icon: "🐉", type: "gathering" },
+			{ name: "Serpent Scale",      areaIndex: 2, tier: 3, weight: 10, icon: "🐍", type: "gathering" },
+			// Area 3 — Crimson Citadel (minGatherLevel 7)
+			{ name: "Moonflower",       areaIndex: 3, tier: 1, weight: 50, icon: "🌼", type: "gathering" },
+			{ name: "Ghost Orchid",     areaIndex: 3, tier: 1, weight: 50, icon: "👻", type: "gathering" },
+			{ name: "Nightshade Berry", areaIndex: 3, tier: 2, weight: 25, icon: "🌙", type: "gathering" },
+			{ name: "Dragonfire Bloom", areaIndex: 3, tier: 3, weight: 10, icon: "🔥", type: "gathering" },
+			// Area 4 — Stormy Peaks (minGatherLevel 9)
+			{ name: "Basilisk's Breath", areaIndex: 4, tier: 1, weight: 50, icon: "🐍", type: "gathering" },
+			{ name: "Basilisk Scale",    areaIndex: 4, tier: 1, weight: 50, icon: "🐉", type: "gathering" },
+			{ name: "Venomous Petal",    areaIndex: 4, tier: 2, weight: 20, icon: "☠️", type: "gathering" },
+			// Area 5 — Lost Catacombs (minGatherLevel 11)
+			{ name: "Phoenix Feather",  areaIndex: 5, tier: 1, weight: 50, icon: "🔥", type: "gathering" },
+			{ name: "Phoenix Ash",      areaIndex: 5, tier: 1, weight: 50, icon: "🌑", type: "gathering" },
+			{ name: "Witch's Thistle",  areaIndex: 5, tier: 2, weight: 20, icon: "🧙‍♀️", type: "gathering" },
+			// Area 6 — Celestial Observatory (minGatherLevel 13)
+			{ name: "Enchanted Vines",  areaIndex: 6, tier: 1, weight: 50, icon: "🌿", type: "gathering" },
+			{ name: "Arcane Essence",   areaIndex: 6, tier: 1, weight: 50, icon: "✨", type: "gathering" },
+			// Area 7 — Frozen Tundra (minGatherLevel 15)
+			{ name: "Eternal Blossom",  areaIndex: 7, tier: 1, weight: 50, icon: "🌸", type: "gathering" },
+			{ name: "Celestial Petal",  areaIndex: 7, tier: 1, weight: 50, icon: "🌟", type: "gathering" },
+			// Area 8 — Volcanic Depths (minGatherLevel 17)
+			{ name: "Starfire Crystal", areaIndex: 8, tier: 1, weight: 50, icon: "💫", type: "gathering" },
+			{ name: "Moonlight Essence",areaIndex: 8, tier: 1, weight: 50, icon: "🌕", type: "gathering" },
+			// Area 9 — Cursed Catacombs (minGatherLevel 19)
+			{ name: "Starfire Crystal", areaIndex: 9, tier: 1, weight: 50, icon: "💫", type: "gathering" },
+			{ name: "Moonlight Essence",areaIndex: 9, tier: 1, weight: 50, icon: "🌕", type: "gathering" },
 		],
 		randomEnemies: [
 			{ name: "Swordmaster", icon: "🗡️🛡️" },
@@ -732,52 +879,22 @@ function generateId(name, level) {
 	return enemyId.toLowerCase();
 }
 
-const ATTRIBUTES = {
-	maxHP: {
-	  levelFactors: [0.4, 0.45, 0.5, 0.45, 0.5, 0.55, 0.5, 0.55, 0.6, 0.7],
-	  groupBonuses: [2, 4, 8, 12, 0, 0, 0, 0, 0, 0],
-	},
-	damage: {
-	  levelFactors: [0.4, 0.45, 0.5, 0.45, 0.5, 0.55, 0.5, 0.55, 0.6, 0.7],
-	  groupBonuses: [1, 2, 5, 15, 0, 0, 0, 0, 0, 0],
-	},
-	defense: {
-	  levelFactors: [0.4, 0.45, 0.5, 0.45, 0.5, 0.55, 0.5, 0.55, 0.6, 0.7],
-	  groupBonuses: [2, 4, 3, 0, 0, 0, 0, 0, 0, 0],
-	},
-	precision: {
-	  levelFactors: [0.4, 0.45, 0.5, 0.45, 0.5, 0.55, 0.5, 0.55, 0.6, 0.7],
-	  groupBonuses: [1, 2, 5, 15, 0, 0, 0, 0, 0, 0],
-	},
-	evasion: {
-	  levelFactors: [0.4, 0.45, 0.5, 0.45, 0.5, 0.55, 0.5, 0.55, 0.6, 0.7],
-	  groupBonuses: [4, 6, 5, 0, 0, 0, 0, 0, 0, 0],
-	},
-	critical: {
-	  levelFactors: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-	  groupBonuses: [1, 2, 5, 15, 0, 0, 0, 0, 0, 0],
-	},
-	resistance: {
-	  levelFactors: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-	  groupBonuses: [3, 5, 4, 0, 0, 0, 0, 0, 0, 0],
-	},
-	penetration: {
-	  levelFactors: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-	  groupBonuses: [1, 0, 2, 10, 0, 0, 0, 0, 0, 0],
-	},
-	block: {
-	  levelFactors: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-	  groupBonuses: [0, 1, 1, 0, 0, 0, 0, 0, 0, 0],
-	},
-}
+const STAT_CONFIGS = {
+	maxHP:       { factor: 0.7,  areaScale: 3.0 },
+	damage:      { factor: 0.6,  areaScale: 2.0 },
+	defense:     { factor: 0.55, areaScale: 1.5 },
+	precision:   { factor: 0.55, areaScale: 2.0 },
+	evasion:     { factor: 0.5,  areaScale: 1.5 },
+	critical:    { factor: 0.2,  areaScale: 1.0 },
+	resistance:  { factor: 0.2,  areaScale: 1.0 },
+	penetration: { factor: 0.15, areaScale: 0.8 },
+	block:       { factor: 0.15, areaScale: 0.8 },
+};
 
 const getAttributeValue = (level, attribute) => {
-	const group = Math.ceil(level / 10)
-	const factorIndex = (level - 1) % 10
-	const groupIndex = group - 1
-	const factor = ATTRIBUTES[attribute].levelFactors[factorIndex]
-	const bonus = ATTRIBUTES[attribute].groupBonuses[groupIndex]
-	return Math.floor(1 + level * factor + bonus)
+	const areaIndex = Math.floor((level - 1) / 10);
+	const { factor, areaScale } = STAT_CONFIGS[attribute];
+	return Math.floor(1 + level * factor + areaIndex * areaScale);
 };
 
 enemies.forEach(enemy => {
@@ -800,17 +917,18 @@ enemies.forEach(enemy => {
 
 	if (type === 'BOSS') {
 	  enemy.lootChance = 0.333
-	  enemy.spell = spells[Math.ceil(enemy.level / 10)];
+	  enemy.spell = spells[Math.ceil(enemy.level / 10) - 1];
 	} else if (type ==='DUELIST') {
 	  enemy.lootChance = 0
-	  enemy.damage += Math.ceil(enemy.precision * 0.1);
-	  enemy.precision += Math.ceil(enemy.precision * 0.1);
-	  enemy.critical += Math.ceil(enemy.precision * 0.05);
-	  enemy.penetration += Math.ceil(enemy.precision * 0.05);
+	  const basePrecision = enemy.precision;
+	  enemy.damage += Math.ceil(basePrecision * 0.1);
+	  enemy.precision += Math.ceil(basePrecision * 0.1);
+	  enemy.critical += Math.ceil(basePrecision * 0.05);
+	  enemy.penetration += Math.ceil(basePrecision * 0.05);
 	  enemy.spell = null;
 	} else {
 	  enemy.lootChance = 0.033
-	  enemy.spell = spells[Math.ceil(enemy.level / 10)];
+	  enemy.spell = spells[Math.ceil(enemy.level / 10) - 1];
 	}
 });
 
@@ -819,6 +937,7 @@ itemsList.forEach(item => {
 	item.id = generateId(name, level);
 	item.areaIndex = Math.floor((level - 1) / 10);
 	item.improvementLevel = 0;
+	item.craftRank = 0;
 });
 
 const gameConfig = {
@@ -838,7 +957,11 @@ const gameConfig = {
 	levelUpRequirements: levelUpRequirements,
 	effectValue: 0.03,
 	spellMaxLevel: 10,
-	gatheringItems: gatheringItems
+	gatheringItems: gatheringItems,
+	relics: RELICS,
+	questPool: QUEST_POOL,
+	craftRecipes: CRAFT_RECIPES,
+	prestigeMinLevel: 30,
 }
 
 function deepFreeze(obj) {

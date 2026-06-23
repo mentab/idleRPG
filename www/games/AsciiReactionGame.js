@@ -1,59 +1,59 @@
-// Simple ASCII timing mini-game: press Space when [!] is near the center.
+// "Spellcast" — release the spell when the gem is at peak power (center of the bar).
+
+import { initGameArea, createPre, createCaption, createSub, createBtnRow, createBtn } from './gameUtils.js';
 
 function asciiReactionGame(resultCallback) {
-	const gameArea = document.getElementById('game-area');
-	gameArea.innerHTML = '';
+	const gameArea = initGameArea();
 
-	const pre = document.createElement('pre');
-	pre.textContent = 'Press SPACE when [!] is at the center…';
-	gameArea.appendChild(pre);
+	const pre     = createPre();
+	const caption = createCaption('✨ Channel the energy — release at peak power!');
+	const sub     = createSub('Power: 0%');
+	const btnRow  = createBtnRow();
+	const btn     = createBtn('✨ Release!');
 
-	const hint = document.createElement('p');
-	hint.textContent = 'Bar: |........[!]........|  —  SPACE';
-	gameArea.appendChild(hint);
+	btnRow.appendChild(btn);
+	gameArea.append(pre, caption, sub, btnRow);
 
-	const width = 21;
-	const center = Math.floor(width / 2);
-	let position = 0;
+	const WIDTH   = 21;
+	const TARGET  = 3 + Math.floor(Math.random() * (WIDTH - 6));
+	let position  = 0;
 	let direction = 1;
-	let finished = false;
-	const speedMs = 55 + Math.floor(Math.random() * 40);
+	let finished  = false;
+	const speedMs = 45 + Math.floor(Math.random() * 35);
 
 	const render = () => {
-		const line = Array(width).fill('.');
-		line[position] = '!';
-		pre.textContent = `|${line.join('')}|`;
+		const line = Array(WIDTH).fill('·');
+		line[TARGET]   = '|';
+		line[position] = '◆';
+		pre.textContent = `[${line.join('')}]`;
+		sub.textContent = `Power: ${Math.max(0, 100 - Math.abs(position - TARGET) * 12)}%`;
 	};
 
 	const finish = (score) => {
 		if (finished) return;
 		finished = true;
 		clearInterval(tick);
-		window.removeEventListener('keydown', onKey);
-		pre.textContent = `|${' '.repeat(center)}[!]${' '.repeat(center)}|\nScore: ${score}/100`;
+		const line = Array(WIDTH).fill('·');
+		line[TARGET]    = '*';
+		pre.textContent = `[${line.join('')}]`;
+		caption.textContent = score >= 80 ? '💥 Perfect release!' : score >= 50 ? '✨ Good cast!' : '💨 Off-target...';
+		sub.textContent     = `Score: ${score}`;
 		setTimeout(() => resultCallback(score), 400);
 	};
 
-	const onKey = (event) => {
-		if (event.code !== 'Space' || finished) return;
-		event.preventDefault();
-		const distance = Math.abs(position - center);
-		const score = Math.max(0, Math.min(100, 100 - distance * 12));
-		finish(score);
-	};
+	btn.addEventListener('click', () => {
+		if (finished) return;
+		finish(Math.max(0, Math.min(100, 100 - Math.abs(position - TARGET) * 12)));
+	});
 
 	const tick = setInterval(() => {
 		position += direction;
-		if (position >= width - 1 || position <= 0) {
-			direction *= -1;
-		}
+		if (position >= WIDTH - 1 || position <= 0) direction *= -1;
 		render();
 	}, speedMs);
 
-	window.addEventListener('keydown', onKey);
 	render();
-
-	setTimeout(() => finish(15), 8000);
+	setTimeout(() => finish(10), 8000);
 }
 
 export default asciiReactionGame;

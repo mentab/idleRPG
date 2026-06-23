@@ -4,9 +4,12 @@ import { updateGameNotice } from '../modules/MessageModule.js';
 import { createCombatModifier, describeCombatModifier } from '../modules/MiniGameBonusModule.js';
 
 class MiniGameScreen {
-	constructor(showNextScreen) {
+	constructor(showNextScreen, player = null, streakModule = null, questModule = null) {
 		this.miniGames = [];
 		this.showNextScreen = showNextScreen;
+		this.player = player;
+		this.streakModule = streakModule;
+		this.questModule = questModule;
 	}
 
 	registerMiniGame(miniGameFunction, label = 'Mini-game') {
@@ -33,7 +36,20 @@ class MiniGameScreen {
 	}
 
 	finishMiniGame(rawResult, action) {
-		const modifier = createCombatModifier(rawResult);
+		let playerStats = null;
+		if (this.player) {
+			playerStats = {
+				damage:      this.player.damage    + this.player.calculateEquippedDamage(),
+				precision:   this.player.precision + this.player.calculateEquippedPrecision(),
+				defense:     this.player.defense   + this.player.calculateEquippedDefense(),
+				evasion:     this.player.evasion   + this.player.calculateEquippedEvasion(),
+				relicsOwned: this.player.relicsOwned,
+			};
+		}
+		const modifier = createCombatModifier(rawResult, playerStats);
+		if (this.streakModule) {
+			this.streakModule.recordMiniGameScore(modifier.score, this.questModule);
+		}
 		updateGameNotice(describeCombatModifier(modifier));
 		action(modifier ?? null);
 		this.showNextScreen();

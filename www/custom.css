@@ -278,7 +278,8 @@ sub {
 #stat-list,
 #shop-item-list,
 #sell-item-list,
-#spell-list {
+#spell-list,
+#crafting-recipes-list {
 	display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 20px;
@@ -293,7 +294,8 @@ sub {
 #stat-list > div,
 #shop-item-list > div,
 #sell-item-list > div,
-#spell-list > div  {
+#spell-list > div,
+#crafting-recipes-list > div {
 	background: var(--accent-bg);
 	border: 2px solid var(--border);
 	padding: 1em;
@@ -309,7 +311,8 @@ sub {
 #stat-list > div > button,
 #shop-item-list > div > button,
 #sell-item-list > div > button,
-#spell-list > div > button {
+#spell-list > div > button,
+#crafting-recipes-list > div > button {
 	margin-top: auto;
 	margin-bottom: 5px;
 }
@@ -344,7 +347,7 @@ sub {
     animation: slide-in 0.5s ease-out;
 }
 
-/* Animation pour afficher la notice */
+/* Slide-in animation */
 @keyframes slide-in {
     from {
         transform: translateX(100%);
@@ -354,7 +357,7 @@ sub {
     }
 }
 
-/* Animation de disparition */
+/* Fade-out animation */
 .fade-out {
     opacity: 0;
     transform: translateX(100%);
@@ -511,12 +514,50 @@ button:hover {
 	padding: 0.5rem;
 	border: 1px dashed var(--border);
 	display: flex;
-	flex-wrap: wrap;
-	gap: 0.5rem;
+	flex-direction: column;
 	align-items: center;
+	gap: 0.5rem;
 }
 
 #game-area pre {
 	margin: 0;
 	white-space: pre;
+	border: none;
+	background: transparent;
+	border-radius: 0;
+	padding: 0;
+}
+
+/* ── Screen fade-in transition ── */
+@keyframes screenFadeIn {
+	from { opacity: 0; transform: translateY(6px); }
+	to   { opacity: 1; transform: translateY(0); }
+}
+#main-screens > div:not(.hidden) {
+	animation: screenFadeIn 0.15s ease;
+}
+
+/* ── Item rarity colours ── */
+.rarity-legendary { color: #ffd700; }
+.rarity-epic      { color: #bf5fff; }
+.rarity-rare      { color: #4da6ff; }
+.rarity-common    { color: inherit; }
+
+/* ── Area modifier warning ── */
+.area-modifier {
+	color: #ff9966;
+}
+
+/* ── Sidebar section labels ── */
+#choose-screen small strong {
+	opacity: 0.6;
+	font-size: 0.75rem;
+	letter-spacing: 0.05em;
+	display: block;
+	margin-top: 0.4rem;
+}
+
+/* ── Prestige gold label ── */
+#playerPrestige {
+	font-weight: bold;
 }

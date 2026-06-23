@@ -1,40 +1,87 @@
+// "Parry the Strike" — tap Parry the instant the knight swings.
+
+import { initGameArea, createPre, createCaption, createSub, createBtnRow, createBtn } from './gameUtils.js';
+
 function timingGame(resultCallback) {
-	const gameArea = document.getElementById('game-area');
-	gameArea.innerHTML = '';
+	const gameArea = initGameArea();
 
-	const button = document.createElement('button');
-	button.innerText = 'Wait for the signal, then click!';
-	gameArea.appendChild(button);
+	const IDLE   = `  -|-\n  (O)\n  /|\\\n  / \\`;
+	const RAISE  = `   ==\n  (O)\n  /|\\\n  / \\`;
+	const STRIKE = `  (O)\n  /|--\n  / \\\n     `;
 
-	const targetTime = Math.random() * 2000 + 1000;
-	let startTime = null;
-	let finished = false;
+	const pre     = createPre();
+	const caption = createCaption('A knight in black armor sizes you up...');
+	const sub     = createSub();
+	const btnRow  = createBtnRow();
+	const btn     = createBtn('🛡️ Parry!');
 
-	function calculateScore(difference) {
-		const maxDifference = 1000;
-		const score = Math.floor((1 - difference / maxDifference) * 100);
-		return score;
+	pre.textContent = IDLE;
+	btnRow.appendChild(btn);
+	gameArea.append(pre, caption, sub, btnRow);
+
+	let finished      = false;
+	let attackStarted = false;
+	let attackTime    = null;
+	const attackDelay = 1500 + Math.random() * 2500;
+	const hasFeint    = Math.random() < 0.3;
+
+	if (hasFeint) {
+		setTimeout(() => {
+			if (finished) return;
+			pre.textContent     = RAISE;
+			caption.textContent = '⚠️ He draws his arm back...';
+		}, attackDelay * 0.32);
+
+		setTimeout(() => {
+			if (finished || attackStarted) return;
+			pre.textContent     = IDLE;
+			caption.textContent = '😏 A feint — he lowers his guard.';
+		}, attackDelay * 0.52);
+
+		setTimeout(() => {
+			if (finished || attackStarted) return;
+			pre.textContent     = RAISE;
+			caption.textContent = '⚠️ Wait — he raises again!';
+		}, attackDelay * 0.75);
+	} else {
+		setTimeout(() => {
+			if (finished) return;
+			pre.textContent     = RAISE;
+			caption.textContent = '⚠️ He draws his arm back...';
+		}, attackDelay * 0.55);
 	}
 
-	button.addEventListener('click', () => {
+	setTimeout(() => {
+		if (finished) return;
+		pre.textContent     = STRIKE;
+		caption.textContent = '💥 INCOMING STRIKE — PARRY NOW!';
+		attackStarted = true;
+		attackTime    = Date.now();
+	}, attackDelay);
+
+	btn.addEventListener('click', () => {
 		if (finished) return;
 		finished = true;
-
-		if (!startTime) {
-			resultCallback(15);
+		if (!attackStarted) {
+			pre.textContent     = IDLE;
+			caption.textContent = '😓 Too early — you left yourself open!';
+			setTimeout(() => resultCallback(10), 700);
 			return;
 		}
-
-		const endTime = Date.now();
-		const reactionTime = endTime - startTime;
-		const difference = Math.abs(reactionTime - targetTime);
-		resultCallback(calculateScore(difference));
+		const reaction = Date.now() - attackTime;
+		const score    = Math.max(5, Math.min(100, Math.round(100 - reaction / 15)));
+		pre.textContent     = '  O \n [=]\n / \\\n    ';
+		caption.textContent = reaction < 400 ? `✨ Perfect parry! (${reaction}ms)` : `🛡️ Parried! (${reaction}ms)`;
+		sub.textContent     = `Score: ${score}`;
+		setTimeout(() => resultCallback(score), 700);
 	});
 
 	setTimeout(() => {
-		button.innerText = 'Click now!';
-		startTime = Date.now();
-	}, targetTime);
+		if (finished) return;
+		finished = true;
+		caption.textContent = '💀 Too slow — the blow lands hard!';
+		setTimeout(() => resultCallback(5), 700);
+	}, attackDelay + 2200);
 }
 
 export default timingGame;

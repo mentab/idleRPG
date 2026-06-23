@@ -38,11 +38,12 @@ class AchievementsScreen {
 		achievementsList.innerHTML = "";
 
 		const filteredEnemies = gameConfig.enemies.filter(
-			(enemy) => enemy.areaIndex == this.player.areaIndex && enemy.type === 'BASE'
+			(enemy) => enemy.areaIndex == this.player.areaIndex
 		);
 
 		filteredEnemies.forEach((enemy) => {
-			const { id, icon, name } = enemy;
+			const { id, icon, name, type } = enemy;
+			const typeLabel = type === 'BOSS' ? ' 👑' : type === 'DUELIST' ? ' ⚔️' : '';
 			const nextReward = this.getNextReward(enemy);
 
 			if (nextReward) {
@@ -51,7 +52,7 @@ class AchievementsScreen {
 				const rewardCard = document.createElement("div");
 
 				const enemyInfo = document.createElement("div");
-				enemyInfo.innerHTML = `<strong>${name}</strong> ${icon}`;
+				enemyInfo.innerHTML = `<strong>${name}</strong> ${icon}${typeLabel}`;
 				rewardCard.appendChild(enemyInfo);
 
 				const progressInfo = document.createElement("div");

@@ -1,4 +1,4 @@
-import { mapToArray, arrayToMap } from "../utils/utils.js";
+import { mapToArray, arrayToMap, getRarityMultiplier } from "../utils/utils.js";
 import { updateGameNotice } from "../modules/MessageModule.js";
 
 export class Player {
@@ -54,19 +54,27 @@ export class Player {
         this.inventory = [];
         this.money = 0;
         this.experience = 0;
-        this.gatheringXP = 0;
         this.areaIndex = 0;
         this.killedEnemies = new Map();
         this.claimedRewards = new Map();
         this.gambleCount = 0;
         this.availableSpellPoints = 1;
+        // prestige / meta-progression
+        this.prestigeLevel = 0;
+        this.prestigePoints = 0;
+        this.relicsOwned = [];
+        this.highestLevel = 1;
+        // daily quests
+        this.dailyQuests = [];
+        this.lastQuestDate = null;
     }
 
 	calculateEquippedStat(stat) {
 		const item = this[stat + "Item"];
 		if (item) {
-			const { level, improvementLevel } = item;
-			const finalLevel = level + improvementLevel;
+			const { level, improvementLevel, craftRank } = item;
+			const effectiveLevel = level + improvementLevel + (craftRank ?? 0) * 3;
+			const finalLevel = Math.floor(effectiveLevel * getRarityMultiplier(level));
 
 			switch (stat) {
 				case "defense":
@@ -78,12 +86,12 @@ export class Player {
 				case "resistance":
                 case "block":
                 case "penetration":
-					return Math.ceil(finalLevel / 10);
+					return Math.ceil(finalLevel / 5);
 				case "bonusExp":
 				case "bonusLoot":
 					return Math.floor(finalLevel / 20);
                 case "regeneration":
-                    return Math.floor(finalLevel / 30);
+                    return Math.floor(finalLevel / 15);
 				default:
 					return 0;
 			}
@@ -134,6 +142,61 @@ export class Player {
 
     calculateEquippedBonusLoot() {
         return this.calculateEquippedStat("bonusLoot");
+    }
+
+    levelUp() {
+        this.maxHP += 1;
+        if (this.level % 25 === 0) {
+            this.regeneration += 1;
+        }
+        this.toughness += 1;
+        this.swiftness += 1;
+        if (this.level % 10 === 0) {
+            this.fortitude += 1;
+            this.defiance += 1;
+            this.availableSpellPoints += 1;
+        }
+        this.currentHP = this.maxHP;
+    }
+
+    regenerate() {
+        this.currentHP = Math.min(this.maxHP, this.currentHP + this.regeneration + this.calculateEquippedRegeneration());
+    }
+
+    checkLevelUp(levelUpRequirements) {
+        for (const requirement of levelUpRequirements) {
+            if (this.level < requirement.level && this.experience >= requirement.experience) {
+                this.level = requirement.level;
+                this.experience = requirement.experience;
+                this.levelUp();
+                return this.level;
+            }
+        }
+        return null;
+    }
+
+    ascend() {
+        const prestigePointsEarned = Math.floor(this.level / 10);
+
+        const persistent = {
+            prestigeLevel: this.prestigeLevel + 1,
+            prestigePoints: this.prestigePoints + prestigePointsEarned,
+            relicsOwned: [...this.relicsOwned],
+            killedEnemies: this.killedEnemies,
+            claimedRewards: this.claimedRewards,
+            highestLevel: Math.max(this.highestLevel, this.level),
+            dailyQuests: this.dailyQuests,
+            lastQuestDate: this.lastQuestDate,
+        };
+
+        // Reset in-place so all existing references remain valid
+        const defaults = new Player();
+        for (const key of Object.keys(defaults)) {
+            this[key] = defaults[key];
+        }
+        Object.assign(this, persistent);
+
+        return prestigePointsEarned;
     }
 
     savePlayerData() {

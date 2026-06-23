@@ -1,17 +1,29 @@
-function memoryGame(resultCallback) {
-	const gameArea = document.getElementById('game-area');
-	gameArea.innerHTML = '';
+// "Rune Stones" — a sorcerer flashes rune pairs; find them all before running out of chances.
 
-	const symbols = ['🗡️', '🔮', '👑'];
+import { initGameArea, createCaption, createSub } from './gameUtils.js';
+
+function memoryGame(resultCallback) {
+	const gameArea = initGameArea();
+
+	const caption  = createCaption('🔮 A sorcerer flashes rune stones. Match all pairs!');
+	const sub      = createSub('Mistakes left: 3');
+	const cardGrid = document.createElement('div');
+	Object.assign(cardGrid.style, {
+		display: 'flex', gap: '10px', justifyContent: 'center',
+		flexWrap: 'wrap', width: '100%', margin: '8px 0',
+	});
+
+	gameArea.append(caption, sub, cardGrid);
+
+	const symbols    = ['⚡', '🔥', '💧'];
 	const totalPairs = 3;
-	const cards = generateCards(symbols, totalPairs);
+	const maxMisses  = 3;
 
 	let selectedCards = [];
-	let matches = 0;
-	let misses = 0;
+	let matches   = 0;
+	let misses    = 0;
 	let isWaiting = false;
-	let finished = false;
-	const maxMisses = 3;
+	let finished  = false;
 
 	const endGame = (won) => {
 		if (finished) return;
@@ -22,93 +34,54 @@ function memoryGame(resultCallback) {
 
 	const timeoutId = setTimeout(() => endGame(false), 45000);
 
-	cards.forEach((card) => {
-	gameArea.appendChild(card);
-		card.addEventListener('click', () => {
-			if (finished) return;
-			if (!isWaiting && !selectedCards.includes(card) && selectedCards.length < 2) {
-				flipCard(card);
-				selectedCards.push(card);
+	// Build shuffled card deck
+	const deck = [...symbols, ...symbols];
+	for (let i = deck.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[deck[i], deck[j]] = [deck[j], deck[i]];
+	}
 
-				if (selectedCards.length === 2) {
-					isWaiting = true;
-					setTimeout(checkMatch, 1000);
-				}
+	deck.forEach((sym) => {
+		const btn = document.createElement('button');
+		btn.innerText      = '❓';
+		btn.dataset.symbol = sym;
+		Object.assign(btn.style, { fontSize: '1.8em', width: '64px', height: '64px', padding: '0', flexShrink: '0' });
+
+		btn.addEventListener('click', () => {
+			if (finished || isWaiting || btn.disabled || selectedCards.includes(btn)) return;
+			btn.innerText = sym;
+			selectedCards.push(btn);
+			if (selectedCards.length === 2) {
+				isWaiting = true;
+				setTimeout(checkMatch, 900);
 			}
 		});
+
+		cardGrid.appendChild(btn);
 	});
 
-	function generateCards(symbols, totalPairs) {
-		const cards = [];
-
-		for (let i = 0; i < totalPairs; i++) {
-			const symbol = symbols[i];
-			const card1 = createCard(symbol);
-			const card2 = createCard(symbol);
-
-			cards.push(card1);
-			cards.push(card2);
-		}
-
-		// Shuffle the cards using Fisher-Yates algorithm
-		for (let i = cards.length - 1; i > 0; i--) {
-			const j = Math.floor(Math.random() * (i + 1));
-			[cards[i], cards[j]] = [cards[j], cards[i]];
-		}
-
-		return cards;
-	}
-
-	function createCard(symbol) {
-		const card = document.createElement('button');
-		card.innerText = '❓';
-		card.setAttribute('data-symbol', symbol);
-		return card;
-	}
-
-	function flipCard(card) {
-		const symbol = card.getAttribute('data-symbol');
-
-		card.innerText = symbol;
-
-		// Set a short timeout to flip the card back if not matched
-		setTimeout(() => {
-			if (!selectedCards.includes(card)) {
-				card.innerText = '❓';
-			}
-		}, 1000);
-	}
-
-	function unflipCards() {
-		selectedCards.forEach((card) => {
-			card.innerText = '❓';
-		});
-		selectedCards = [];
-		isWaiting = false;
-	}
-
 	function checkMatch() {
-		const [card1, card2] = selectedCards;
-		const symbol1 = card1.getAttribute('data-symbol');
-		const symbol2 = card2.getAttribute('data-symbol');
-
-		if (symbol1 === symbol2) {
-			card1.removeEventListener('click', () => {});
-			card2.removeEventListener('click', () => {});
+		const [a, b] = selectedCards;
+		if (a.dataset.symbol === b.dataset.symbol) {
+			[a, b].forEach(c => {
+				c.disabled          = true;
+				c.style.outline     = '3px solid gold';
+				c.style.outlineOffset = '2px';
+				c.style.opacity     = '0.75';
+			});
 			matches++;
-
-			if (matches === totalPairs) {
-				endGame(true);
-			} else {
-				selectedCards = [];
-				isWaiting = false;
-			}
+			selectedCards = [];
+			isWaiting     = false;
+			if (matches === totalPairs) endGame(true);
 		} else {
 			misses++;
+			sub.textContent = `Mistakes left: ${maxMisses - misses}`;
 			if (misses >= maxMisses) {
 				endGame(false);
 			} else {
-				unflipCards();
+				a.innerText = b.innerText = '❓';
+				selectedCards = [];
+				isWaiting     = false;
 			}
 		}
 	}
